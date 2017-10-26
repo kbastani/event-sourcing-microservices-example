@@ -26,7 +26,7 @@
     <modules>
         <module>user-service</module>
         <module>friend-service</module>
-        <module>event-processor</module>
+        <module>aggregate-service</module>
     </modules>
 
 	<dependencyManagement>

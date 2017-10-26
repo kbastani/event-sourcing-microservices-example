@@ -20,6 +20,6 @@ public class UserServiceApplication {
 
     @Configuration
     @EnableBinding(Source.class)
-    class EventService {
+    class StreamConfig {
     }
 }

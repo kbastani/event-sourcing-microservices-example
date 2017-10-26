@@ -1,6 +1,19 @@
-server:
-  port: 8080
+spring.profiles.active: development
+server.port: 0
+---
 spring:
+  profiles: development
+  application:
+    name: user-service
+  cloud:
+    stream:
+      bindings:
+        output:
+          destination: user
+          contentType: 'application/json'
+---
+spring:
+  profiles: test
   application:
     name: user-service
   cloud:

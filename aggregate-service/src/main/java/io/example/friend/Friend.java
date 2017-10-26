@@ -1,25 +1,15 @@
-package io.example;
-
-import javax.persistence.*;
+package io.example.friend;
 
 /**
- * The domain entity representing a friend relationship between two users.
+ * A projection of the {@link Friend} domain object that is owned by the
+ * friend service.
  *
  * @author Kenny Bastani
  */
-@Entity
-@Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"user_id", "friend_id"}))
 public class Friend {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "user_id")
     private Long userId;
-
-    @Column(name = "friend_id")
     private Long friendId;
 
     public Friend() {

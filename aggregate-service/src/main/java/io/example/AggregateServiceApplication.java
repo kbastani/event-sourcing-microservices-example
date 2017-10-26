@@ -11,10 +11,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Kenny Bastani
  */
 @SpringBootApplication
-public class EventProcessorApplication {
+public class AggregateServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(EventProcessorApplication.class, args);
+        SpringApplication.run(AggregateServiceApplication.class, args);
     }
 
 }

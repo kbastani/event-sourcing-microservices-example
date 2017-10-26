@@ -1,0 +1,46 @@
+spring.profiles.active: development
+server.port: 0
+---
+spring:
+  profiles: development
+  cloud:
+    stream:
+      bindings:
+        user:
+          destination: user
+          group: user-group
+          contentType: 'application/json'
+          consumer:
+            durableSubscription: true
+        friend:
+          destination: friend
+          group: friend-group
+          contentType: 'application/json'
+          consumer:
+            durableSubscription: true
+  data:
+    neo4j:
+      username: neo4j
+      password: graphdb
+---
+spring:
+  profiles: test
+  cloud:
+    stream:
+      bindings:
+        user:
+          destination: user
+          group: user-group
+          contentType: 'application/json'
+          consumer:
+            durableSubscription: true
+        friend:
+          destination: friend
+          group: friend-group
+          contentType: 'application/json'
+          consumer:
+            durableSubscription: true
+  data:
+    neo4j:
+      username: neo4j
+      password: graphdb

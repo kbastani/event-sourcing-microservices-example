@@ -24,6 +24,6 @@ public class FriendServiceApplication {
      */
     @Configuration
     @EnableBinding(Source.class)
-    class EventService {
+    class StreamConfig {
     }
 }

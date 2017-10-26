@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>event-processor</artifactId>
+	<artifactId>aggregate-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>event-processor</name>
+	<name>aggregate-service</name>
 
     <parent>
         <groupId>io.example</groupId>

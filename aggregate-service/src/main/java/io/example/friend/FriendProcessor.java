@@ -33,13 +33,13 @@ public class FriendProcessor {
         switch (friendEvent.getPayload().getEventType()) {
             case FRIEND_ADDED:
                 userRepository.addFriend(
-                        friendEvent.getPayload().getSubject().getUserA(),
-                        friendEvent.getPayload().getSubject().getUserB());
+                        friendEvent.getPayload().getSubject().getUserId(),
+                        friendEvent.getPayload().getSubject().getFriendId());
                 break;
             case FRIEND_REMOVED:
                 userRepository.removeFriend(
-                        friendEvent.getPayload().getSubject().getUserA(),
-                        friendEvent.getPayload().getSubject().getUserB());
+                        friendEvent.getPayload().getSubject().getUserId(),
+                        friendEvent.getPayload().getSubject().getFriendId());
                 break;
         }
     }

@@ -1,8 +1,17 @@
-server:
-  port: 8082
+spring.profiles.active: development
+server.port: 0
+---
 spring:
-  application:
-    name: friend-service
+  profiles: development
+  cloud:
+    stream:
+      bindings:
+        output:
+          destination: friend
+          contentType: 'application/json'
+---
+spring:
+  profiles: test
   cloud:
     stream:
       bindings:
