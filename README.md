@@ -16,6 +16,8 @@ One of the main problems I see today when describing components of a microservic
 
 **Domain services** are microservices that own the _system of record_ for a portion of the application's domain.
 
+![Domain service](https://imgur.com/Lgy55OJ.png)
+
 Domain services:
 
 - Manage the storage of domain data that it owns.
@@ -26,6 +28,8 @@ Domain services:
 ### Aggregate Services
 
 **Aggregate services** are microservices that replicate eventually consistent views of domain data owned by separate _domain services_.
+
+![Aggregate service](https://imgur.com/1jx6rTn.png)
 
 Aggregate services:
 
