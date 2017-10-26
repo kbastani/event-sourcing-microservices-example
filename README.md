@@ -38,6 +38,14 @@ Aggregate services:
 - Create connected query projections of distributed domain data.
 - Provide performant read-access to complex views of domain data.
 
+## Example Domain
+
+The example domain is a social network of users who can establish friend relationships with one another. I chose this domain because it has high join complexity when the domain data is split across separate services.
+
+![Domain graph of users and friends](https://imgur.com/Uqd7SHE.png)
+
+The diagram above is a domain graph that shows `User` nodes and `Friend` relationships. In a microservice architecture we may decide to decompose this domain graph into two separate domain services, a `user-service` and a `friend-service`. For this reason, we'll have foreign-key relationships stored in the `friend-service` that reference the unique identity of a `User` stored on the `user-service`. 
+
 # License
 
 This project is licensed under Apache License 2.0.
