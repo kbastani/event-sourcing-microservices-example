@@ -6,7 +6,7 @@ This repository is a microservice reference example that is intended to teach th
 
 For this reference, I chose to create a simple example domain with a high degree of relationships between data stored on separate microservices. In the architecture diagram below, you'll see an abstract component diagram that describes an event-driven microservice architecture containing two domain services and one aggregate processor.
 
-![Event sourcing architecture diagram](https://i.imgur.com/oL2sR9i.png)
+![Event sourcing architecture diagram](https://imgur.com/hikqWCr.png)
 
 ## Conventions
 
