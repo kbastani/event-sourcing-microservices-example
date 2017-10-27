@@ -6,7 +6,7 @@ This repository is a microservice reference example that is intended to teach th
 
 For this reference, I chose to create a simple example domain with a high degree of relationships between data stored on separate microservices. In the architecture diagram below, you'll see an abstract component diagram that describes an event-driven microservice architecture containing two domain services and one aggregate processor.
 
-![Event sourcing architecture diagram](https://imgur.com/hikqWCr.png)
+<img src="https://imgur.com/DUEhtBH.png" width="480" alt="Event sourcing architecture diagram">
 
 ## Conventions
 
@@ -16,7 +16,8 @@ One of the main problems I see today when describing components of a microservic
 
 **Domain services** are microservices that own the _system of record_ for a portion of the application's domain.
 
-![Domain service](https://imgur.com/Lgy55OJ.png)
+<img src="https://imgur.com/bAttimP.png" height="300" alt="Domain service">
+<br/>
 
 Domain services:
 
@@ -29,7 +30,8 @@ Domain services:
 
 **Aggregate services** are microservices that replicate eventually consistent views of domain data owned by separate _domain services_.
 
-![Aggregate service](https://imgur.com/1jx6rTn.png)
+<img src="https://imgur.com/6c8mJfC.png" height="305" alt="Aggregate service">
+<br/>
 
 Aggregate services:
 
@@ -42,7 +44,8 @@ Aggregate services:
 
 The example domain is a social network of users who can establish friend relationships with one another. I chose this domain because it has high join complexity when the domain data is split across separate services.
 
-![Domain graph of users and friends](https://imgur.com/Uqd7SHE.png)
+<img src="https://imgur.com/Uqd7SHE.png" width="400" alt="Domain graph of users and friends">
+<br/>
 
 The diagram above is a domain graph that shows `User` nodes and `Friend` relationships. In a microservice architecture we may decide to decompose this domain graph into two separate domain services, a `user-service` and a `friend-service`. For this reason, we'll have foreign-key relationships stored in the `friend-service` that reference the unique identity of a `User` stored on the `user-service`. 
 
