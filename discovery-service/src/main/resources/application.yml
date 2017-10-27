@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: development
+  application:
+    name: discovery-service
+server:
+  port: 8761
+---
+spring:
+  profiles: development
+---
+spring:
+  profiles: docker
+---
+spring:
+  profiles: test

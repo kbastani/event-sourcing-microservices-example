@@ -1,0 +1,47 @@
+neo4j:
+  image: neo4j:3.2.5
+  ports:
+   - 7474:7474
+   - 7687:7687
+  environment:
+  - NEO4J_AUTH=none
+rabbit:
+  image: rabbitmq:management-alpine
+  ports:
+   - 15672:15672
+discovery-service:
+  image: discovery-service:latest
+  ports:
+   - 8761:8761
+  environment:
+   - SPRING_PROFILES_ACTIVE=docker
+aggregate-service:
+  image: aggregate-service:latest
+  links:
+   - discovery-service
+   - rabbit
+   - neo4j
+  environment:
+   - SPRING_PROFILES_ACTIVE=docker
+user-service:
+  image: user-service:latest
+  links:
+   - discovery-service
+   - rabbit
+  environment:
+   - SPRING_PROFILES_ACTIVE=docker
+friend-service:
+  image: friend-service:latest
+  links:
+   - discovery-service
+   - rabbit
+  environment:
+   - SPRING_PROFILES_ACTIVE=docker
+edge-service:
+  image: edge-service:latest
+  ports:
+   - 9000:9000
+  links:
+   - discovery-service
+  environment:
+   - SPRING_PROFILES_ACTIVE=docker

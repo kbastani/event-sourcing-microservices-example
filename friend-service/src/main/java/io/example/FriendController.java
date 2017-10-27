@@ -38,7 +38,7 @@ public class FriendController {
                 .orElseThrow(() -> new RuntimeException("Could not retrieve friends for the supplied user id"));
     }
 
-    @RequestMapping(path = "/users/{userId}/commands/add", method = RequestMethod.POST)
+    @RequestMapping(path = "/users/{userId}/commands/addFriend", method = RequestMethod.POST)
     public HttpEntity<?> addFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
         Friend friend;
 
@@ -59,7 +59,7 @@ public class FriendController {
         return new ResponseEntity<>(friend, HttpStatus.CREATED);
     }
 
-    @RequestMapping(path = "/users/{userId}/commands/remove", method = RequestMethod.PUT)
+    @RequestMapping(path = "/users/{userId}/commands/removeFriend", method = RequestMethod.PUT)
     public HttpEntity<?> removeFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
 
         // Fetch friend relationship

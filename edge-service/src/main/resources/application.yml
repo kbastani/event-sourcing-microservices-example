@@ -2,15 +2,15 @@ spring:
   profiles:
     active: development
   application:
-    name: friend-service
-  cloud:
-    stream:
-      bindings:
-        output:
-          destination: friend
-          contentType: 'application/json'
+    name: edge-service
 server:
-  port: 0
+  port: 9000
+zuul:
+  ignored-services: '*'
+  routes:
+    aggregate-service: /aggregate/**
+    friend-service: /friend/**
+    user-service: /user/**
 ---
 spring:
   profiles: development
@@ -25,8 +25,6 @@ eureka:
 ---
 spring:
   profiles: docker
-  rabbitmq:
-    host: rabbit
 eureka:
   instance:
     prefer-ip-address: true
