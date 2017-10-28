@@ -40,8 +40,14 @@ spring:
   data:
     neo4j:
       uri: http://neo4j:7474
-  rabbitmq:
-    host: rabbit
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: kafka
+          defaultBrokerPort: 29092
+          zkNodes: zookeeper
+          defaultZkPort: 32181
 eureka:
   instance:
     prefer-ip-address: true

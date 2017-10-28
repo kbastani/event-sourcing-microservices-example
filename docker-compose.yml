@@ -1,47 +1,81 @@
-neo4j:
-  image: neo4j:3.2.5
-  ports:
-   - 7474:7474
-   - 7687:7687
-  environment:
-  - NEO4J_AUTH=none
-rabbit:
-  image: rabbitmq:management-alpine
-  ports:
-   - 15672:15672
-discovery-service:
-  image: discovery-service:latest
-  ports:
-   - 8761:8761
-  environment:
-   - SPRING_PROFILES_ACTIVE=docker
-aggregate-service:
-  image: aggregate-service:latest
-  links:
-   - discovery-service
-   - rabbit
-   - neo4j
-  environment:
-   - SPRING_PROFILES_ACTIVE=docker
-user-service:
-  image: user-service:latest
-  links:
-   - discovery-service
-   - rabbit
-  environment:
-   - SPRING_PROFILES_ACTIVE=docker
-friend-service:
-  image: friend-service:latest
-  links:
-   - discovery-service
-   - rabbit
-  environment:
-   - SPRING_PROFILES_ACTIVE=docker
-edge-service:
-  image: edge-service:latest
-  ports:
-   - 9000:9000
-  links:
-   - discovery-service
-  environment:
-   - SPRING_PROFILES_ACTIVE=docker
+---
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+     - microservices
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+     - microservices
+  neo4j:
+    image: neo4j:3.2.5
+    networks:
+     - microservices
+    ports:
+     - "7474:7474"
+     - "7687:7687"
+    environment:
+      NEO4J_AUTH: none
+  discovery-service:
+    image: discovery-service:latest
+    networks:
+     - microservices
+    ports:
+     - "8761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+  aggregate-service:
+    image: aggregate-service:latest
+    depends_on:
+     - neo4j
+     - kafka
+     - zookeeper
+     - discovery-service
+    networks:
+     - microservices
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+  user-service:
+    image: user-service:latest
+    depends_on:
+     - kafka
+     - zookeeper
+     - discovery-service
+    networks:
+     - microservices
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+  friend-service:
+    image: friend-service:latest
+    depends_on:
+     - kafka
+     - zookeeper
+     - discovery-service
+    networks:
+     - microservices
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+  edge-service:
+    image: edge-service:latest
+    depends_on:
+     - discovery-service
+    networks:
+     - microservices
+    ports:
+     - "9000:9000"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+networks:
+  microservices:
