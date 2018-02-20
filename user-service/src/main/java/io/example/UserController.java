@@ -1,5 +1,6 @@
 package io.example;
 
+import org.apache.log4j.Logger;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final Source source;
+    private final Logger log = Logger.getLogger(this.getClass());
 
     public UserController(UserRepository userRepository, Source source) {
         this.userRepository = userRepository;
@@ -31,6 +33,7 @@ public class UserController {
     public User createUser(@RequestBody User user) {
         userRepository.save(user);
 
+        log.info("User created: " + user.toString());
         source.output().send(MessageBuilder
                 .withPayload(new UserEvent(user, EventType.USER_CREATED)).build());
 
