@@ -1,5 +1,6 @@
 package io.example.user;
 
+import io.example.AggregateRepository;
 import org.apache.log4j.Logger;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -18,10 +19,10 @@ import org.springframework.messaging.Message;
 public class UserProcessor {
 
     private final Logger log = Logger.getLogger(UserProcessor.class);
-    private final UserRepository userRepository;
+    private final AggregateRepository aggregateRepository;
 
-    public UserProcessor(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserProcessor(AggregateRepository aggregateRepository) {
+        this.aggregateRepository = aggregateRepository;
     }
 
     @StreamListener(value = UserSink.INPUT)
@@ -33,7 +34,7 @@ public class UserProcessor {
             case USER_CREATED:
 
                 // Saves a new user node
-                userRepository.save(userEvent.getPayload().getSubject());
+                aggregateRepository.save(userEvent.getPayload().getSubject());
                 break;
         }
     }

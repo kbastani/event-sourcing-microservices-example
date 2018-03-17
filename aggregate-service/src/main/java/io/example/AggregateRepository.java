@@ -1,5 +1,6 @@
-package io.example.user;
+package io.example;
 
+import io.example.user.User;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
 
@@ -10,7 +11,7 @@ import java.util.List;
  *
  * @author Kenny Bastani
  */
-public interface UserRepository extends GraphRepository<User> {
+public interface AggregateRepository extends GraphRepository<User> {
 
     @Query("MATCH (userA:User)-[r:FRIENDS]->(userB:User)" +
             "WHERE userA.userId={0} AND userB.userId={1} " +
@@ -23,7 +24,7 @@ public interface UserRepository extends GraphRepository<User> {
     void addFriend(Long fromId, Long toId);
 
     @Query("MATCH (userA:User), (userB:User)\n" +
-            "WHERE userA.userId=1 AND userB.userId=2\n" +
+            "WHERE userA.userId={0} AND userB.userId={1}\n" +
             "MATCH (userA)-[:FRIENDS]->(fof:User)<-[:FRIENDS]-(userB)\n" +
             "RETURN fof")
     List<User> friendOfFriend(Long fromId, Long toId);

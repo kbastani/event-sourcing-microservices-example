@@ -1,6 +1,6 @@
 package io.example.friend;
 
-import io.example.user.UserRepository;
+import io.example.AggregateRepository;
 import org.apache.log4j.Logger;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -19,10 +19,10 @@ import org.springframework.messaging.Message;
 public class FriendProcessor {
 
     private final Logger log = Logger.getLogger(FriendProcessor.class);
-    private final UserRepository userRepository;
+    private final AggregateRepository aggregateRepository;
 
-    public FriendProcessor(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public FriendProcessor(AggregateRepository aggregateRepository) {
+        this.aggregateRepository = aggregateRepository;
     }
 
     @StreamListener(value = FriendSink.INPUT)
@@ -32,12 +32,12 @@ public class FriendProcessor {
 
         switch (friendEvent.getPayload().getEventType()) {
             case FRIEND_ADDED:
-                userRepository.addFriend(
+                aggregateRepository.addFriend(
                         friendEvent.getPayload().getSubject().getUserId(),
                         friendEvent.getPayload().getSubject().getFriendId());
                 break;
             case FRIEND_REMOVED:
-                userRepository.removeFriend(
+                aggregateRepository.removeFriend(
                         friendEvent.getPayload().getSubject().getUserId(),
                         friendEvent.getPayload().getSubject().getFriendId());
                 break;
