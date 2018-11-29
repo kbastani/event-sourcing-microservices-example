@@ -2,7 +2,7 @@ package io.example;
 
 import io.example.user.User;
 import org.springframework.data.neo4j.annotation.Query;
-import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Kenny Bastani
  */
-public interface AggregateRepository extends GraphRepository<User> {
+public interface AggregateRepository extends Neo4jRepository<User, Long> {
 
     @Query("MATCH (userA:User)-[r:FRIENDS]->(userB:User)" +
             "WHERE userA.userId={0} AND userB.userId={1} " +

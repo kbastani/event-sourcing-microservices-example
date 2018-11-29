@@ -1,11 +1,12 @@
 package io.example.friend;
 
 import io.example.AggregateRepository;
-import org.apache.log4j.Logger;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
+
+import java.util.logging.Logger;
 
 /**
  * Message stream listener for {@link Friend} events. Maps types of events
@@ -18,7 +19,7 @@ import org.springframework.messaging.Message;
 @EnableBinding(FriendSink.class)
 public class FriendProcessor {
 
-    private final Logger log = Logger.getLogger(FriendProcessor.class);
+    private final Logger log = Logger.getLogger(FriendProcessor.class.getName());
     private final AggregateRepository aggregateRepository;
 
     public FriendProcessor(AggregateRepository aggregateRepository) {

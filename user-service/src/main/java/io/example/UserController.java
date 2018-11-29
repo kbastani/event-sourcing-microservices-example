@@ -1,6 +1,5 @@
 package io.example;
 
-import org.apache.log4j.Logger;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
+import java.util.logging.Logger;
 
 /**
  * Controller for the {@link User} API.
@@ -22,7 +22,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final Source source;
-    private final Logger log = Logger.getLogger(this.getClass());
+    private final Logger log = Logger.getLogger(UserController.class.getName());
 
     public UserController(UserRepository userRepository, Source source) {
         this.userRepository = userRepository;
