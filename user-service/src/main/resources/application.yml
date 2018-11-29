@@ -44,3 +44,6 @@ eureka:
 ---
 spring:
   profiles: test
+eureka:
+  client:
+    enabled: false

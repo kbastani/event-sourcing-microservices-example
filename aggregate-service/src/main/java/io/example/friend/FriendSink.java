@@ -10,7 +10,7 @@ import org.springframework.messaging.SubscribableChannel;
  *
  * @author Kenny Bastani
  */
-public interface FriendSink extends Sink {
+public interface FriendSink {
 
     String INPUT = "friend";
 

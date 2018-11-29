@@ -10,7 +10,7 @@ import org.springframework.messaging.SubscribableChannel;
  *
  * @author Kenny Bastani
  */
-public interface UserSink extends Sink {
+public interface UserSink {
     String INPUT = "user";
 
     @Input(UserSink.INPUT)
