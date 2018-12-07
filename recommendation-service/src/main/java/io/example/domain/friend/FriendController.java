@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/recommendation")
+@RequestMapping("/v1")
 public class FriendController {
 
     private final FriendRepository friendRepository;
@@ -16,12 +16,12 @@ public class FriendController {
         this.friendRepository = friendRepository;
     }
 
-    @GetMapping(path = "/users/{userId}/commands/findMutualFriends")
+    @GetMapping(path = "/friends/{userId}/commands/findMutualFriends")
     List<User> getMutualFriends(@PathVariable Long userId, @RequestParam Long friendId) {
         return friendRepository.mutualFriends(userId, friendId);
     }
 
-    @GetMapping(path = "/users/{userId}/commands/recommendFriends")
+    @GetMapping(path = "/friends/{userId}/commands/recommendFriends")
     List<RankedUser> recommendFriends(@PathVariable Long userId) {
         return friendRepository.recommendedFriends(userId);
     }
