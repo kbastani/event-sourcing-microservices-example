@@ -62,7 +62,7 @@ services:
   neo4j:
     environment:
       NEO4J_AUTH: none
-    image: neo4j:3.2.5
+    image: neo4j:3.5.0
     networks:
       - microservices
     ports:
