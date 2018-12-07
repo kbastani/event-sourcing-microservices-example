@@ -1,4 +1,4 @@
-## CQRS and Event Sourcing with Spring Boot, Docker, and Kubernetes
+## CQRS + Event Sourcing with Spring Boot, Neo4j, Docker, and Kubernetes
 
 This project is a practical microservices reference example for demonstrating the basics of CQRS and Event Sourcing with Spring Boot and Spring Cloud. This tutorial walks you through getting this example up and running on Kubernetes using Docker Stacks. If you're unfamiliar with Kubernetes–no worries!–everything you need to get started is contained in this tutorial.
 
@@ -25,26 +25,25 @@ With this approach, we can get the best of both worlds—the large shared databa
   - *User Service*
     - Framework: Spring Boot 2.0.7
     - Database: H2/MySQL
-    - Messaging: Apache Kafka
-    - Broker: Apache Kafka
     - Messaging: Producer
+    - Broker: Apache Kafka
     - Practices: CQRS
   - *Friend Service*
     - Framework: Spring Boot 2.0.7
     - Database: H2/MySQL
-    - Broker: Apache Kafka
     - Messaging: Producer
+    - Broker: Apache Kafka
     - Practices: CQRS
 
 ***Aggregate Services***
   - *Recommendation Service*
     - Framework: Spring Boot 2.0.7
-    - Database: Neo4j 3.5.0
+    - Database: Neo4j
+    - Messaging: Producer
     - Broker: Apache Kafka
-    - Messaging: Consumer
     - Practices: Event Sourcing
 
-## Running the Example on Kubernetes using Docker Stacks
+## Deploying to Kubernetes with Docker Stacks
 
 This is the first reference example that I've put together that uses Docker Compose to deploy and operate containers on Kubernetes.
 
@@ -77,7 +76,7 @@ You can quickly tackle the last two pre-requisites by configuring the Docker pre
 
 #### How does this all work?
 
-Docker Desktop will use your kubectl configuration to provide you a list of Kubernetes clusters that you can target for a stack deployment using a Docker Compose file. By default, Docker Desktop gives you a ready-to-go Kubernetes cluster called docker-for-desktop-cluster that runs locally. Or you can set up your local cluster using mini-kube.
+Docker Desktop will use your `kubectl` configuration to provide you a list of Kubernetes clusters that you can target for a stack deployment using a Docker Compose file. By default, Docker Desktop gives you a ready-to-go Kubernetes cluster called `docker-for-desktop-cluster` that runs locally. Or you can set up your local cluster using `mini-kube`.
 
 Once you have finished the pre-requisites, you should adjust your Docker system memory to roughly 8 GiB. You can also find these settings in the Docker Desktop system tray.
 
@@ -106,7 +105,7 @@ The problem posed by running Docker Compose locally is that most developers ofte
 
 ### Deploying to Kubernetes
 
-Make sure that you've completed the pre-requisites listed in an earlier section of this README. Once you've done that, select the Kubernetes cluster that you would like to deploy to using the Docker Desktop System Tray Menu. You should find this icon in either the top right of your MacOS desktop or at the bottom right of your Windows OS desktop. By default, docker-for-desktop should be selected. Docker provides this default as a Kubernetes cluster running on your local machine. To see where Docker discovers these Kubernetes clusters, you can run the following formatted command using kubectl config view.
+Make sure that you've completed the pre-requisites listed in an earlier section of this README. Once you've done that, select the Kubernetes cluster that you would like to deploy to using the Docker Desktop System Tray Menu. You should find this icon in either the top right of your MacOS desktop or at the bottom right of your Windows OS desktop. By default, docker-for-desktop should be selected. Docker provides this default as a Kubernetes cluster running on your local machine. To see where Docker discovers these Kubernetes clusters, you can run the following formatted command using `kubectl` config view.
 
 
 ```bash
@@ -114,7 +113,7 @@ $ kubectl config view -o \
   jsonpath='{"\n\033[1mCLUSTER NAME\033[0m\n"}{range .clusters[*]}{.name}{"\n"}{end}'
 ```
 
-If you have any Kubernetes clusters added to your kubectl config, you'll see something similar to the following output.
+If you have any Kubernetes clusters added to your `kubectl` config, you'll see something similar to the following output.
 
 ```bash
 CLUSTER NAME
@@ -125,7 +124,7 @@ kubernetes-the-hard-way
 minikube
 ```
 
-It doesn't matter which cluster you decide to use–whether it is running locally–or if you have a remote cluster setup that is managed by a cloud provider. With Docker Stacks, you'll be able to deploy this example on any Kubernetes cluster you have configured as a target in kubectl config.
+It doesn't matter which cluster you decide to use–whether it is running locally–or if you have a remote cluster setup that is managed by a cloud provider. With Docker Stacks, you'll be able to deploy this example on any Kubernetes cluster you have configured as a target in `kubectl config`.
 
 #### Ready to Deploy
 
@@ -174,7 +173,7 @@ If everything has been set up correctly, you'll now be able to navigate to Sprin
 
  - http://localhost:8761
 
-You should see that each of the microservices have registered with Eureka. You won't be able to directly navigate to the URIs contained in the service registry. That's because each URI is a part of a network overlay that is being used by the Kubernetes cluster. We can think of these IPs as private, which are not directly mapped to a gateway. Thankfully, we have a Spring Cloud Zuul gateway that is accessible and mapped to your `localhost:9000` (*this assumes you've deployed to a local Kubernetes cluster*).
+You should see that each of the microservices has registered with Eureka. You won't be able to navigate to the URIs contained in the service registry directly. That's because each URI is a part of a network overlay that is being used by the Kubernetes cluster. We can think of these IPs as private, which are not directly mapped to a gateway. Thankfully, we have a Spring Cloud Zuul gateway that is accessible and assigned to your `localhost:9000` (this assumes you've deployed to a local Kubernetes cluster).
 
 #### API Gateway
 
@@ -199,34 +198,34 @@ The *Edge Service* application is an API gateway that simplifies, combines, and 
 
 ## Commands and Queries
 
-CQRS is a way to structure your REST APIs so that stateful business logic can be captured as a sequence of events. Simple CRUD operations have dominated web services for the better part of the last two decades. With microservices, we should make sure we structure our REST APIs in the same way that we would build a command-line application. Can you imagine trying to build a CLI application using only REST APIs that implemented CRUD?
+CQRS is a way to structure your REST APIs so that stateful business logic can be captured as a sequence of events. Simple CRUD operations have dominated web services for the better part of the last two decades. With microservices, we should make sure we structure our REST APIs in the same way that we would build a command-line application. Can you imagine trying to create a CLI application using only REST APIs that implemented CRUD?
 
-For each domain aggregate that we have in our microservice applications, we must only use *command* APIs to mutate state as a result of how business logic applies to domain data. As a result, the aggregates get transformed into a query model that is used for HTTP GET operations.
+For each domain aggregate that we have in our microservice applications, we must only use command APIs to mutate state as a result of how business logic applies to domain data. As a result, the aggregates get transformed into a query model that is used for HTTP GET operations.
 
 ### Event Sourcing and CQRS
 
 The *User Service* is responsible for storing, exposing, and managing the data of a social network's users. The query model for a user's profile is created by applying commands in the form of business logic that is triggered by a REST API. Each command is applied to a `User` object and will generate a domain event that describes what happened as a result.
 
-As a result, a stream of endless domain activity are piped into a `User` topic as a series of messages that describe events that are stored in Apache Kafka. I like to think of Apache Kafka as a "DNA store" for a distributed system—allowing us to exactly replicate and create projections of domain data that are distributed across many different applications and databases.
+As a result, a stream of endless domain activity is piped into a `User` topic as a series of messages that describe events that are stored in Apache Kafka. I like to think of Apache Kafka as a "DNA store" for a distributed system—allowing us to exactly replicate and create projections of domain data that are distributed across many different applications and databases.
 
 <img src="https://imgur.com/DUEhtBH.png" width="480" alt="Event sourcing architecture diagram">
 
-The same idea applies to the *Friend Service*. Every time a user adds a friend, a command is triggered that generates an event that describes exactly what happened. All of these events can be sequenced in the exact order they are received from the front-end users.
+The same idea applies to the *Friend Service*. Every time a user adds a friend, a command is triggered that generates an event that describes precisely what happened. All of these events can be sequenced in the exact order they are received from the front-end users.
 
-There is a metaphor I often use for event sourcing in microservices. It helps to think that each domain microservice is a musical instrument in a symphony orchestra. Each instrument plays a stream of notes that create a composition of sound. When a musician plays one note, an event is sent out, projecting a harmonic wave that finds the ears of those listening. Each of these different instruments are playing in parallel and are combined together to form a single symphony of sound.
+There is a metaphor I often use for event sourcing in microservices. It helps to think that each domain microservice is a musical instrument in a symphony orchestra. Each instrument plays a stream of notes that create a composition of sound. When a musician plays one note, an event is sent out, projecting a harmonic wave that finds the ears of those listening. Each of these different instruments is performing in parallel and are combined to form a single symphony of sound.
 
-Now, our aggregate store—the *Recommendation Service*—could be thought of as a kind of recording studio that combines the different channel sources into one single musical track. The newly formed single track is then recorded to a disk or tape, making it immutable—as an exact read-only replica of the song. We can create as many copies as we want, and distribute them all over the world without worrying about the original song being corrupted or accidentally modified. That's the beauty behind a read-only aggregate service. These useful services are similar to recording studios that can mix or remix the original multi-channel tracks of a song and then combine them into one immutable projection of past behavior.
+Now, our aggregate store—the *Recommendation Service*—could be thought of as a kind of recording studio that combines the different channel sources into one single musical track. The newly formed single track is then recorded to a disk or tape, making it immutable— like an exact read-only replica of the song. We can create as many copies as we want, and distribute them all over the world without worrying about the original song being corrupted or accidentally modified. That's the beauty behind a read-only aggregate service. These useful services are similar to recording studios that can mix or remix the original multi-channel tracks of a song and then combine them into one immutable projection of past behavior.
 
 <img src="https://imgur.com/Uqd7SHE.png" width="400" alt="Domain graph of users and friends">
 <br/>
 
-The *Recommendation Service* can use a single projected view of the many silos of domain data across an architecture and provide new powerful querying capabilities that do not require HTTP traversals. These aggregate services can be used for machine learning, predictive analytics, or any use case that requires combining multiple streams of events together into a single eventually consistent data structure.
+The Recommendation Service can use a single projected view of the many silos of domain data across an architecture and provide new powerful querying capabilities that do not require HTTP traversals. These aggregate services can be used for machine learning, predictive analytics, or any use case that requires combining multiple streams of events into a single eventually consistent data structure.
 
 ## Friend of a Friend Recommendations
 
-Let's take a look at a seemingly simple query that can quickly become a monster that wrecks havoc due to its computational complexity. A friend-of-a-friend query should be simple, right? Well let's rethink that idea. Since our friend relationships are stored separate from our users, we will need to make a single HTTP request for each friend, and their friends. To generate a single friend recommendation, we would need to make 101 HTTP requests if everyone in our social network had only 100 friends. This is obviously not an option if you ever wanted to sleep again as an on-call developer or operator with a pager.
+Let's take a look at a seemingly simple query that can quickly become a monster that wreaks havoc due to its computational complexity. A friend-of-a-friend query should be simple, right? Well, let's rethink that idea. Since our friend relationships are stored separate from our users, we will need to make a single HTTP request for each friend, and their friends. To generate a single friend recommendation, we would need to make 101 HTTP requests if everyone in our social network had only 100 friends. This is not an option if you ever wanted to sleep again as an on-call developer or operator with a pager.
 
-A better approach would be to use the best tool for the job to generate eventually consistent friend recommendations. The best tool in this case would be a graph database, siuch as Neo4j. Neo4j tends to eat these kinds of queries for breakfast before asking for second or third servings. Now, let's take a look at a friend-of-a-friend query in Neo4j that will answer the question of who are the mutual friends of two separate users?
+A better approach would be to use the best tool for the job to generate eventually consistent friend recommendations. The best tool, in this case, would be a graph database, such as Neo4j. Neo4j tends to eat these kinds of queries for breakfast before asking for second or third servings. Now, let's take a look at a friend-of-a-friend query in Neo4j that will answer the question of who are the mutual friends of two separate users?
 
 ```java
 MATCH (user:User {id: 1}), (friend:User {id: 2}),
@@ -238,11 +237,11 @@ The query above is called Cypher, and it is designed to use ASCII art to resembl
 
 ## Friend Recommendations
 
-But what if I wanted to know who I should be friends with? That's a bit more difficult. To figure this out, we need to rank the number of mutual connections that a user's friends have. We then need to eliminate the mutual friends from that list, resulting in a ranked list of people who a user is not yet friends with. This is called a *non-mutual friend-of-a-friend query*.
+But what if I wanted to know who I should be friends with? That's a bit more difficult. To figure this out, we need to rank the number of mutual connections that a user's friends have. We then need to eliminate the mutual friends from that list, resulting in a ranked list of people who a user is not yet friends with. This is called a non-mutual friend-of-a-friend query.
 
-Is your head spinning yet? Well, I hope not, because it only takes 5 lines of documented code to implement.
+Is your head spinning yet? Well, I hope not, because it only takes five lines of documented code to implement.
 
-The question we are asking ourselves is similar to the last one—except we want to find the friends of my friends who have the most mutual friends with me—and return only the ones that I am not yet friends with yet. Take a look at the Cypher query below, which walks you through each step. 
+The question we are asking ourselves is similar to the last one—except we want to find the friends of my friends who have the most mutual friends with me—and return only the ones that I am not yet friends with yet. Take a look at the Cypher query below, which walks you through each step.
 
 ```java
 // Match all the friends of my friends
@@ -262,15 +261,15 @@ RETURN nonFriend, mutualFriends
 ORDER BY mutualFriends DESC
 ```
 
-Using Spring Data Neo4j, each of these queries can be mapped to repository methods that make it easy to do something that would otherwise be very difficult and costly to achieve. However, It may not make sense to have everyone use Neo4j across a microservice architecture. There are domains that are just not that complex and really would benefit from a relational database model. Also, a majority of developers understand and already have experience with a RDBMS.
+Using Spring Data Neo4j, each of these queries can be mapped to repository methods that make it easy to do something that would otherwise be very difficult and costly to achieve. However, It may not make sense to have everyone use Neo4j across a microservice architecture. Some domains are just not that complex and really would benefit from a relational database model. Also, a majority of developers understand and already have experience with an RDBMS.
 
-A database like Neo4j really shines when you have a small team of data scientists who are able to work with service developers to performantly operationalize some of the more complex queries. Thewse are the kinds of queries that would be extremely costly if implemented on top of a more traditional data store.
+A database like Neo4j shines when you have a small team of data scientists who can work with service developers to performantly operationalize some of the more complex queries. These are the kinds of queries that would be extremely costly if implemented on top of a more traditional data store.
 
-Now that we've walked through how this social network operates as a distributed system, let's condense down what we've learned into a set of conventions and best practices.
+Now that we've walked through how this social network operates as a distributed system let's condense down what we've learned into a set of conventions and best practices.
 
 ## Conventional Best Practices
 
-One of the main problems I see today when describing components of a microservice architecture is a general ambiguity in the roles of separate services. For this reason, this example will describe a set of conventions for the roles of separate services.
+One of the main problems I see today when describing components of a microservice architecture is a general ambiguity in the roles of separate services. For this reason, this example will illustrate a set of conventions for different services.
 
 ### Domain Services
 
