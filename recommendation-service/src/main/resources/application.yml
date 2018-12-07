@@ -29,7 +29,7 @@ spring:
   profiles: development
   data:
     neo4j:
-      uri: "http://localhost:7474/"
+      uri: "bolt://localhost:7687"
   cloud:
     stream:
       kafka:
@@ -48,7 +48,7 @@ spring:
   profiles: docker
   data:
     neo4j:
-      uri: "http://neo4j:7474/"
+      uri: "bolt://neo4j:7687"
   cloud:
     stream:
       kafka:
@@ -65,6 +65,3 @@ eureka:
 ---
 spring:
   profiles: test
-  data:
-    neo4j:
-      uri: "file:///var/tmp/neo4j-test.db"
