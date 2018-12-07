@@ -35,6 +35,7 @@ With this approach we can get the best of both worlds—the large shared databas
     - Broker: Apache Kafka
     - Messaging: Producer
     - Practices: CQRS
+
 ***Aggregate Services***
   - *Recommendation Service*
     - Framework: Spring Boot 2.0.7
