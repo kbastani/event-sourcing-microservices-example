@@ -39,7 +39,7 @@ With this approach, we can get the best of both worlds—the large shared databa
   - *Recommendation Service*
     - Framework: Spring Boot 2.0.7
     - Database: Neo4j
-    - Messaging: Producer
+    - Messaging: Consumer
     - Broker: Apache Kafka
     - Practices: Event Sourcing
 
