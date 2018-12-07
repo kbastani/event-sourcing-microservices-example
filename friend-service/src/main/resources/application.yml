@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: development
   application:
     name: friend-service
   cloud:
@@ -9,8 +7,10 @@ spring:
         output:
           destination: friend
           contentType: 'application/json'
+  profiles:
+    active: development
 server:
-  port: 0
+  port: ${PORT:${SERVER_PORT:0}}
 ---
 spring:
   profiles: development

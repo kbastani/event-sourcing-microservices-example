@@ -8,9 +8,16 @@ server:
 ---
 spring:
   profiles: development
+eureka:
+  instance:
+    preferIpAddress: true
 ---
 spring:
   profiles: docker
+eureka:
+  instance:
+    preferIpAddress: true
 ---
 spring:
   profiles: test
+eureka.client.enabled: false

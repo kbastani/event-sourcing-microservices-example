@@ -1,4 +1,6 @@
-package io.example;
+package io.example.domain.friend;
+
+import io.example.domain.friend.entity.Friend;
 
 /**
  * An event that encapsulates a state transition for the {@link Friend}
@@ -9,12 +11,12 @@ package io.example;
 public class FriendEvent {
 
     private FriendMessage subject;
-    private EventType eventType;
+    private FriendEventType eventType;
 
     public FriendEvent() {
     }
 
-    public FriendEvent(FriendMessage subject, EventType eventType) {
+    public FriendEvent(FriendMessage subject, FriendEventType eventType) {
         this.subject = subject;
         this.eventType = eventType;
     }
@@ -27,11 +29,11 @@ public class FriendEvent {
         this.subject = subject;
     }
 
-    public EventType getEventType() {
+    public FriendEventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(EventType eventType) {
+    public void setEventType(FriendEventType eventType) {
         this.eventType = eventType;
     }
 }

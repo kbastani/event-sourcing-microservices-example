@@ -8,7 +8,7 @@ server:
 zuul:
   ignored-services: '*'
   routes:
-    aggregate-service: /aggregate/**
+    recommendation-service: /recommendation/**
     friend-service: /friend/**
     user-service: /user/**
 ---

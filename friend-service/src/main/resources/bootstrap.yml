@@ -1,3 +1,5 @@
 spring:
   profiles: default,development,test
+  application:
+    name: friend-service
 ---

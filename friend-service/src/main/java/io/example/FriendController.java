@@ -3,6 +3,8 @@ package io.example;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +53,7 @@ public class FriendController {
 
             // Broadcast a new domain event
             eventStream.output().send(MessageBuilder
-                    .withPayload(new FriendEvent(friend, EventType.FRIEND_ADDED)).build());
+                    .withPayload(new FriendEvent(new FriendMessage(userId, friendId), EventType.FRIEND_ADDED)).build());
         } else {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -71,7 +73,7 @@ public class FriendController {
 
             // Broadcast a new domain event
             eventStream.output().send(MessageBuilder
-                    .withPayload(new FriendEvent(friend, EventType.FRIEND_REMOVED)).build());
+                    .withPayload(new FriendEvent(new FriendMessage(userId, friendId), EventType.FRIEND_REMOVED)).build());
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

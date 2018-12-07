@@ -1,81 +1,94 @@
----
-version: '2'
+version: "3.3"
+
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+
+  recommendation-service:
+    depends_on:
+      - discovery-service
+      - kafka
+      - neo4j
+      - zookeeper
     environment:
-      ZOOKEEPER_CLIENT_PORT: 32181
-      ZOOKEEPER_TICK_TIME: 2000
+      SPRING_PROFILES_ACTIVE: docker
+    image: recommendation-service:latest
     networks:
-     - microservices
+      - microservices
+
+  discovery-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    image: discovery-service:latest
+    networks:
+      - microservices
+    ports:
+      - "8761:8761/tcp"
+
+  edge-service:
+    depends_on:
+      - discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    image: edge-service:latest
+    networks:
+      - microservices
+    ports:
+      - "9000:9000/tcp"
+
+  friend-service:
+    depends_on:
+      - discovery-service
+      - kafka
+      - zookeeper
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    image: friend-service:latest
+    networks:
+      - microservices
+
   kafka:
-    image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
+      KAFKA_BROKER_ID: 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    networks:
-     - microservices
-  neo4j:
-    image: neo4j:3.2.5
-    networks:
-     - microservices
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
+    image: confluentinc/cp-kafka:latest
     ports:
-     - "7474:7474"
-     - "7687:7687"
+      - "29092:29092/tcp"
+    networks:
+      - microservices
+
+  neo4j:
     environment:
       NEO4J_AUTH: none
-  discovery-service:
-    image: discovery-service:latest
+    image: neo4j:3.2.5
     networks:
-     - microservices
+      - microservices
     ports:
-     - "8761:8761"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-  aggregate-service:
-    image: aggregate-service:latest
-    depends_on:
-     - neo4j
-     - kafka
-     - zookeeper
-     - discovery-service
-    networks:
-     - microservices
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+      - "7474:7474/tcp"
+      - "7687:7687/tcp"
+
   user-service:
+    depends_on:
+      - discovery-service
+      - kafka
+      - zookeeper
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
     image: user-service:latest
-    depends_on:
-     - kafka
-     - zookeeper
-     - discovery-service
     networks:
-     - microservices
+      - microservices
+
+  zookeeper:
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-  friend-service:
-    image: friend-service:latest
-    depends_on:
-     - kafka
-     - zookeeper
-     - discovery-service
-    networks:
-     - microservices
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-  edge-service:
-    image: edge-service:latest
-    depends_on:
-     - discovery-service
-    networks:
-     - microservices
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+    image: confluentinc/cp-zookeeper:latest
     ports:
-     - "9000:9000"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+      - "32181:32181/tcp"
+    networks:
+      - microservices
+
 networks:
   microservices:

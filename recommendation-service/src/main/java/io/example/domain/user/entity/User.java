@@ -1,39 +1,50 @@
-package io.example;
+package io.example.domain.user.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.Objects;
+import org.neo4j.ogm.annotation.GeneratedValue;
+import org.neo4j.ogm.annotation.Id;
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.springframework.integration.support.json.Jackson2JsonObjectMapper;
+
+import java.util.Random;
 
 /**
- * The {@link User} domain entity representing the identity of a user.
+ * A projection of the {@link User} domain object that is owned by the
+ * user service.
  *
  * @author Kenny Bastani
  */
-@Entity
+@NodeEntity
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
+    @Id
+    @GeneratedValue
+    private Long id;
+    private Long userId;
     private String firstName;
     private String lastName;
 
     public User() {
+        userId = Math.abs(new Random().nextLong());
     }
 
     public User(String firstName, String lastName) {
+        this();
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public User(Long id, String firstName, String lastName) {
+        this.userId = id;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
     public Long getId() {
-        return id;
+        return userId;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.userId = id;
     }
 
     public String getFirstName() {
@@ -54,26 +65,16 @@ public class User {
 
     @Override
     public String toString() {
+        try {
+            return new Jackson2JsonObjectMapper().toJson(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return "User{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(firstName, user.firstName) &&
-                Objects.equals(lastName, user.lastName);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, firstName, lastName);
     }
 }

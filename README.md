@@ -47,7 +47,7 @@ The example domain is a social network of users who can establish friend relatio
 <img src="https://imgur.com/Uqd7SHE.png" width="400" alt="Domain graph of users and friends">
 <br/>
 
-The diagram above is a domain graph that shows `User` nodes and `Friend` relationships. In a microservice architecture we may decide to decompose this domain graph into two separate domain services, a `user-service` and a `friend-service`. For this reason, we'll have foreign-key relationships stored in the `friend-service` that reference the unique identity of a `User` stored on the `user-service`. 
+The diagram above is a domain graph that shows `User` nodes and `Friend` relationships. In a microservice architecture we may decide to decompose this domain graph into two separate domain services, a `user-service` and a `friend-service`. For this reason, we'll have foreign-key relationships stored in the `friendId-service` that reference the unique identity of a `User` stored on the `user-service`. 
 
 # License
 

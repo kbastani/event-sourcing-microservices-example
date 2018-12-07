@@ -1,4 +1,6 @@
-package io.example;
+package io.example.domain.user;
+
+import io.example.domain.user.entity.User;
 
 /**
  * An event that encapsulates a state transition for the {@link User}
@@ -9,12 +11,12 @@ package io.example;
 public class UserEvent {
 
     private User subject;
-    private EventType eventType;
+    private UserEventType eventType;
 
     public UserEvent() {
     }
 
-    public UserEvent(User subject, EventType eventType) {
+    public UserEvent(User subject, UserEventType eventType) {
         this.subject = subject;
         this.eventType = eventType;
     }
@@ -27,11 +29,11 @@ public class UserEvent {
         this.subject = subject;
     }
 
-    public EventType getEventType() {
+    public UserEventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(EventType eventType) {
+    public void setEventType(UserEventType eventType) {
         this.eventType = eventType;
     }
 
