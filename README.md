@@ -44,7 +44,7 @@ With this approach we can get the best of both worlds—the large shared databas
     - Messaging: Consumer
     - Practices: Event Sourcing
 
-## Usage
+## Running the Example on Kubernetes using Docker Stacks
 
 This is the first reference example that I've put together that uses *Docker Compose* to deploy and operate containers on *Kubernetes*.
 
