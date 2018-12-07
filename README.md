@@ -1,10 +1,10 @@
 ## CQRS and Event Sourcing with Spring Boot, Docker, and Kubernetes
 
-This project is a practical microservices reference example for demonstrating the basics of CQRS and Event Sourcing with Spring Boot and Spring Cloud. This tutorial walks you through getting this example up and running on Kubernetes using **Docker Stacks**. If you're unfamiliar with Kubernetes–no worries!–everything you need to get started is contained in this tutorial.
+This project is a practical microservices reference example for demonstrating the basics of CQRS and Event Sourcing with Spring Boot and Spring Cloud. This tutorial walks you through getting this example up and running on Kubernetes using Docker Stacks. If you're unfamiliar with Kubernetes–no worries!–everything you need to get started is contained in this tutorial.
 
 ## Microservices for Social Networks
 
-For this example, I've chosen to build a social network using microservices. A social network's domain graph provides a simple model that has a high-degree of complexity as friendships are established between users. The complexity of a graph can force microservice teams to become confused about the ownership of complicated features, such as generating friend recommendations for a user. Without the right architectural best practices, teams may resort to sophisticated caching techniques or ETLs—or worse: generating recommendations using HTTP calls that exponentially decrease performance.
+For this example, I've chosen to build a social network using microservices. A social network's domain graph provides a simple model that has a high degree of complexity as friendships are established between users. The complexity of a graph can force microservice teams to become confused about the ownership of complicated features, such as generating friend recommendations for a user. Without the right architectural best practices, teams may resort to sophisticated caching techniques or ETLs—or worse: generating recommendations using HTTP calls that exponentially decrease performance.
 
 <img src="https://imgur.com/Uqd7SHE.png" width="400" alt="Domain graph of users and friends">
 <br/>
@@ -17,9 +17,9 @@ In the architecture diagram below, you'll see a component diagram that describes
 
 ### Microservice Specifications
 
-The reference example has two microservices and one read-only replica of domain data that is stitched together from events streamed into Apache Kafka. This means that we can hydrate a different database technology with each event from multiple different microservices. By running these events in order, we can create one eventually consistent read-only projection of domain data stored in separate systems of record!
+The reference example has two microservices, and one read-only replica of domain data that is stitched together from events streamed into Apache Kafka. This means that we can hydrate a different database technology with each event from multiple different microservices. By running these events in order, we can create one eventually consistent read-only projection of domain data stored in separate systems of record!
 
-With this approach we can get the best of both worlds—the large shared database that was easier to query from a monolith—without sacrificing the many benefits of building microservices.
+With this approach, we can get the best of both worlds—the large shared database that was easier to query from a monolith—without sacrificing the many benefits of building microservices.
 
  ***Domain Services***
   - *User Service*
@@ -46,13 +46,13 @@ With this approach we can get the best of both worlds—the large shared databas
 
 ## Running the Example on Kubernetes using Docker Stacks
 
-This is the first reference example that I've put together that uses *Docker Compose* to deploy and operate containers on *Kubernetes*.
+This is the first reference example that I've put together that uses Docker Compose to deploy and operate containers on Kubernetes.
 
-**Docker Desktop Community v2.0** recently released an experimental feature that allows you to use *Docker Compose* files to deploy and operate distributed systems on any Kubernetes cluster (locally or remote). I think that this is a major advancement for developers looking to get up and running with Kubernetes and microservices as quickly as possible. Prior to this feature, (*over the last 5 years*), developers with Windows-based development environments found it difficult to run my examples using Docker. I'm proud to say that those days are now over.
+Docker Desktop Community v2.0 recently released an experimental feature that allows you to use Docker Compose files to deploy and operate distributed systems on any Kubernetes cluster (locally or remote). I think that this is a significant advancement for developers looking to get up and running with Kubernetes and microservices as quickly as possible. Before this feature, (over the last five years), developers with Windows-based development environments found it difficult to run my examples using Docker. I'm proud to say that those days are now over.
 
 ### Docker Stacks on Kubernetes
 
-**Docker Stacks** is a feature that now allows you to deploy realistically complex microservice examples to any remote or local Kubernetes clusters.
+Docker Stacks is a feature that now allows you to deploy realistically complex microservice examples to any remote or local Kubernetes clusters.
 
 ## Installation
 
@@ -64,7 +64,7 @@ First, if you have not already, please download *Docker Desktop Community Editio
 
 ### Pre-requisites
 
-You'll need to do the following pre-requisites before you can use Docker Stacks to perform Kubernetes deployments using Docker Compoase files.
+You'll need to do the following pre-requisites before you can use Docker Stacks to perform Kubernetes deployments using Docker Compose files.
 
 Pre-requisites:
 
@@ -73,17 +73,17 @@ Pre-requisites:
 - Enable `Kubernetes` (From Docker Desktop)
 - Turn on `Experimental Features` (From Docker Desktop)
 
-You can easily tackle the last two pre-requisites by configuring the Docker preferences pane—which can be found from the menu in the Docker Desktop system tray.
+You can quickly tackle the last two pre-requisites by configuring the Docker preferences pane—which can be found from the menu in the Docker Desktop system tray.
 
 #### How does this all work?
 
-Docker Desktop will use your `kubectl` configuration to provide you a list of Kubernetes clusters that you can target for a stack deployment using a Docker Compose file. By default, Docker Desktop provides you a ready-to-go Kubernetes cluster called `docker-for-desktop-cluster` that runs locally. Or you can setup your own local cluster using `mini-kube`.
+Docker Desktop will use your kubectl configuration to provide you a list of Kubernetes clusters that you can target for a stack deployment using a Docker Compose file. By default, Docker Desktop gives you a ready-to-go Kubernetes cluster called docker-for-desktop-cluster that runs locally. Or you can set up your local cluster using mini-kube.
 
 Once you have finished the pre-requisites, you should adjust your Docker system memory to roughly 8 GiB. You can also find these settings in the Docker Desktop system tray.
 
 ### Docker Compose Classic (Local)
 
-The `docker-compose.yml` file that is in the root directory of this project will provide you with a `v3.3` Docker Compose manifest that you can use to run this application locally or to deploy to Kubernetes/Docker Swarm. To run this example locally, without using a container orchestrator, simply run the following commands.
+The `docker-compose.yml` file that is in the root directory of this project will provide you with a `v3.3` Docker Compose manifest that you can use to run this application locally or to deploy to Kubernetes/Docker Swarm. To run this example locally, without using a container orchestrator, just run the following commands.
 
 ```bash
 $ docker-compose up -d
@@ -100,13 +100,13 @@ If all of the services have successfully started, that means you're ready to sta
 
 ### Docker Stacks (Kubernetes or Swarm)
 
-Running Docker Compose locally is an ephemeral way to quickly spin up a distributed system on your local machine. This has been a great feature for teaching developers how to build distributed systems for about 4 years now. Eventually, for larger examples, it becomes unfeasible to use Docker Compose on your laptop.
+Running Docker Compose locally is an ephemeral way to spin up a distributed system on your local machine quickly. This has been an excellent feature for teaching developers how to build distributed systems for about four years now. Eventually, for more extensive examples, it becomes unfeasible to use Docker Compose on your laptop.
 
-The problem posed by running Docker Compose locally is that most developers often do not have the system memory available to performantly run some of my more complex examples. **Docker Stacks** allows you to use **Docker Compose** to deploy a multi-container application, such as the social network example in this repository—targeting an orchestrator that is either Kubernetes or Docker Swarm. This choice is up to you, but for this example, I will demonstrate how to easily deploy to a Kubernetes cluster using **Docker Stacks**.
+The problem posed by running Docker Compose locally is that most developers often do not have the system memory available to run some of my more complex examples performantly. Docker Stacks allows you to use Docker Compose to deploy a multi-container application, such as the social network example in this repository—targeting an orchestrator that is either Kubernetes or Docker Swarm. This choice is up to you, but for this example, I will demonstrate how to deploy to a Kubernetes cluster using Docker Stacks efficiently.
 
 ### Deploying to Kubernetes
 
-Make sure that you've completed the pre-requisites listed in an earlier section of this README. Once you've done that, select the Kubernetes cluster that you would like to deploy to using the *Docker Desktop System Tray Menu*. You should find this icon in either the top right of your MacOS desktop or at the bottom right of your Windows OS desktop. By default, `docker-for-desktop` should be selected. This default is provided by Docker as a Kubernetes cluster running on your local machine. To see where Docker discovers these Kubernetes clusters, you can run the following formatted command using `kubectl config view`.
+Make sure that you've completed the pre-requisites listed in an earlier section of this README. Once you've done that, select the Kubernetes cluster that you would like to deploy to using the Docker Desktop System Tray Menu. You should find this icon in either the top right of your MacOS desktop or at the bottom right of your Windows OS desktop. By default, docker-for-desktop should be selected. Docker provides this default as a Kubernetes cluster running on your local machine. To see where Docker discovers these Kubernetes clusters, you can run the following formatted command using kubectl config view.
 
 
 ```bash
@@ -114,7 +114,7 @@ $ kubectl config view -o \
   jsonpath='{"\n\033[1mCLUSTER NAME\033[0m\n"}{range .clusters[*]}{.name}{"\n"}{end}'
 ```
 
-If you have any Kubernetes clusters added to your `kubectl config`, you'll see something similar to the following output.
+If you have any Kubernetes clusters added to your kubectl config, you'll see something similar to the following output.
 
 ```bash
 CLUSTER NAME
@@ -125,18 +125,17 @@ kubernetes-the-hard-way
 minikube
 ```
 
-It doesn't matter which cluster you decide to use–whether it is running locally–or if you have a remote cluster setup that is managed by a cloud provider. With **Docker Stacks**, you'll be able to deploy this example on any Kubernetes cluster you have configured as a target in `kubectl config`.
+It doesn't matter which cluster you decide to use–whether it is running locally–or if you have a remote cluster setup that is managed by a cloud provider. With Docker Stacks, you'll be able to deploy this example on any Kubernetes cluster you have configured as a target in kubectl config.
 
 #### Ready to Deploy
 
-Now that you've selected a target Kubernetes cluster, it's time to deploy the example contained inside this repository. Next, using one simple command, this example will be deployed using the configuration contained inside a `docker-compose.yml` file.
+Now that you've selected a target Kubernetes cluster, it's time to deploy the example contained inside this repository. Next, using a straightforward command, this example will be deployed using the configuration included inside a docker-compose.yml file.
 
 ```bash
 $ docker stack up event-sourcing --compose-file $(pwd)/docker-compose.yml
 ```
 
-After running the above command, the services contained in the `docker-compose.yml` file will begin to be deployed to pods in your Kubernetes cluster. You should be able to see the following output when the applications are up and running.
-
+After running the above command, the services contained in the docker-compose.yml file will begin to be deployed to pods in your Kubernetes cluster. You should be able to see the following output when the applications are up and running.
 
 ```bash
 Waiting for the stack to be stable and running...
@@ -169,9 +168,9 @@ zookeeper-5fd96b9b9f-8dfw8                1/1       Running   0          1m
 
 ## Building a Social Network
 
-Since we've deployed the distributed system to Kubernetes, we can start exploring the functionality of the social networking backend. For extra credit, you can add in a service mesh, such as Istio, which uses sidecars that adds application platform functionality similar to what you would find in Spring Cloud. Not contained in this example, Istio will provide you with distributed tracing and metrics right out of the box. Since we are using **Spring Cloud Eureka** in this example, there won't be much of a need to use Istio's other popular feature: service discovery.
+Since we've deployed the distributed system to Kubernetes, we can start exploring the functionality of the social networking backend. For extra credit, you can add in a service mesh, such as Istio, which uses sidecars that adds application platform functionality similar to what you would find in Spring Cloud. Not contained in this example, Istio will provide you with distributed tracing and metrics right out of the box. Since we are using Spring Cloud Eureka in this example, there won't be much of a need to use Istio's other favorite feature: service discovery.
 
-If everything has been setup correctly, you'll now be able to navigate to Spring Cloud Eureka at the following URL.
+If everything has been set up correctly, you'll now be able to navigate to Spring Cloud Eureka at the following URL.
 
  - http://localhost:8761
 
