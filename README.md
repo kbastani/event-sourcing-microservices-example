@@ -1,6 +1,6 @@
 ## CQRS and Event Sourcing with Spring Boot, Docker, and Kubernetes
 
-This project is a practical microservices reference example for demonstrating the basics of CQRS and Event Sourcing with Spring Boot and Spring Cloud. This tutorial walks you through getting this example up and running on Kubernetes using `Docker Stacks`. If you're unfamiliar with Kubernetes–no worries!–everything you need to get started is contained in this tutorial.
+This project is a practical microservices reference example for demonstrating the basics of CQRS and Event Sourcing with Spring Boot and Spring Cloud. This tutorial walks you through getting this example up and running on Kubernetes using **Docker Stacks**. If you're unfamiliar with Kubernetes–no worries!–everything you need to get started is contained in this tutorial.
 
 ## Microservices for Social Networks
 
@@ -21,7 +21,7 @@ The reference example has two microservices and one read-only replica of domain 
 
 With this approach we can get the best of both worlds—the large shared database that was easier to query from a monolith—without sacrificing the many benefits of building microservices.
 
- - ***Domain Services***
+ ***Domain Services***
   - *User Service*
     - Framework: Spring Boot 2.0.7
     - Database: H2/MySQL
@@ -35,7 +35,7 @@ With this approach we can get the best of both worlds—the large shared databas
     - Broker: Apache Kafka
     - Messaging: Producer
     - Practices: CQRS
- - ***Aggregate Services***
+***Aggregate Services***
   - *Recommendation Service*
     - Framework: Spring Boot 2.0.7
     - Database: Neo4j 3.5.0
@@ -84,14 +84,16 @@ Once you have finished the pre-requisites, you should adjust your Docker system 
 
 The `docker-compose.yml` file that is in the root directory of this project will provide you with a `v3.3` Docker Compose manifest that you can use to run this application locally or to deploy to Kubernetes/Docker Swarm. To run the example locally without using a container orchestrator, simply run the following commands.
 
-```Shell
-$ docker-compose up -d
-$ docker-compose logs -f
+```bash
+docker-compose up -d
+docker-compose logs -f
 ```
 
 You'll see a flurry of system logs flash before your eyes as multiple containers in the distributed system begin to spin up. It's recommended that you wait until the logging comes to a slow halt. In another tab, ensure that all of the containers are running.
 
-$ docker-compose ps
+```bash
+docker-compose ps
+```
 
 If all of the services have successfully started, that means you're ready to start playing with the application. Skip forward
 
@@ -106,14 +108,14 @@ The problem posed by running Docker Compose locally is that most developers ofte
 Make sure that you've completed the pre-requisites listed in an earlier section of this README. Once you've done that, select the Kubernetes cluster that you would like to deploy to using the *Docker Desktop System Tray Menu*. You should find this icon in either the top right of your MacOS or at the bottom right of your Windows OS. By default, `docker-for-desktop` should be selected, which is a Kubernetes cluster running on your local machine. To see where Docker discovers these Kubernetes clusters, you can run the following formatted command using `kubectl config view`.
 
 
-```Shell
-$ kubectl config view -o \
+```bash
+kubectl config view -o \
   jsonpath='{"\n\033[1mCLUSTER NAME\033[0m\n"}{range .clusters[*]}{.name}{"\n"}{end}'
 ```
 
 If you have any Kubernetes clusters added to your `kubectl config`, you'll see something similar to the following output.
 
-```Shell
+```bash
 CLUSTER NAME
 docker-for-desktop-cluster
 gke_kubernetes-engine-205004_us-central1-a_cluster-1
@@ -129,31 +131,31 @@ It doesn't matter which cluster you decide to use–whether it is running locall
 Now that you've selected a target Kubernetes cluster, it's time to deploy the example contained inside this repository. Using one simple command, this example will be deployed using the meta data contained inside the `docker-compose.yml` file.
 
 
-```Shell
-$ docker stack up event-sourcing --compose-file $(pwd)/docker-compose.yml
+```bash
+docker stack up event-sourcing --compose-file $(pwd)/docker-compose.yml
 ```
 
 After running this command, the services contained in the `docker-compose.yml` file will begin to be deployed to pods in your Kubernetes cluster. You should see the following output when the applications are up and running.
 
 
-```Shell
+```bash
 Waiting for the stack to be stable and running...
 
-neo4j: Ready		            [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
-discovery-service: Ready		[pod status: 1/1 ready, 0/1 pending, 0/1 failed]
-kafka: Ready		            [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
+neo4j: Ready                    [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
+discovery-service: Ready        [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
+kafka: Ready                    [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
 recommendation-service: Ready   [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
 friend-service: Ready           [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
-edge-service: Ready		     [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
-zookeeper: Ready		        [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
-user-service: Ready		     [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
+edge-service: Ready             [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
+zookeeper: Ready                [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
+user-service: Ready             [pod status: 1/1 ready, 0/1 pending, 0/1 failed]
 ```
 
 As you can see, each one of our applications and backing services (such as Kafka, Neo4j, and Zookeeper), were successfully deployed and started on your Kubernetes cluster. To verify that the pods are successfully running, you can use the `kubectl get pod` command for more info.
 
 You should see something similar to the following output.
 
-```Shell
+```shell
 NAME                                      READY     STATUS    RESTARTS   AGE
 discovery-service-9c44459b8-c5qln         1/1       Running   0          1m
 edge-service-6cb5d5dc8c-5glzq             1/1       Running   0          1m
@@ -227,11 +229,12 @@ Let's take a look at a seemingly simple query that can quickly become a monster 
 
 What would be better is if we used the best tool for the job to generate eventually consistent friend recommendations. The best tool in this case would be Neo4j, a graph database that eats these kinds of queries for breakfast and then asks for seconds and thirds. Let's take a look at a friend of a friend query in Neo4j.
 
-```Cypher
+```java
 MATCH (user:User {id: 1}), (friend:User {id: 2}),
   (user)-[:FRIEND]-(mutualFriends)-[:FRIEND]-(friend)
 return mutualFriends
 ```
+
 This is called a Cypher query, and it's designed as ASCII art to resemble the connections we are querying in the graph database. The SQL-like syntax above is a basic friend-of-a-friend query.
 
 ## Friend Recommendations
@@ -240,7 +243,7 @@ But what if I wanted to know who I should be friends with? That's a bit more com
 
 The question we are asking is similar to the last one, except we want to find the friends of my friends who have the most mutual friends with me, that I am not yet friends with yet.
 
-```Cypher
+```java
 // Match all the friends of my friends
 MATCH (me:User {userId: 1})-[:FRIEND]-(friends),
 	(nonFriend:User)-[:FRIEND]-(friends)
