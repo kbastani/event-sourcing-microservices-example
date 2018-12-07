@@ -2,52 +2,36 @@ version: "3.3"
 
 services:
 
-  recommendation-service:
-    depends_on:
-      - discovery-service
-      - kafka
-      - neo4j
-      - zookeeper
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-    image: kbastani/recommendation-service:latest
-    networks:
-      - microservices
-
   discovery-service:
     environment:
       SPRING_PROFILES_ACTIVE: docker
     image: kbastani/discovery-service:latest
-    networks:
-      - microservices
     ports:
       - "8761:8761/tcp"
 
   edge-service:
-    depends_on:
-      - discovery-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
     image: kbastani/edge-service:latest
-    networks:
-      - microservices
     ports:
       - "9000:9000/tcp"
 
   friend-service:
-    depends_on:
-      - discovery-service
-      - kafka
-      - zookeeper
     environment:
       SPRING_PROFILES_ACTIVE: docker
     image: kbastani/friend-service:latest
-    networks:
-      - microservices
+
+  user-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    image: kbastani/user-service:latest
+
+  recommendation-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    image: kbastani/recommendation-service:latest
 
   kafka:
-    depends_on:
-      - zookeeper
     environment:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
       KAFKA_BROKER_ID: 1
@@ -56,29 +40,6 @@ services:
     image: confluentinc/cp-kafka:latest
     ports:
       - "29092:29092/tcp"
-    networks:
-      - microservices
-
-  neo4j:
-    environment:
-      NEO4J_AUTH: none
-    image: neo4j:3.5.0
-    networks:
-      - microservices
-    ports:
-      - "7474:7474/tcp"
-      - "7687:7687/tcp"
-
-  user-service:
-    depends_on:
-      - discovery-service
-      - kafka
-      - zookeeper
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-    image: kbastani/user-service:latest
-    networks:
-      - microservices
 
   zookeeper:
     environment:
@@ -87,8 +48,11 @@ services:
     image: confluentinc/cp-zookeeper:latest
     ports:
       - "32181:32181/tcp"
-    networks:
-      - microservices
 
-networks:
-  microservices:
+  neo4j:
+    environment:
+      NEO4J_AUTH: none
+    image: neo4j:3.5.0
+    ports:
+      - "7474:7474/tcp"
+      - "7687:7687/tcp"

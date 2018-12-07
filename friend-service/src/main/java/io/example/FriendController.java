@@ -1,6 +1,7 @@
 package io.example;
 
 import org.springframework.cloud.stream.messaging.Source;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
@@ -32,15 +33,15 @@ public class FriendController {
         this.friendRepository = friendRepository;
     }
 
-    @RequestMapping(path = "/users/{userId}/friends", method = RequestMethod.GET)
-    public HttpEntity<?> getFriends(@PathVariable Long userId, Pageable pageable,
-                                    PagedResourcesAssembler<Friend> assembler) {
+    @GetMapping(path = "/users/{userId}/friends")
+    public HttpEntity<PagedResources<Resource<Friend>>> getFriends(@PathVariable Long userId, Pageable pageable,
+                                               PagedResourcesAssembler<Friend> assembler) {
         return Optional.of(friendRepository.findAllByUserId(userId, pageable))
                 .map(a -> new ResponseEntity<>(assembler.toResource(a), HttpStatus.OK))
                 .orElseThrow(() -> new RuntimeException("Could not retrieve friends for the supplied user id"));
     }
 
-    @RequestMapping(path = "/users/{userId}/commands/addFriend", method = RequestMethod.POST)
+    @PostMapping(path = "/users/{userId}/commands/addFriend")
     public HttpEntity<?> addFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
         Friend friend;
 
@@ -61,7 +62,7 @@ public class FriendController {
         return new ResponseEntity<>(friend, HttpStatus.CREATED);
     }
 
-    @RequestMapping(path = "/users/{userId}/commands/removeFriend", method = RequestMethod.PUT)
+    @PutMapping(path = "/users/{userId}/commands/removeFriend")
     public HttpEntity<?> removeFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
 
         // Fetch friend relationship

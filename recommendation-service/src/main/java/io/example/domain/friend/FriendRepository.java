@@ -1,6 +1,7 @@
 package io.example.domain.friend;
 
 import io.example.domain.friend.entity.Friend;
+import io.example.domain.friend.entity.RankedUser;
 import io.example.domain.user.entity.User;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -30,5 +31,13 @@ public interface FriendRepository extends Neo4jRepository<Friend, Long> {
             "WHERE userA.userId={0} AND userB.userId={1}\n" +
             "MATCH (userA)-[:FRIEND]-(fof:User)-[:FRIEND]-(userB)\n" +
             "RETURN DISTINCT fof")
-    List<User> friendOfFriend(Long fromId, Long toId);
+    List<User> mutualFriends(Long fromId, Long toId);
+
+    @Query("MATCH (me:User {userId: {0}})-[:FRIEND]-(friends),\n" +
+            "\t(nonFriend:User)-[:FRIEND]-(friends)\n" +
+            "WHERE NOT (me)-[:FRIEND]-(nonFriend)\n" +
+            "WITH nonFriend, count(nonFriend) as mutualFriends\n" +
+            "RETURN nonFriend as User, mutualFriends as Weight\n" +
+            "ORDER BY Weight DESC")
+    List<RankedUser> recommendedFriends(Long userId);
 }

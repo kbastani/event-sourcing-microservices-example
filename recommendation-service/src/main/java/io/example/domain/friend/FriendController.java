@@ -1,10 +1,8 @@
 package io.example.domain.friend;
 
+import io.example.domain.friend.entity.RankedUser;
 import io.example.domain.user.entity.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,9 +16,13 @@ public class FriendController {
         this.friendRepository = friendRepository;
     }
 
-    @GetMapping("friends")
-    List<User> getFriendOfFriend(@RequestParam("userId") Long userId,
-                                 @RequestParam("friendId") Long friendId) {
-        return friendRepository.friendOfFriend(userId, friendId);
+    @GetMapping(path = "/users/{userId}/commands/findMutualFriends")
+    List<User> getMutualFriends(@PathVariable Long userId, @RequestParam Long friendId) {
+        return friendRepository.mutualFriends(userId, friendId);
+    }
+
+    @GetMapping(path = "/users/{userId}/commands/recommendFriends")
+    List<RankedUser> recommendFriends(@PathVariable Long userId) {
+        return friendRepository.recommendedFriends(userId);
     }
 }
