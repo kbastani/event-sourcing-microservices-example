@@ -23,7 +23,7 @@ spring:
   profiles:
     active: docker
 server:
-  port: ${PORT:${SERVER_PORT:0}}
+  port: ${PORT:${SERVER_PORT:8110}}
 ---
 spring:
   profiles: development
