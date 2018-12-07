@@ -80,7 +80,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>1.2.0</version>
                 <configuration>
-                    <imageName>${project.name}</imageName>
+                    <imageName>kbastani/${project.name}</imageName>
                     <baseImage>openjdk:8-jre-alpine</baseImage>
                     <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
                     <!-- copy the service's jar file from target into the root directory of the image -->

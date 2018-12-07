@@ -10,14 +10,14 @@ services:
       - zookeeper
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: recommendation-service:latest
+    image: kbastani/recommendation-service:latest
     networks:
       - microservices
 
   discovery-service:
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: discovery-service:latest
+    image: kbastani/discovery-service:latest
     networks:
       - microservices
     ports:
@@ -28,7 +28,7 @@ services:
       - discovery-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: edge-service:latest
+    image: kbastani/edge-service:latest
     networks:
       - microservices
     ports:
@@ -41,7 +41,7 @@ services:
       - zookeeper
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: friend-service:latest
+    image: kbastani/friend-service:latest
     networks:
       - microservices
 
@@ -76,7 +76,7 @@ services:
       - zookeeper
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: user-service:latest
+    image: kbastani/user-service:latest
     networks:
       - microservices
 
