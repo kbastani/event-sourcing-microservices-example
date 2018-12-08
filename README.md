@@ -1,5 +1,7 @@
 ## CQRS + Event Sourcing with Spring Boot, Neo4j, Docker, and Kubernetes
 
+[![Build Status](https://travis-ci.com/kbastani/event-sourcing-microservices-basics.svg?branch=master)](https://travis-ci.com/kbastani/event-sourcing-microservices-basics)
+
 This project is a practical microservices reference example for demonstrating the basics of CQRS and Event Sourcing with Spring Boot and Spring Cloud. This tutorial walks you through getting this example up and running on Kubernetes using Docker Stacks. If you're unfamiliar with Kubernetes–no worries!–everything you need to get started is contained in this tutorial.
 
 ## Microservices for Social Networks
@@ -95,7 +97,7 @@ You'll see a flurry of system logs flash before your eyes as multiple containers
 $ docker-compose ps
 ```
 
-If all of the services have successfully started, that means you're ready to start playing with the application. The next section will focus on using Docker Stacks to deploy this example to a Kubernetes cluster. 
+If all of the services have successfully started, that means you're ready to start playing with the application. The next section will focus on using Docker Stacks to deploy this example to a Kubernetes cluster.
 
 ### Docker Stacks (Kubernetes or Swarm)
 
