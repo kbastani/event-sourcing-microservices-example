@@ -33,7 +33,6 @@ public class RecommendationServiceTests {
     public static void setup() {
         System.setProperty("spring.cloud.stream.kafka.binder.brokers", embeddedKafka.getBrokersAsString());
         System.setProperty("eureka.client.enabled", "false");
-        System.setProperty("spring.data.neo4j.uri", "file:///var/tmp/neo4j-test.db");
         System.setProperty("spring.profiles", "test");
     }
 
