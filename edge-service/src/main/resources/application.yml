@@ -11,6 +11,11 @@ zuul:
     recommendation-service: /recommendation/**
     friend-service: /friend/**
     user-service: /user/**
+  host:
+    socket-timeout-millis: 60000
+    connect-timeout-millis: 60000
+    connection-request-timeout-millis: 60000
+
 ---
 spring:
   profiles: development
