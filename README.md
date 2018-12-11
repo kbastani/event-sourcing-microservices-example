@@ -128,9 +128,58 @@ minikube
 
 It doesn't matter which cluster you decide to use–whether it is running locally–or if you have a remote cluster setup that is managed by a cloud provider. With Docker Stacks, you'll be able to deploy this example on any Kubernetes cluster you have configured as a target in `kubectl config`.
 
+#### Build and Deploy
+
+The current configuration is setup to build, push, and deploy the docker compose containers to my Docker Hub account. To fix this, you'll need to make a few changes. Simply put, do a replace-all in `./docker-compose.yml` and `./deployment/docker/docker-compose-build.yml` by replacing `kbastani` with your Docker Hub username. To make this easy, I've provided a script that will replace the username in the `pom.xml` property before you build the project. Run the following commands in order.
+
+Replace `[docker-hub-username]` with your username.
+
+```bash
+$ export username="[docker-hub-username]"
+```
+
+Replaces my username with yours in the main docker compose file.
+
+```bash
+$ sed -i '' -e 's/kbastani/'$username'/g' \
+    ./docker-compose.yml
+```
+
+Replaces my username with yours in the docker compose push file.
+
+```bash
+$ sed -i '' -e 's/kbastani/'$username'/g' \
+    ./deployment/docker/docker-compose-build.yml
+```
+
+Replaces my name with yours in the pom.xml file for building the images.
+
+```bash
+$ sed -i '' -e 's/kbastani/'$username'/g' \
+    ./pom.xml
+```
+
+Now you're ready to build the project and your docker containers.
+
+```bash
+$ mvn clean install -DskipTests
+```
+
+After everything has successfully been built, you are now ready to deploy the containers to your Docker Hub account. Run the following command.
+
+```bash
+$ docker-compose -f ./deployment/docker/docker-compose-build.yml \
+    push edge-service discovery-service friend-service \
+    user-service recommendation-service
+```
+
+After the docker images are successfully uploaded to your Docker Hub account, you're all ready to deploy this distributed system to Kubernetes using Docker Stacks.
+
 #### Ready to Deploy
 
-Now that you've selected a target Kubernetes cluster, it's time to deploy the example contained inside this repository. Next, using a straightforward command, this example will be deployed using the configuration included inside a docker-compose.yml file.
+Make sure that your `kubectl` is targeting the desired Kubernetes cluster you would like to deploy to. You can select this using the Docker for Mac/Desktop tray icon before proceeding.
+
+Now it's time to deploy the example contained inside this repository. Next, using a straightforward command, this example will be deployed to Kubernetes using the configuration included inside a docker-compose.yml file.
 
 ```bash
 $ docker stack up event-sourcing --compose-file $(pwd)/docker-compose.yml
@@ -173,7 +222,7 @@ Since we've deployed the distributed system to Kubernetes, we can start explorin
 
 If everything has been set up correctly, you'll now be able to navigate to Spring Cloud Eureka at the following URL.
 
- - http://localhost:8761
+ - [http://localhost:8761](http://localhost:8761)
 
 You should see that each of the microservices has registered with Eureka. You won't be able to navigate to the URIs contained in the service registry directly. That's because each URI is a part of a network overlay that is being used by the Kubernetes cluster. We can think of these IPs as private, which are not directly mapped to a gateway. Thankfully, we have a Spring Cloud Zuul gateway that is accessible and assigned to your `localhost:9000` (this assumes you've deployed to a local Kubernetes cluster).
 
@@ -197,6 +246,42 @@ The *Edge Service* application is an API gateway that simplifies, combines, and 
   - GET http://localhost:9000/recommendation/v1/friends/{0}/commands/findMutualFriends?friendId={1}
 - **Friend Recommendation**
   - GET http://localhost:9000/recommendation/v1/friends/{0}/commands/recommendFriends
+
+#### Generating a Social Network
+
+Many thanks goes out to [Michael Simons](http://www.twitter.com/rotnroll666) for contributing multiple fixes and improvements to this repository. One of those improvements was a script to generate test data that you can use to automate the APIs listed above. Once your cluster is up and running, navigate to the `./deployment/sbin` directory. This directory contains a shell script named `generate-social-network.sh`. To make sure there is no funny business going on, you're welcome to run the command `$ cat ./deployment/sbin/generate-social-network.sh`. You'll see the contents of the shell script, which is written in BASH and will automate and test each of the APIs in the order listed in the last section.
+
+You will need to install `jq` to run the script. If you have not yet installed this dependency via your terminal, you can run the command:
+
+```bash
+$ brew install jq
+```
+
+Now you're ready to run the script and test each of the APIs. This script will create 6 users, and create a friend relationships between some of them. Finally, the recommendation API will identify mutual friends and recommend users who I should be friends with.
+
+```bash
+$ sh ./deployment/sbin/generate-social-network.sh
+```
+
+To see exactly what happened in the Neo4j browser, run the following command.
+
+```bash
+$ open http://localhost:7474
+```
+
+That should open up the Neo4j browser, and allow you to run a Cypher query. Run the following query and hit CTRL+ENTER.
+
+```text
+MATCH (n)
+OPTIONAL MATCH (n)-[r]-()
+RETURN n, r
+```
+
+You should see the following result.
+
+![Neo4j Browser](https://imgur.com/33PrJzC.png)
+
+Congratulations! You've successfully deployed a distributed system to Kubernetes using Docker Compose. I've been waiting for this feature for several years. I could not be more excited about how this feature will make it easier for developers to test their distributed systems using Kubernetes and Docker. The next sections in this tutorial are purely architectural. If you're interested in learning more about how the social network works, please feel free to read on.
 
 ## Commands and Queries
 

@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+
+  discovery-service:
+    build: .
+    image: kbastani/discovery-service:latest
+
+  edge-service:
+    build: .
+    image: kbastani/edge-service:latest
+
+  friend-service:
+    build: .
+    image: kbastani/friend-service:latest
+
+  user-service:
+    build: .
+    image: kbastani/user-service:latest
+
+  recommendation-service:
+    build: .
+    image: kbastani/recommendation-service:latest

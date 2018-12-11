@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
 # Requires jq, see https://stedolan.github.io/jq/
-# Install with 
+# Install with
 # macOS: brew install jq
 # Windows: chocolatey install jq.
 # Linux: apt-get install jq
 
-
+# Wake up user service
+curl -i "http://localhost:9000/user/actuator/info" | jq
 
 ID_MH=`\
 curl -X "POST" "http://localhost:9000/user/v1/users" \
@@ -56,15 +57,29 @@ curl -X "POST" "http://localhost:9000/user/v1/users" \
   "lastName": "E."
 }' | jq .id`
 
-sleep 20
+sleep 5
 
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MH/commands/addFriend?friendId=$ID_MS"
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MS/commands/addFriend?friendId=$ID_KB"
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_SH"
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_EE"
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MH/commands/addFriend?friendId=$ID_EE"
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_MJ"
+# Wake up friend service
+curl -i "http://localhost:9000/friend/actuator/info" | jq
+
+# Wake up recommendation service
+curl -i "http://localhost:9000/recommendation/actuator/info" | jq
+
+curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MH/commands/addFriend?friendId=$ID_MS" | jq
+sleep 1
+curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MS/commands/addFriend?friendId=$ID_KB" | jq
+sleep 1
+curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_SH" | jq
+sleep 1
+curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_EE" | jq
+sleep 1
+curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MH/commands/addFriend?friendId=$ID_EE" | jq
+sleep 1
+curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_MJ" | jq
+sleep 1
 
 curl "http://localhost:9000/friend/v1/users/$ID_MH/friends" | jq
+sleep 1
 curl "http://localhost:9000/recommendation/v1/users/$ID_MH/commands/findMutualFriends?friendId=$ID_KB" | jq
+sleep 1
 curl "http://localhost:9000/recommendation/v1/users/$ID_KB/commands/recommendFriends" | jq
