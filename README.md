@@ -25,13 +25,13 @@ With this approach, we can get the best of both worlds—the large shared databa
 
  ***Domain Services***
   - *User Service*
-    - Framework: Spring Boot 2.0.7
+    - Framework: Spring Boot 2.1.1.RELEASE
     - Database: H2/MySQL
     - Messaging: Producer
     - Broker: Apache Kafka
     - Practices: CQRS
   - *Friend Service*
-    - Framework: Spring Boot 2.0.7
+    - Framework: Spring Boot 2.1.1.RELEASE
     - Database: H2/MySQL
     - Messaging: Producer
     - Broker: Apache Kafka
@@ -39,7 +39,7 @@ With this approach, we can get the best of both worlds—the large shared databa
 
 ***Aggregate Services***
   - *Recommendation Service*
-    - Framework: Spring Boot 2.0.7
+    - Framework: Spring Boot 2.1.1.RELEASE
     - Database: Neo4j
     - Messaging: Consumer
     - Broker: Apache Kafka
