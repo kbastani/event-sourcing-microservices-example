@@ -25,13 +25,15 @@ With this approach, we can get the best of both worlds—the large shared databa
 
  ***Domain Services***
   - *User Service*
-    - Framework: Spring Boot 2.1.1.RELEASE
+    - Spring Boot 2.1.1.RELEASE
+    - Spring Cloud Greenwich.RC1
     - Database: H2/MySQL
     - Messaging: Producer
     - Broker: Apache Kafka
     - Practices: CQRS
   - *Friend Service*
-    - Framework: Spring Boot 2.1.1.RELEASE
+    - Spring Boot 2.1.1.RELEASE
+    - Spring Cloud Greenwich.RC1
     - Database: H2/MySQL
     - Messaging: Producer
     - Broker: Apache Kafka
@@ -39,7 +41,8 @@ With this approach, we can get the best of both worlds—the large shared databa
 
 ***Aggregate Services***
   - *Recommendation Service*
-    - Framework: Spring Boot 2.1.1.RELEASE
+    - Spring Boot 2.1.1.RELEASE
+    - Spring Cloud Greenwich.RC1
     - Database: Neo4j
     - Messaging: Consumer
     - Broker: Apache Kafka
@@ -243,9 +246,9 @@ The *Edge Service* application is an API gateway that simplifies, combines, and 
 - **Get Friends**
   - GET http://localhost:9000/friend/v1/users/{0}/friends
 - **Mutual Friends**
-  - GET http://localhost:9000/recommendation/v1/friends/{0}/commands/findMutualFriends?friendId={1}
+  - GET http://localhost:9000/recommendation/v1/users/{0}/commands/findMutualFriends?friendId={1}
 - **Friend Recommendation**
-  - GET http://localhost:9000/recommendation/v1/friends/{0}/commands/recommendFriends
+  - GET http://localhost:9000/recommendation/v1/users/{0}/commands/recommendFriends
 
 #### Generating a Social Network
 
