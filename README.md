@@ -115,14 +115,14 @@ Once you have finished the pre-requisites, you should adjust your Docker system 
 The `docker-compose.yml` file that is in the root directory of this project will provide you with a `v3.3` Docker Compose manifest that you can use to run this application locally or to deploy to Kubernetes/Docker Swarm. To run this example locally, without using a container orchestrator, just run the following commands.
 
 ```bash
-$ docker-compose up -d
-$ docker-compose logs -f
+docker-compose up -d
+docker-compose logs -f
 ```
 
 You'll see a flurry of system logs flash before your eyes as multiple containers in a distributed system begin to spin up and start. It is recommended that you wait until the logging comes to a slow halt. In another tab, ensure that all of the containers are running using the following command.
 
 ```bash
-$ docker-compose ps
+docker-compose ps
 ```
 
 If all of the services have successfully started, that means you're ready to start playing with the application. The next section will focus on using Docker Stacks to deploy this example to a Kubernetes cluster.
@@ -140,7 +140,7 @@ Make sure that you've completed the pre-requisites listed in an earlier section 
 To see where Docker discovers these Kubernetes clusters, you can run the following formatted command using `kubectl` config view.
 
 ```bash
-$ kubectl config view -o \
+kubectl config view -o \
   jsonpath='{"\n\033[1mCLUSTER NAME\033[0m\n"}{range .clusters[*]}{.name}{"\n"}{end}'
 ```
 
@@ -168,40 +168,40 @@ To make running the example easy, I've provided a few command-line scripts that 
 First, create an environment variable called `$username` by replacing the text `replace` with your Docker Hub username. _After executing this command, you can run the following commands without replacing any syntax._
 
 ```bash
-$ export username="replace"
+export username="replace"
 ```
 
 _This next command replaces all instances of my username in the main docker compose file._
 
 ```bash
-$ sed -i '' -e 's/kbastani/'$username'/g' \
+sed -i '' -e 's/kbastani/'$username'/g' \
     ./docker-compose.yml
 ```
 
 _This next command replaces all instances of my username in another Docker Compose file that is meant for **pushing** the compiled containers to Docker Hub._
 
 ```bash
-$ sed -i '' -e 's/kbastani/'$username'/g' \
+sed -i '' -e 's/kbastani/'$username'/g' \
     ./deployment/docker/docker-compose-build.yml
 ```
 
 _The final command replaces my name in each pom.xml file that is used for building the container images._
 
 ```bash
-$ sed -i '' -e 's/kbastani/'$username'/g' \
+sed -i '' -e 's/kbastani/'$username'/g' \
     ./pom.xml
 ```
 
 Now you're ready to build the project and your docker containers.
 
 ```bash
-$ mvn clean install -DskipTests
+mvn clean install -DskipTests
 ```
 
 After everything has successfully been built, you are now ready to deploy the containers to your Docker Hub account. Run the following command.
 
 ```bash
-$ docker-compose -f ./deployment/docker/docker-compose-build.yml \
+docker-compose -f ./deployment/docker/docker-compose-build.yml \
     push edge-service discovery-service friend-service \
     user-service recommendation-service
 ```
@@ -215,7 +215,7 @@ Make sure that your `kubectl` is targeting the desired Kubernetes cluster you wo
 Now it's time to deploy the example contained inside this repository. Next, using a straightforward command, this example will be deployed to Kubernetes using the configuration included inside a docker-compose.yml file.
 
 ```bash
-$ docker stack up event-sourcing --compose-file $(pwd)/docker-compose.yml
+docker stack up event-sourcing --compose-file $(pwd)/docker-compose.yml
 ```
 
 After running the above command, the services contained in the docker-compose.yml file will begin to be deployed to pods in your Kubernetes cluster. You should be able to see the following output when the applications are up and running.
@@ -259,7 +259,7 @@ If everything has been set up correctly, you'll now be able to navigate to Sprin
 
 You should see that each of the microservices has registered with Eureka. You won't be able to navigate to the URIs contained in the service registry directly. That's because each URI is a part of a network overlay that is being used by the Kubernetes cluster. We can think of these IPs as private, which are not directly mapped to a gateway. Thankfully, we have a Spring Cloud Zuul gateway that is accessible and assigned to your `localhost:9000` (this assumes you've deployed to a local Kubernetes cluster).
 
-#### API Gateway
+### API Gateway
 
 The _Edge Service_ application is an API gateway that simplifies, combines, and secures access to the potentially many different REST APIs exposed by different microservices. For our simple social networking backend, we have a few simple APIs exposed by the gateway.
 
@@ -280,26 +280,26 @@ The _Edge Service_ application is an API gateway that simplifies, combines, and 
 -   **Friend Recommendation**
     -   GET <http://localhost:9000/recommendation/v1/users/{0}/commands/recommendFriends>
 
-#### Generating a Social Network
+### Generating a Social Network
 
-Many thanks goes out to [Michael Simons](http://www.twitter.com/rotnroll666) for contributing multiple fixes and improvements to this repository. One of those improvements was a script to generate test data that you can use to automate the APIs listed above. Once your cluster is up and running, navigate to the `./deployment/sbin` directory. This directory contains a shell script named `generate-social-network.sh`. To make sure there is no funny business going on, you're welcome to run the command `$ cat ./deployment/sbin/generate-social-network.sh`. You'll see the contents of the shell script, which is written in BASH and will automate and test each of the APIs in the order listed in the last section.
+Many thanks goes out to [Michael Simons](http://www.twitter.com/rotnroll666) for contributing multiple fixes and improvements to this repository. One of those improvements was a script to generate test data that you can use to automate the APIs listed above. Once your cluster is up and running, navigate to the `./deployment/sbin` directory. This directory contains a shell script named `generate-social-network.sh`. To make sure there is no funny business going on, you're welcome to run the command `cat ./deployment/sbin/generate-social-network.sh`. You'll see the contents of the shell script, which is written in BASH and will automate and test each of the APIs in the order listed in the last section.
 
 You will need to install `jq` to run the script. If you have not yet installed this dependency via your terminal, you can run the command:
 
 ```bash
-$ brew install jq
+brew install jq
 ```
 
 Now you're ready to run the script and test each of the APIs. This script will create 6 users, and create a friend relationships between some of them. Finally, the recommendation API will identify mutual friends and recommend users who I should be friends with.
 
 ```bash
-$ sh ./deployment/sbin/generate-social-network.sh
+sh ./deployment/sbin/generate-social-network.sh
 ```
 
 To see exactly what happened in the Neo4j browser, run the following command.
 
 ```bash
-$ open http://localhost:7474
+open http://localhost:7474
 ```
 
 That should open up the Neo4j browser, and allow you to run a Cypher query. Run the following query and hit CTRL+ENTER.
