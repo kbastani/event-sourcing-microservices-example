@@ -1,10 +1,36 @@
-## CQRS + Event Sourcing with Spring Boot, Neo4j, Docker, and Kubernetes
+# CQRS + Event Sourcing with Spring Boot, Neo4j, Docker, and Kubernetes
 
 [![Build Status](https://travis-ci.com/kbastani/event-sourcing-microservices-example.svg?branch=master)](https://travis-ci.com/kbastani/event-sourcing-microservices-example)
 
 This project is a practical microservices reference example for demonstrating the basics of CQRS and Event Sourcing with Spring Boot and Spring Cloud. This tutorial walks you through getting this example up and running on Kubernetes using Docker Stacks. If you're unfamiliar with Kubernetes–no worries!–everything you need to get started is contained in this tutorial.
 
-## Microservices for Social Networks
+## Table of Contents
+
+-   [Reference Example Overview](#microservices-for-social-networks)
+-   [Architecture](#architecture)
+    -   [Microservice Specifications](#microservice-specifications)
+-   [Docker and Kubernetes](#deploying-to-kubernetes-with-docker-stacks)
+    -   [Docker Stacks](#docker-stacks-on-kubernetes)
+-   [Installation](#installation)
+    -   [Pre-requisites](#pre-requisites)
+        -   [How does this all work?](#how-does-this-all-work)
+    -   [Docker Compose Classic (Local)](#docker-compose-classic-local)
+    -   [Docker Stacks (Kubernetes or Swarm)](#docker-stacks-kubernetes-or-swarm)
+    -   [Kubernetes](#deploying-to-kubernetes)
+        -   [Build](#build-and-deploy)
+        -   [Deploy](#ready-to-deploy)
+-   [Building a Social Network](#building-a-social-network)
+-   [API Gateway](#api-gateway)
+-   [Generating a Social Network](#generating-a-social-network)
+-   [Commands and Queries](#commands-and-queries)
+    -   [Event Sourcing and CQRS](#event-sourcing-and-cqrs)
+    -   [Finding Mutual Friends](#finding-mutual-friends)
+    -   [Recommending New Friends](#recommending-new-friends)
+-   [Conventional Best Practices](#conventional-best-practices)
+    -   [Domain Services](#domain-services)
+    -   [Aggregate Services](#aggregate-services)
+
+## Reference Example Overview
 
 For this example, I've chosen to build a social network using microservices. A social network's domain graph provides a simple model that has a high degree of complexity as friendships are established between users. The complexity of a graph can force microservice teams to become confused about the ownership of complicated features, such as generating friend recommendations for a user. Without the right architectural best practices, teams may resort to sophisticated caching techniques or ETLs—or worse: generating recommendations using HTTP calls that exponentially decrease performance.
 
@@ -56,10 +82,6 @@ This is the first reference example that I've put together that uses Docker Comp
 
 Docker Desktop Community v2.0 recently released an experimental feature that allows you to use Docker Compose files to deploy and operate distributed systems on any Kubernetes cluster (locally or remote). I think that this is a significant advancement for developers looking to get up and running with Kubernetes and microservices as quickly as possible. Before this feature, (over the last five years), developers with Windows-based development environments found it difficult to run my examples using Docker. I'm proud to say that those days are now over.
 
-### Docker Stacks on Kubernetes
-
-Docker Stacks is a feature that now allows you to deploy realistically complex microservice examples to any remote or local Kubernetes clusters.
-
 ## Installation
 
 First, if you have not already, please download _Docker Desktop Community Edition_ for your operating system of choice. You can choose between _Windows or Mac_ from Docker's download page.
@@ -106,13 +128,15 @@ If all of the services have successfully started, that means you're ready to sta
 
 ### Docker Stacks (Kubernetes or Swarm)
 
-Running Docker Compose locally is an ephemeral way to spin up a distributed system on your local machine quickly. This has been an excellent feature for teaching developers how to build distributed systems for about four years now. Eventually, for more extensive examples, it becomes unfeasible to use Docker Compose on your laptop.
+Running Docker Compose locally brought us an easy way to spin up a distributed system on a local machine. This has been an excellent feature for teaching developers how to build distributed systems. Eventually, for more extensive examples, it becomes unfeasible to use Docker Compose to run distributed systems on your laptop. The problem posed by running Docker Compose locally is that most developers often do not have the system memory available to run some of my more complex examples performantly.
 
-The problem posed by running Docker Compose locally is that most developers often do not have the system memory available to run some of my more complex examples performantly. Docker Stacks allows you to use Docker Compose to deploy a multi-container application, such as the social network example in this repository—targeting an orchestrator that is either Kubernetes or Docker Swarm. This choice is up to you, but for this example, I will demonstrate how to deploy to a Kubernetes cluster using Docker Stacks efficiently.
+Docker Stacks is a feature that now allows you to deploy realistically complex microservice examples (or any distributed system) to a remote or local Kubernetes cluster. Docker Stacks allows you to use Docker Compose to deploy a multi-container application, such as the social network example in this repository—using an orchestrator that is either Kubernetes or Docker Swarm. This choice is up to you, but for this example, I will show you how to deploy this example to a Kubernetes cluster.
 
 ### Deploying to Kubernetes
 
-Make sure that you've completed the pre-requisites listed in an earlier section of this README. Once you've done that, select the Kubernetes cluster that you would like to deploy to using the Docker Desktop System Tray Menu. You should find this icon in either the top right of your MacOS desktop or at the bottom right of your Windows OS desktop. By default, docker-for-desktop should be selected. Docker provides this default as a Kubernetes cluster running on your local machine. To see where Docker discovers these Kubernetes clusters, you can run the following formatted command using `kubectl` config view.
+Make sure that you've completed the pre-requisites listed in an earlier section of this README. Once you've done that, select the Kubernetes cluster that you would like to deploy to using the Docker Desktop System Tray Menu. You should find this icon in either the top right of your MacOS desktop or at the bottom right of your Windows OS desktop. By default, docker-for-desktop should be selected. Docker provides this default as a Kubernetes cluster running on your local machine.
+
+To see where Docker discovers these Kubernetes clusters, you can run the following formatted command using `kubectl` config view.
 
 ```bash
 $ kubectl config view -o \
@@ -134,29 +158,33 @@ It doesn't matter which cluster you decide to use–whether it is running locall
 
 #### Build and Deploy
 
-The current configuration is setup to build, push, and deploy the docker compose containers to my Docker Hub account. To fix this, you'll need to make a few changes. Simply put, do a replace-all in `./docker-compose.yml` and `./deployment/docker/docker-compose-build.yml` by replacing `kbastani` with your Docker Hub username. To make this easy, I've provided a script that will replace the username in the `pom.xml` property before you build the project. Run the following commands in order.
+The current configuration is setup to build, push, and deploy the docker compose containers to my Docker Hub account. To fix this, you'll need to make a few changes. Simply put, do a replace-all in `./docker-compose.yml` and `./deployment/docker/docker-compose-build.yml` by replacing `kbastani` with your Docker Hub username.
 
-Replace `[docker-hub-username]` with your username.
+##### Using your DockerHub Account
+
+To make running the example easy, I've provided a few command-line scripts that will replace my Docker Hub username in the multiple configuration files in this project. Before continuing forward, make sure to run each of the following commands in order.
+
+First, create an environment variable called `$username` by replacing the text `replace` with your Docker Hub username. _After executing this command, you can run the following commands without replacing any syntax._
 
 ```bash
-$ export username="[docker-hub-username]"
+$ export username="replace"
 ```
 
-Replaces my username with yours in the main docker compose file.
+_This next command replaces all instances of my username in the main docker compose file._
 
 ```bash
 $ sed -i '' -e 's/kbastani/'$username'/g' \
     ./docker-compose.yml
 ```
 
-Replaces my username with yours in the docker compose push file.
+_This next command replaces all instances of my username in another Docker Compose file that is meant for **pushing** the compiled containers to Docker Hub._
 
 ```bash
 $ sed -i '' -e 's/kbastani/'$username'/g' \
     ./deployment/docker/docker-compose-build.yml
 ```
 
-Replaces my name with yours in the pom.xml file for building the images.
+_The final command replaces my name in each pom.xml file that is used for building the container images._
 
 ```bash
 $ sed -i '' -e 's/kbastani/'$username'/g' \
@@ -312,7 +340,7 @@ Now, our aggregate store—the _Recommendation Service_—could be thought of as
 
 The Recommendation Service can use a single projected view of the many silos of domain data across an architecture and provide new powerful querying capabilities that do not require HTTP traversals. These aggregate services can be used for machine learning, predictive analytics, or any use case that requires combining multiple streams of events into a single eventually consistent data structure.
 
-## Friend of a Friend Recommendations
+#### Finding Mutual Friends
 
 Let's take a look at a seemingly simple query that can quickly become a monster that wreaks havoc due to its computational complexity. A friend-of-a-friend query should be simple, right? Well, let's rethink that idea. Since our friend relationships are stored separate from our users, we will need to make a single HTTP request for each friend, and their friends. To generate a single friend recommendation, we would need to make 101 HTTP requests if everyone in our social network had only 100 friends. This is not an option if you ever wanted to sleep again as an on-call developer or operator with a pager.
 
@@ -326,7 +354,7 @@ return mutualFriends
 
 The query above is called Cypher, and it is designed to use ASCII art to resemble the connections we are querying for in the graph database. The SQL-like syntax above is a basic friend-of-a-friend query.
 
-## Friend Recommendations
+#### Recommending New Friends
 
 But what if I wanted to know who I should be friends with? That's a bit more difficult. To figure this out, we need to rank the number of mutual connections that a user's friends have. We then need to eliminate the mutual friends from that list, resulting in a ranked list of people who a user is not yet friends with. This is called a non-mutual friend-of-a-friend query.
 
@@ -390,6 +418,6 @@ Aggregate services:
 -   Create connected query projections of distributed domain data.
 -   Provide performant read-access to complex views of domain data.
 
-# License
+## License
 
 This project is licensed under Apache License 2.0.
