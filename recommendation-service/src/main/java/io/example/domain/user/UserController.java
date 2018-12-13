@@ -17,12 +17,12 @@ public class UserController {
     }
 
     @GetMapping(path = "/users/{userId}/commands/findMutualFriends")
-    Flux<User> getMutualFriends(@PathVariable Long userId, @RequestParam Long friendId) {
+    public Flux<User> getMutualFriends(@PathVariable Long userId, @RequestParam Long friendId) {
         return Flux.just(friendRepository.mutualFriends(userId, friendId).toArray(User[]::new));
     }
 
     @GetMapping(path = "/users/{userId}/commands/recommendFriends")
-    Flux<RankedUser> recommendFriends(@PathVariable Long userId) {
+    public Flux<RankedUser> recommendFriends(@PathVariable Long userId) {
         return Flux.just(friendRepository.recommendedFriends(userId).toArray(RankedUser[]::new));
     }
 }
