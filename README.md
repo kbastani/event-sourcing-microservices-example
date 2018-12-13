@@ -6,11 +6,10 @@ This project is a practical microservices reference example for demonstrating th
 
 ## Table of Contents
 
--   [Reference Example Overview](#microservices-for-social-networks)
+-   [Reference Example Overview](#reference-example-overview)
 -   [Architecture](#architecture)
     -   [Microservice Specifications](#microservice-specifications)
 -   [Docker and Kubernetes](#deploying-to-kubernetes-with-docker-stacks)
-    -   [Docker Stacks](#docker-stacks-on-kubernetes)
 -   [Installation](#installation)
     -   [Pre-requisites](#pre-requisites)
         -   [How does this all work?](#how-does-this-all-work)
@@ -49,32 +48,11 @@ The reference example has two microservices, and one read-only replica of domain
 
 With this approach, we can get the best of both worlds—the large shared database that was easier to query from a monolith—without sacrificing the many benefits of building microservices.
 
- **_Domain Services_**
-
--   _User Service_
-    -   Spring Boot 2.1.1.RELEASE
-    -   Spring Cloud Greenwich.RC1
-    -   Database: H2/MySQL
-    -   Messaging: Producer
-    -   Broker: Apache Kafka
-    -   Practices: CQRS
--   _Friend Service_
-    -   Spring Boot 2.1.1.RELEASE
-    -   Spring Cloud Greenwich.RC1
-    -   Database: H2/MySQL
-    -   Messaging: Producer
-    -   Broker: Apache Kafka
-    -   Practices: CQRS
-
-**_Aggregate Services_**
-
--   _Recommendation Service_
-    -   Spring Boot 2.1.1.RELEASE
-    -   Spring Cloud Greenwich.RC1
-    -   Database: Neo4j
-    -   Messaging: Consumer
-    -   Broker: Apache Kafka
-    -   Practices: Event Sourcing
+| Service Name                                                                                                            | Spring Boot                                                                                  | Spring Cloud                                                                                        | ORM                                                                                      | Messaging                                 | Service Type                     |
+| ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------- | -------------------------------- |
+| _[Friend](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/friend-service)_                 | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [R2DBC](https://docs.spring.io/spring-data/r2dbc/docs/1.0.0.M1/reference/html/)          | [Apache Kafka](https://kafka.apache.org/) | [Domain](#domain-services)       |
+| _[User](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/user-service)_                     | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [R2DBC](https://docs.spring.io/spring-data/r2dbc/docs/1.0.0.M1/reference/html/)          | [Apache Kafka](https://kafka.apache.org/) | [Domain](#domain-services)       |
+| _[Recommendation](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/recommendation-service)_ | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [Neo4j OGM](https://docs.spring.io/spring-data/neo4j/docs/5.1.3.RELEASE/reference/html/) | [Apache Kafka](https://kafka.apache.org/) | [Aggregate](#aggregate-services) |
 
 ## Deploying to Kubernetes with Docker Stacks
 
