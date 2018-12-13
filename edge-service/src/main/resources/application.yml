@@ -3,18 +3,51 @@ spring:
     active: development
   application:
     name: edge-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes:
+      - id: FRIEND-SERVICE
+        uri: lb://FRIEND-SERVICE
+        predicates:
+        - name: Path
+          args:
+            pattern: "/friend/**"
+        filters:
+        - name: RewritePath
+          args:
+            regexp: "/friend/(?<remaining>.*)"
+            replacement: "/${remaining}"
+      - id: USER-SERVICE
+        uri: lb://USER-SERVICE
+        predicates:
+        - name: Path
+          args:
+            pattern: "/user/**"
+        filters:
+        - name: RewritePath
+          args:
+            regexp: "/user/(?<remaining>.*)"
+            replacement: "/${remaining}"
+      - id: RECOMMENDATION-SERVICE
+        uri: lb://RECOMMENDATION-SERVICE
+        predicates:
+        - name: Path
+          args:
+            pattern: "/recommendation/**"
+        filters:
+        - name: RewritePath
+          args:
+            regexp: "/recommendation/(?<remaining>.*)"
+            replacement: "/${remaining}"
 server:
   port: 9000
-zuul:
-  ignored-services: '*'
-  routes:
-    recommendation-service: /recommendation/**
-    friend-service: /friend/**
-    user-service: /user/**
-  host:
-    socket-timeout-millis: 60000
-    connect-timeout-millis: 60000
-    connection-request-timeout-millis: 60000
+management:
+  endpoint:
+    gateway:
+      enabled: true
 
 ---
 spring:
@@ -27,6 +60,7 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+management.endpoints.web.exposure.include: gateway
 ---
 spring:
   profiles: docker

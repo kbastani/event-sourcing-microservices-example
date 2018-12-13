@@ -21,7 +21,7 @@ spring:
             concurrency: 5
             instanceIndex: 1
   profiles:
-    active: docker
+    active: development
 server:
   port: ${PORT:${SERVER_PORT:8110}}
 ---

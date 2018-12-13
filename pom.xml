@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.example</groupId>
-    <artifactId>event-sourcing-microservices-basics</artifactId>
+    <artifactId>event-sourcing-microservices-example</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>event-sourcing-microservices-basics</name>
+    <name>event-sourcing-microservices-example</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
