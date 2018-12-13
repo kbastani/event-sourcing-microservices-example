@@ -1,20 +1,20 @@
 package io.example;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.r2dbc.repository.query.Query;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * A repository for managing {@link Friend} entities.
  *
  * @author Kenny Bastani
  */
-public interface FriendRepository extends JpaRepository<Friend, Long> {
+public interface FriendRepository extends ReactiveCrudRepository<Friend, Long> {
 
-    Friend findFriendByUserIdAndFriendId(@Param("userId") Long userId, @Param("friendId") Long friendId);
+    @Query("SELECT * FROM Friend f WHERE user_id = $1 AND friend_id = $2")
+    Mono<Friend> findFriends(Long userId, Long friendId);
 
-    Boolean existsByUserIdAndFriendId(@Param("userId") Long userId, @Param("friendId") Long friendId);
-
-    Page<Friend> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
+    @Query("SELECT * FROM Friend f WHERE f.user_id = $1")
+    Flux<Friend> findAllByUserId(Long userId);
 }

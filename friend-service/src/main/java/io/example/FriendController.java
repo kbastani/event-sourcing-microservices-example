@@ -1,18 +1,14 @@
 package io.example;
 
 import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
 
 /**
@@ -34,51 +30,52 @@ public class FriendController {
     }
 
     @GetMapping(path = "/users/{userId}/friends")
-    public HttpEntity<PagedResources<Resource<Friend>>> getFriends(@PathVariable Long userId, Pageable pageable,
-                                               PagedResourcesAssembler<Friend> assembler) {
-        return Optional.of(friendRepository.findAllByUserId(userId, pageable))
-                .map(a -> new ResponseEntity<>(assembler.toResource(a), HttpStatus.OK))
+    public Flux<Friend> getFriends(@PathVariable Long userId) {
+        return Optional.of(friendRepository.findAllByUserId(userId))
                 .orElseThrow(() -> new RuntimeException("Could not retrieve friends for the supplied user id"));
     }
 
     @PostMapping(path = "/users/{userId}/commands/addFriend")
-    public HttpEntity<?> addFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
+    public Mono<Friend> addFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
         Friend friend;
 
         // Check if friend relationship already exists
-        if (!friendRepository.existsByUserIdAndFriendId(userId, friendId)) {
+        if (friendRepository.findFriends(userId, friendId).block() == null) {
             friend = new Friend(userId, friendId);
 
             // Save friend relationship
-            friendRepository.save(friend);
+            friend = friendRepository.save(friend).block();
 
             // Broadcast a new domain event
             eventStream.output().send(MessageBuilder
-                    .withPayload(new FriendEvent(new FriendMessage(userId, friendId), EventType.FRIEND_ADDED)).build());
+                    .withPayload(new FriendEvent(new FriendMessage(userId, friendId), EventType.FRIEND_ADDED))
+                    .build());
         } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return Mono.justOrEmpty(Optional.empty());
         }
 
-        return new ResponseEntity<>(friend, HttpStatus.CREATED);
+        return Mono.justOrEmpty(friend);
     }
 
     @PutMapping(path = "/users/{userId}/commands/removeFriend")
-    public HttpEntity<?> removeFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
+    public Mono<?> removeFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
 
         // Fetch friend relationship
-        Friend friend = friendRepository.findFriendByUserIdAndFriendId(userId, friendId);
+        Mono<Friend> friend = friendRepository.findFriends(userId, friendId);
 
         if (friend != null) {
             // Delete friend relationship
-            friendRepository.delete(friend);
+            Mono<Void> result = friendRepository.deleteAll(friend);
+
+            result.block();
 
             // Broadcast a new domain event
             eventStream.output().send(MessageBuilder
                     .withPayload(new FriendEvent(new FriendMessage(userId, friendId), EventType.FRIEND_REMOVED)).build());
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return Mono.just(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         }
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return Mono.just(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 }

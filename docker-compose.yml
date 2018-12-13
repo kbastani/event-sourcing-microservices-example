@@ -56,3 +56,22 @@ services:
     ports:
       - "7474:7474/tcp"
       - "7687:7687/tcp"
+
+  friend-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432/tcp"
+
+  user-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432/tcp"
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8080:9191"

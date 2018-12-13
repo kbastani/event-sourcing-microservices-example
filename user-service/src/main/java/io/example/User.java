@@ -1,9 +1,9 @@
 package io.example;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
 import java.util.Objects;
 
 /**
@@ -11,13 +11,15 @@ import java.util.Objects;
  *
  * @author Kenny Bastani
  */
-@Entity
+@Table(value = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(value = "first_name")
     private String firstName;
+
+    @Column(value = "last_name")
     private String lastName;
 
     public User() {

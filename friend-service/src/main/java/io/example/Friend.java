@@ -1,25 +1,24 @@
 package io.example;
 
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * The domain entity representing a friend relationship between two users.
  *
  * @author Kenny Bastani
  */
-@Entity
-@Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"user_id", "friend_id"}))
+@Table("friend")
 public class Friend {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "user_id")
+    @Column(value = "user_id")
     private Long userId;
 
-    @Column(name = "friend_id")
+    @Column(value = "friend_id")
     private Long friendId;
 
     public Friend() {

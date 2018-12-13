@@ -12,8 +12,21 @@ spring:
 server:
   port: ${PORT:${SERVER_PORT:8120}}
 ---
+postgres.port: 5432
+postgres.host: localhost
+postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/
+postgres.database-name: postgres
 spring:
   profiles: development
+  datasource:
+    url: ${postgres.url}
+    data-username: postgres
+    data-password: example
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    url: ${postgres.url}
+    user: postgres
+    password: example
 eureka:
   instance:
     prefer-ip-address: true
@@ -23,6 +36,10 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
 ---
+postgres.port: 5432
+postgres.host: user-db
+postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/
+postgres.database-name: postgres
 spring:
   profiles: docker
   cloud:
@@ -33,6 +50,15 @@ spring:
           defaultBrokerPort: 29092
           zkNodes: zookeeper
           defaultZkPort: 32181
+  datasource:
+    url: ${postgres.url}
+    data-username: postgres
+    data-password: example
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    url: ${postgres.url}
+    user: postgres
+    password: example
 eureka:
   instance:
     prefer-ip-address: true

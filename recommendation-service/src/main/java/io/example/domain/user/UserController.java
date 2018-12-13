@@ -4,8 +4,7 @@ import io.example.domain.friend.FriendRepository;
 import io.example.domain.friend.entity.RankedUser;
 import io.example.domain.user.entity.User;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/v1")
@@ -18,12 +17,12 @@ public class UserController {
     }
 
     @GetMapping(path = "/users/{userId}/commands/findMutualFriends")
-    List<User> getMutualFriends(@PathVariable Long userId, @RequestParam Long friendId) {
-        return friendRepository.mutualFriends(userId, friendId);
+    Flux<User> getMutualFriends(@PathVariable Long userId, @RequestParam Long friendId) {
+        return Flux.just(friendRepository.mutualFriends(userId, friendId).toArray(User[]::new));
     }
 
     @GetMapping(path = "/users/{userId}/commands/recommendFriends")
-    List<RankedUser> recommendFriends(@PathVariable Long userId) {
-        return friendRepository.recommendedFriends(userId);
+    Flux<RankedUser> recommendFriends(@PathVariable Long userId) {
+        return Flux.just(friendRepository.recommendedFriends(userId).toArray(RankedUser[]::new));
     }
 }
