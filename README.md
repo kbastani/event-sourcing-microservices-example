@@ -23,30 +23,32 @@ The reference example has two microservices, and one read-only replica of domain
 
 With this approach, we can get the best of both worlds—the large shared database that was easier to query from a monolith—without sacrificing the many benefits of building microservices.
 
- ***Domain Services***
-  - *User Service*
-    - Spring Boot 2.1.1.RELEASE
-    - Spring Cloud Greenwich.RC1
-    - Database: H2/MySQL
-    - Messaging: Producer
-    - Broker: Apache Kafka
-    - Practices: CQRS
-  - *Friend Service*
-    - Spring Boot 2.1.1.RELEASE
-    - Spring Cloud Greenwich.RC1
-    - Database: H2/MySQL
-    - Messaging: Producer
-    - Broker: Apache Kafka
-    - Practices: CQRS
+ **_Domain Services_**
 
-***Aggregate Services***
-  - *Recommendation Service*
-    - Spring Boot 2.1.1.RELEASE
-    - Spring Cloud Greenwich.RC1
-    - Database: Neo4j
-    - Messaging: Consumer
-    - Broker: Apache Kafka
-    - Practices: Event Sourcing
+-   _User Service_
+    -   Spring Boot 2.1.1.RELEASE
+    -   Spring Cloud Greenwich.RC1
+    -   Database: H2/MySQL
+    -   Messaging: Producer
+    -   Broker: Apache Kafka
+    -   Practices: CQRS
+-   _Friend Service_
+    -   Spring Boot 2.1.1.RELEASE
+    -   Spring Cloud Greenwich.RC1
+    -   Database: H2/MySQL
+    -   Messaging: Producer
+    -   Broker: Apache Kafka
+    -   Practices: CQRS
+
+**_Aggregate Services_**
+
+-   _Recommendation Service_
+    -   Spring Boot 2.1.1.RELEASE
+    -   Spring Cloud Greenwich.RC1
+    -   Database: Neo4j
+    -   Messaging: Consumer
+    -   Broker: Apache Kafka
+    -   Practices: Event Sourcing
 
 ## Deploying to Kubernetes with Docker Stacks
 
@@ -60,11 +62,11 @@ Docker Stacks is a feature that now allows you to deploy realistically complex m
 
 ## Installation
 
-First, if you have not already, please download *Docker Desktop Community Edition* for your operating system of choice. You can choose between *Windows or Mac* from Docker's download page.
+First, if you have not already, please download _Docker Desktop Community Edition_ for your operating system of choice. You can choose between _Windows or Mac_ from Docker's download page.
 
- - https://www.docker.com/products/docker-desktop
+-   <https://www.docker.com/products/docker-desktop>
 
-*Please make sure that you are using version 2.0+ of Docker Desktop.*
+_Please make sure that you are using version 2.0+ of Docker Desktop._
 
 ### Pre-requisites
 
@@ -72,10 +74,10 @@ You'll need to do the following pre-requisites before you can use Docker Stacks 
 
 Pre-requisites:
 
-- Install `kubectl` (https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- Install `minikube` (https://kubernetes.io/docs/tasks/tools/install-minikube/)
-- Enable `Kubernetes` (From Docker Desktop)
-- Turn on `Experimental Features` (From Docker Desktop)
+-   Install `kubectl` (<https://kubernetes.io/docs/tasks/tools/install-kubectl/>)
+-   Install `minikube` (<https://kubernetes.io/docs/tasks/tools/install-minikube/>)
+-   Enable `Kubernetes` (From Docker Desktop)
+-   Turn on `Experimental Features` (From Docker Desktop)
 
 You can quickly tackle the last two pre-requisites by configuring the Docker preferences pane—which can be found from the menu in the Docker Desktop system tray.
 
@@ -111,7 +113,6 @@ The problem posed by running Docker Compose locally is that most developers ofte
 ### Deploying to Kubernetes
 
 Make sure that you've completed the pre-requisites listed in an earlier section of this README. Once you've done that, select the Kubernetes cluster that you would like to deploy to using the Docker Desktop System Tray Menu. You should find this icon in either the top right of your MacOS desktop or at the bottom right of your Windows OS desktop. By default, docker-for-desktop should be selected. Docker provides this default as a Kubernetes cluster running on your local machine. To see where Docker discovers these Kubernetes clusters, you can run the following formatted command using `kubectl` config view.
-
 
 ```bash
 $ kubectl config view -o \
@@ -225,30 +226,30 @@ Since we've deployed the distributed system to Kubernetes, we can start explorin
 
 If everything has been set up correctly, you'll now be able to navigate to Spring Cloud Eureka at the following URL.
 
- - [http://localhost:8761](http://localhost:8761)
+-   <http://localhost:8761>
 
 You should see that each of the microservices has registered with Eureka. You won't be able to navigate to the URIs contained in the service registry directly. That's because each URI is a part of a network overlay that is being used by the Kubernetes cluster. We can think of these IPs as private, which are not directly mapped to a gateway. Thankfully, we have a Spring Cloud Zuul gateway that is accessible and assigned to your `localhost:9000` (this assumes you've deployed to a local Kubernetes cluster).
 
 #### API Gateway
 
-The *Edge Service* application is an API gateway that simplifies, combines, and secures access to the potentially many different REST APIs exposed by different microservices. For our simple social networking backend, we have a few simple APIs exposed by the gateway.
+The _Edge Service_ application is an API gateway that simplifies, combines, and secures access to the potentially many different REST APIs exposed by different microservices. For our simple social networking backend, we have a few simple APIs exposed by the gateway.
 
-- **Create User**
-  - POST http://localhost:9000/user/v1/users
-- **Get User**
-  - GET http://localhost:9000/user/v1/users/{0}
-- **Update User**
-  - PUT http://localhost:9000/user/v1/users/{0}
-- **Add Friend**
-  - POST http://localhost:9000/friend/v1/users/{0}/commands/addFriend?friendId={1}
-- **Remove Friend**
-  - POST http://localhost:9000/friend/v1/users/{0}/commands/removeFriend?friendId={1}
-- **Get Friends**
-  - GET http://localhost:9000/friend/v1/users/{0}/friends
-- **Mutual Friends**
-  - GET http://localhost:9000/recommendation/v1/users/{0}/commands/findMutualFriends?friendId={1}
-- **Friend Recommendation**
-  - GET http://localhost:9000/recommendation/v1/users/{0}/commands/recommendFriends
+-   **Create User**
+    -   POST <http://localhost:9000/user/v1/users>
+-   **Get User**
+    -   GET <http://localhost:9000/user/v1/users/{0}>
+-   **Update User**
+    -   PUT <http://localhost:9000/user/v1/users/{0}>
+-   **Add Friend**
+    -   POST <http://localhost:9000/friend/v1/users/{0}/commands/addFriend?friendId={1}>
+-   **Remove Friend**
+    -   POST <http://localhost:9000/friend/v1/users/{0}/commands/removeFriend?friendId={1}>
+-   **Get Friends**
+    -   GET <http://localhost:9000/friend/v1/users/{0}/friends>
+-   **Mutual Friends**
+    -   GET <http://localhost:9000/recommendation/v1/users/{0}/commands/findMutualFriends?friendId={1}>
+-   **Friend Recommendation**
+    -   GET <http://localhost:9000/recommendation/v1/users/{0}/commands/recommendFriends>
 
 #### Generating a Social Network
 
@@ -294,17 +295,17 @@ For each domain aggregate that we have in our microservice applications, we must
 
 ### Event Sourcing and CQRS
 
-The *User Service* is responsible for storing, exposing, and managing the data of a social network's users. The query model for a user's profile is created by applying commands in the form of business logic that is triggered by a REST API. Each command is applied to a `User` object and will generate a domain event that describes what happened as a result.
+The _User Service_ is responsible for storing, exposing, and managing the data of a social network's users. The query model for a user's profile is created by applying commands in the form of business logic that is triggered by a REST API. Each command is applied to a `User` object and will generate a domain event that describes what happened as a result.
 
 As a result, a stream of endless domain activity is piped into a `User` topic as a series of messages that describe events that are stored in Apache Kafka. I like to think of Apache Kafka as a "DNA store" for a distributed system—allowing us to exactly replicate and create projections of domain data that are distributed across many different applications and databases.
 
 <img src="https://imgur.com/DUEhtBH.png" width="480" alt="Event sourcing architecture diagram">
 
-The same idea applies to the *Friend Service*. Every time a user adds a friend, a command is triggered that generates an event that describes precisely what happened. All of these events can be sequenced in the exact order they are received from the front-end users.
+The same idea applies to the _Friend Service_. Every time a user adds a friend, a command is triggered that generates an event that describes precisely what happened. All of these events can be sequenced in the exact order they are received from the front-end users.
 
 There is a metaphor I often use for event sourcing in microservices. It helps to think that each domain microservice is a musical instrument in a symphony orchestra. Each instrument plays a stream of notes that create a composition of sound. When a musician plays one note, an event is sent out, projecting a harmonic wave that finds the ears of those listening. Each of these different instruments is performing in parallel and are combined to form a single symphony of sound.
 
-Now, our aggregate store—the *Recommendation Service*—could be thought of as a kind of recording studio that combines the different channel sources into one single musical track. The newly formed single track is then recorded to a disk or tape, making it immutable— like an exact read-only replica of the song. We can create as many copies as we want, and distribute them all over the world without worrying about the original song being corrupted or accidentally modified. That's the beauty behind a read-only aggregate service. These useful services are similar to recording studios that can mix or remix the original multi-channel tracks of a song and then combine them into one immutable projection of past behavior.
+Now, our aggregate store—the _Recommendation Service_—could be thought of as a kind of recording studio that combines the different channel sources into one single musical track. The newly formed single track is then recorded to a disk or tape, making it immutable— like an exact read-only replica of the song. We can create as many copies as we want, and distribute them all over the world without worrying about the original song being corrupted or accidentally modified. That's the beauty behind a read-only aggregate service. These useful services are similar to recording studios that can mix or remix the original multi-channel tracks of a song and then combine them into one immutable projection of past behavior.
 
 <img src="https://imgur.com/Uqd7SHE.png" width="400" alt="Domain graph of users and friends">
 <br/>
@@ -370,10 +371,10 @@ One of the main problems I see today when describing components of a microservic
 
 Domain services:
 
-- Manage the storage of domain data that it owns.
-- Produce the API contract for the domain data that it owns.
-- Produce events when the state of any domain data changes.
-- Maintain relationship integrity to domain data owned by other services.
+-   Manage the storage of domain data that it owns.
+-   Produce the API contract for the domain data that it owns.
+-   Produce events when the state of any domain data changes.
+-   Maintain relationship integrity to domain data owned by other services.
 
 ### Aggregate Services
 
@@ -384,11 +385,10 @@ Domain services:
 
 Aggregate services:
 
-- Subscribe to domain events emitted by separate domain services.
-- Maintain an ordered immutable event log for events it receives.
-- Create connected query projections of distributed domain data.
-- Provide performant read-access to complex views of domain data.
-
+-   Subscribe to domain events emitted by separate domain services.
+-   Maintain an ordered immutable event log for events it receives.
+-   Create connected query projections of distributed domain data.
+-   Provide performant read-access to complex views of domain data.
 
 # License
 
