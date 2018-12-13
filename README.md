@@ -1,4 +1,4 @@
-# CQRS + Event Sourcing with Spring Boot, Neo4j, Docker, and Kubernetes
+# Event Sourcing Microservices Example with Spring, Kubernetes, and Docker
 
 [![Build Status](https://travis-ci.com/kbastani/event-sourcing-microservices-example.svg?branch=master)](https://travis-ci.com/kbastani/event-sourcing-microservices-example)
 
