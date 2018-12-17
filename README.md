@@ -162,17 +162,21 @@ sed -i '' -e 's/kbastani/'$username'/g' \
     ./deployment/docker/docker-compose-build.yml
 ```
 
-_The final command replaces my name in each pom.xml file that is used for building the container images._
-
-```bash
-sed -i '' -e 's/kbastani/'$username'/g' \
-    ./pom.xml
-```
-
 Now you're ready to build the project and your docker containers.
 
+If you have JDK and Maven on your workstation you should be able to simply run:
+
 ```bash
-mvn clean install -DskipTests
+mvn clean install -DskipTests -Ddocker.user=$username
+```
+
+If you do not have JDK and Maven on your workstation you may be able to use a maven Docker image to build your images:
+
+```bash
+docker run -it --rm --name my-maven-project \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v "$(pwd)":/src -w /src maven:3.6-jdk-11 \
+  mvn clean install -DskipTests -Ddocker.user=$username
 ```
 
 After everything has successfully been built, you are now ready to deploy the containers to your Docker Hub account. Run the following command.
