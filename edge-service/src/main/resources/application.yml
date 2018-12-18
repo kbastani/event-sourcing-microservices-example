@@ -75,6 +75,51 @@ eureka:
 management.endpoints.web.exposure.include: gateway
 ---
 spring:
+  profiles: kubernetes
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes:
+      - id: FRIEND-SERVICE
+        uri: http://friend-service:8100
+        predicates:
+        - name: Path
+          args:
+            pattern: "/friend/**"
+        filters:
+        - name: RewritePath
+          args:
+            regexp: "/friend/(?<remaining>.*)"
+            replacement: "/${remaining}"
+      - id: USER-SERVICE
+        uri: http://user-service:8120
+        predicates:
+        - name: Path
+          args:
+            pattern: "/user/**"
+        filters:
+        - name: RewritePath
+          args:
+            regexp: "/user/(?<remaining>.*)"
+            replacement: "/${remaining}"
+      - id: RECOMMENDATION-SERVICE
+        uri: http://user-service:8110
+        predicates:
+        - name: Path
+          args:
+            pattern: "/recommendation/**"
+        filters:
+        - name: RewritePath
+          args:
+            regexp: "/recommendation/(?<remaining>.*)"
+            replacement: "/${remaining}"
+management.endpoints.web.exposure.include: gateway
+ribbon.eureka.enabled: false
+eureka.client.enabled: false
+---
+spring:
   profiles: test
 eureka:
   client:

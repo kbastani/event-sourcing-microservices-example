@@ -1,0 +1,11 @@
+kafka:
+  enabled: true
+  nameOverride: kafka
+  persistence:
+    enabled: false
+
+  zookeeper:
+    enabled: true
+    nameOverride: zookeeper
+    persistence:
+      enabled: false
