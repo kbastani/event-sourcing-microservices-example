@@ -1,18 +1,33 @@
+# Deploy Event Sourcing Microservices Example (ESME) via Helm
 
+## Prerequisites
+
+> add instructions for downloading and setting up helm here
+
+Add the bitnami helm repository which contains the `kafka` and `zookeeper` charts:
+
+```bash
+helm repo add bitnami https://charts.bitnami.com
 ```
-$ helm repo add bitnami https://charts.bitnami.com
-$ helm install --namespace esme --name esme --set fullNameOverride=esme .
 
-$ helm install --namespace esme --name discovery --set fullnameOverride=discovery-service discovery-service
+## Deploy
 
-$ helm install --namespace esme --name edge --set fullnameOverride=edge-service deployment/helm/edge-service
+Once Helm is set up, deploying this is quite simple:
 
-$ helm install --namespace esme --name friend --set fullnameOverride=friend-service friend-service
+```bash
+helm install --namespace esme --name esme --set fullNameOverride=esme \
+  deployment/helm/event-sourcing-microservices-example
+```
 
-$ helm install --namespace esme --name user --set fullnameOverride=user-service user-service
+There is not security on the apps, therefore rather than exposing the edge
+to the internet we can utilize `kubectl port-forward` to access the app:
 
-$ helm install --namespace esme --name recommendation --set fullnameOverride=recommendation-service deployment/helm/recommendation-service
+```bash
+kubectl --namespace esme port-forward svc/edge-service 9000
+```
 
+run the following script to add users and friendships to the social network:
 
-
+```bash
+bash deployment/sbin/generate-social-network.sh
 ```

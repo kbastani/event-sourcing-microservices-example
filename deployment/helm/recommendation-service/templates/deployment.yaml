@@ -1,22 +1,22 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ include "user-service.fullname" . }}
+  name: {{ include "recommendation-service.fullname" . }}
   labels:
-    app: {{ include "user-service.name" . }}
-    chart: {{ include "user-service.chart" . }}
+    app: {{ include "recommendation-service.name" . }}
+    chart: {{ include "recommendation-service.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "user-service.name" . }}
+      app: {{ include "recommendation-service.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "user-service.name" . }}
+        app: {{ include "recommendation-service.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
@@ -27,7 +27,7 @@ spec:
             - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS
               value: esme-kafka:9092
             - name: SPRING_DATA_NEO4J_URI
-              value: "bolt://recommendation-neo4j.{{ .Release.Namespace }}.svc.cluster.local:7687"
+              value: "bolt://{{ .Release.Name}}-{{ .Values.neo4j.nameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:7687"
             - name: SPRING_PROFILES_ACTIVE
               value: kubernetes
           ports:
@@ -38,7 +38,7 @@ spec:
             httpGet:
               path: /actuator/health
               port: http
-            initialDelaySeconds: 60
+            initialDelaySeconds: 300
             periodSeconds: 10
           readinessProbe:
             httpGet:
