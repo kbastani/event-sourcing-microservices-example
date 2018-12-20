@@ -2,8 +2,9 @@ spring:
   profiles:
     active: development
   cloud:
-    kubernetes:
-      enabled: false
+    kubernetes.discovery.enabled: false
+    kubernetes.ribbon.enabled: false
+    kubernetes.enabled: false
     gateway:
       discovery:
         locator:
@@ -48,12 +49,21 @@ management:
   endpoint:
     gateway:
       enabled: true
+logging:
+  level:
+    root: INFO
+    kafka.*: WARN
+    org.springframework.*: INFO
+    org.neo4j.*: INFO
+    com.memorynotfound: DEBUG
+    org.apache.kafka.*: ERROR
 ---
 spring:
   profiles: development
   cloud:
-    kubernetes:
-      enabled: false
+    kubernetes.discovery.enabled: false
+    kubernetes.ribbon.enabled: false
+    kubernetes.enabled: false
 eureka:
   instance:
     prefer-ip-address: true
@@ -100,6 +110,15 @@ eureka.client.enabled: false
 ---
 spring:
   profiles: test
+  cloud:
+    kubernetes.discovery.enabled: false
+    kubernetes.ribbon.enabled: false
+    kubernetes.enabled: false
 eureka:
   client:
     enabled: false
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: false

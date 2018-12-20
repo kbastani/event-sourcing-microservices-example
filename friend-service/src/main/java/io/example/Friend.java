@@ -52,4 +52,13 @@ public class Friend {
     public void setFriendId(Long friendId) {
         this.friendId = friendId;
     }
+
+    @Override
+    public String toString() {
+        return "Friend{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", friendId=" + friendId +
+                '}';
+    }
 }

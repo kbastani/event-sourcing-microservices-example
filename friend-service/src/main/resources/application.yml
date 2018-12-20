@@ -9,6 +9,14 @@ spring:
     active: development
 server:
   port: ${PORT:${SERVER_PORT:8100}}
+logging:
+  level:
+    root: INFO
+    kafka.*: WARN
+    org.springframework.*: INFO
+    org.neo4j.*: INFO
+    com.memorynotfound: DEBUG
+    org.apache.kafka.*: ERROR
 ---
 postgres.port: 5432
 postgres.host: localhost
@@ -25,6 +33,10 @@ spring:
     url: ${postgres.url}
     user: postgres
     password: example
+  cloud:
+    kubernetes.discovery.enabled: false
+    kubernetes.ribbon.enabled: false
+    kubernetes.enabled: false
 eureka:
   instance:
     prefer-ip-address: true
@@ -48,6 +60,9 @@ spring:
           defaultBrokerPort: 29092
           zkNodes: zookeeper
           defaultZkPort: 32181
+    kubernetes.discovery.enabled: false
+    kubernetes.ribbon.enabled: false
+    kubernetes.enabled: false
   datasource:
     url: ${postgres.url}
     data-username: postgres
@@ -96,6 +111,15 @@ eureka.client.enabled: false
 ---
 spring:
   profiles: test
+  cloud:
+    kubernetes.discovery.enabled: false
+    kubernetes.ribbon.enabled: false
+    kubernetes.enabled: false
 eureka:
   client:
     enabled: false
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: false

@@ -43,26 +43,23 @@ done
 echo
 
 echo "====> Create 10 friendships"
-for i in {1..10};
+for i in {1..40};
 do
   friend1=${IDS[$RANDOM % ${#IDS[@]}]}
   friend2=${IDS[$RANDOM % ${#IDS[@]}]}
   echo "$friend1 <3 $friend2"
-  curl -s -X "POST" "http://localhost:9000/friend/v1/users/$friend1/commands/addFriend?friendId=$friend2" | jq  
-  sleep 1
+  curl -s -X "POST" "http://localhost:9000/friend/v1/users/$friend1/commands/addFriend?friendId=$friend2" | jq
 done
 
 friend1=${IDS[$RANDOM % ${#IDS[@]}]}
 friend2=${IDS[$RANDOM % ${#IDS[@]}]}
 echo "--> Check that $friend1 has friends"
 curl -s "http://localhost:9000/friend/v1/users/$friend1/friends" | jq
-sleep 1
 
 friend1=${IDS[$RANDOM % ${#IDS[@]}]}
 friend2=${IDS[$RANDOM % ${#IDS[@]}]}
 echo "--> List Mutual friends between $friend1 and $friend2"
 curl -s "http://localhost:9000/recommendation/v1/users/$friend1/commands/findMutualFriends?friendId=$friend2" | jq
-sleep 1
 
 echo "--> Recommend friends to $rec"
 rec=${IDS[$RANDOM % ${#IDS[@]}]}

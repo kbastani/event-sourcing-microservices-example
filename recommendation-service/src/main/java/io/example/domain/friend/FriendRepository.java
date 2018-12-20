@@ -7,6 +7,7 @@ import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,5 +40,5 @@ public interface FriendRepository extends Neo4jRepository<Friend, Long> {
             "WITH nonFriend, count(nonFriend) as mutualFriends\n" +
             "RETURN nonFriend as User, mutualFriends as Weight\n" +
             "ORDER BY Weight DESC")
-    List<RankedUser> recommendedFriends(Long userId);
+    ArrayList<RankedUser> recommendedFriends(Long userId);
 }
