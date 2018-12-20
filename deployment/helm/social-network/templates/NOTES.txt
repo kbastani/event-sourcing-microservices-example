@@ -1,4 +1,4 @@
-Event Sourcing Microservices Example (esme) Successfully deployed.
+HyperSkale Social Network has been successfully deployed.
 
 1. Run kubectl port forward to access the app:
 
@@ -8,3 +8,6 @@ Event Sourcing Microservices Example (esme) Successfully deployed.
 
     $ curl localhost:9000/actuator/health
     {"status":"UP"}
+
+3. Create some content
+    $ bash deployment/sbin/generate-social-network.sh

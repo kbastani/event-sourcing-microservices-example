@@ -1,4 +1,4 @@
-# Deploy Event Sourcing Microservices Example (ESME) via Helm
+# Deploy Hyerskale Social Network via Helm
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ helm repo add bitnami https://charts.bitnami.com
 Run a few helm commands to ensure all dependent charts are available:
 
 ```bash
-helm dep update deployment/helm/event-sourcing-microservices-example
+helm dep update deployment/helm/social-network
 helm dep update deployment/helm/friend-service
 helm dep update deployment/helm/user-service
 helm dep update deployment/helm/recommendation-service
@@ -27,19 +27,28 @@ helm dep update deployment/helm/recommendation-service
 Once Helm is set up, deploying this is quite simple:
 
 ```bash
-helm install --namespace esme --name esme --set fullNameOverride=esme \
-  deployment/helm/event-sourcing-microservices-example
+helm install --namespace social-network --name social-network --set fullNameOverride=social-network \
+  deployment/helm/social-network
 ```
 
-There is not security on the apps, therefore rather than exposing the edge
+There is no security on the apps, therefore rather than exposing the edge
 to the internet we can utilize `kubectl port-forward` to access the app:
 
 ```bash
-kubectl --namespace esme port-forward svc/edge-service 9000
+kubectl --namespace social-network port-forward svc/edge-service 9000
 ```
 
 run the following script to add users and friendships to the social network:
 
 ```bash
 bash deployment/sbin/generate-social-network.sh
+```
+
+## Cleanup
+
+To uninstall run the following commands:
+
+```bash
+helm delete --purge social-network
+kubectl delete pvc datadir-social-network-neo4j-core-0
 ```
