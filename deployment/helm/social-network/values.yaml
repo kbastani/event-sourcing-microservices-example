@@ -1,0 +1,23 @@
+kafka:
+  enabled: true
+  nameOverride: kafka
+  persistence:
+    enabled: false
+
+  zookeeper:
+    enabled: true
+    nameOverride: zookeeper
+    persistence:
+      enabled: false
+
+friend-service:
+  fullnameOverride: friend-service
+
+recommendation-service:
+  fullnameOverride: recommendation-service
+
+user-service:
+  fullnameOverride: user-service
+
+edge-service:
+  fullnameOverride: edge-service

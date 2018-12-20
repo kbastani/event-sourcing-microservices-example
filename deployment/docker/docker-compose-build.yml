@@ -4,20 +4,20 @@ services:
 
   discovery-service:
     build: .
-    image: kbastani/discovery-service:0.0.1-SNAPSHOT
+    image: hyperskale/discovery-service:0.0.1-SNAPSHOT
 
   edge-service:
     build: .
-    image: kbastani/edge-service:0.0.1-SNAPSHOT
+    image: hyperskale/edge-service:0.0.1-SNAPSHOT
 
   friend-service:
     build: .
-    image: kbastani/friend-service:0.0.1-SNAPSHOT
+    image: hyperskale/friend-service:0.0.1-SNAPSHOT
 
   user-service:
     build: .
-    image: kbastani/user-service:0.0.1-SNAPSHOT
+    image: hyperskale/user-service:0.0.1-SNAPSHOT
 
   recommendation-service:
     build: .
-    image: kbastani/recommendation-service:0.0.1-SNAPSHOT
+    image: hyperskale/recommendation-service:0.0.1-SNAPSHOT

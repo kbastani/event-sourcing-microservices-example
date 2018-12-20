@@ -1,0 +1,14 @@
+{{ if .Values.springConfig }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edge-service.fullname" . }}-app
+  labels:
+    app: {{ include "edge-service.name" . }}
+    chart: {{ include "edge-service.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  application.yaml:
+    {{ toYaml .Values.SpringConfig | indent 4  }}
+{{ end }}

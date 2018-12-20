@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "edge-service.fullname" . }}
+  labels:
+    app: {{ include "edge-service.name" . }}
+    chart: {{ include "edge-service.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      targetPort: http
+      protocol: TCP
+      port: {{ .Values.service.port }}
+  selector:
+    app: {{ include "edge-service.name" . }}
+    release: {{ .Release.Name }}

@@ -201,7 +201,11 @@ docker-compose -f ./deployment/docker/docker-compose-build.yml \
 
 After the docker images are successfully uploaded to your Docker Hub account, you're all ready to deploy this distributed system to Kubernetes using Docker Stacks.
 
-#### Ready to Deploy
+#### Deploy with Helm
+
+see [Install Social Network via Helm](deployment/helm/social-network/README.md) for instructions on using the include Helm chart to deploy.  Otherwise you can try to use docker...
+
+#### Deploy with Docker
 
 Make sure that your `kubectl` is targeting the desired Kubernetes cluster you would like to deploy to. You can select this using the Docker for Mac/Desktop tray icon before proceeding.
 

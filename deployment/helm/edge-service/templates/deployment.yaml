@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "edge-service.fullname" . }}
+  labels:
+    app: {{ include "edge-service.name" . }}
+    chart: {{ include "edge-service.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "edge-service.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "edge-service.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ template "edge-service.serviceAccountName" . }}
+      {{ if .Values.springConfig }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "edge-service.fullname" . }}-app
+      {{ end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{ if .Values.springConfig }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+          {{ end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kubernetes
+            - name: KUBERNETES_TRUST_CERTIFICATES
+              value: "true"
+            {{ if .Values.springConfig }}
+            - name: SPRING_CONFIG_LOCATION
+              value: "file:/config/application.yaml"
+            {{ end }}
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 300
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
