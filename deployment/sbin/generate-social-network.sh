@@ -7,69 +7,63 @@
 # Linux: apt-get install jq
 
 # Wake up user service
-curl -i "http://localhost:9000/user/actuator/info" | jq
-
-ID_MH=`\
-curl -X "POST" "http://localhost:9000/user/v1/users" \
-     -H 'Content-Type: application/json; charset=utf-8' \
-     -d $'{
-  "firstName": "Michael",
-  "lastName": "H."
-}' | jq .id`
-
-ID_MS=`\
-curl -X "POST" "http://localhost:9000/user/v1/users" \
-     -H 'Content-Type: application/json; charset=utf-8' \
-     -d $'{
-  "firstName": "Michael",
-  "lastName": "S."
-}' | jq .id`
-
-ID_MJ=`\
-curl -X "POST" "http://localhost:9000/user/v1/users" \
-     -H 'Content-Type: application/json; charset=utf-8' \
-     -d $'{
-  "firstName": "Michaela",
-  "lastName": "J."
-}' | jq .id`
-
-ID_KB=`\
-curl -X "POST" "http://localhost:9000/user/v1/users" \
-     -H 'Content-Type: application/json; charset=utf-8' \
-     -d $'{
-  "firstName": "Kenny",
-  "lastName": "B."
-}' | jq .id`
-
-ID_SH=`\
-curl -X "POST" "http://localhost:9000/user/v1/users" \
-     -H 'Content-Type: application/json; charset=utf-8' \
-     -d $'{
-  "firstName": "Sonja",
-  "lastName": "H."
-}' | jq .id`
-
-ID_EE=`\
-curl -X "POST" "http://localhost:9000/user/v1/users" \
-     -H 'Content-Type: application/json; charset=utf-8' \
-     -d $'{
-  "firstName": "Emil",
-  "lastName": "E."
-}' | jq .id`
+echo -n "--> Wake up user service "
+curl -s "http://localhost:9000/user/actuator/health" | jq '.status'
 
 # Wake up friend service
-curl -i "http://localhost:9000/friend/actuator/info" | jq
+echo -n "--> Wake up friend service "
+curl -s "http://localhost:9000/friend/actuator/health" | jq '.status'
 
 # Wake up recommendation service
-curl -i "http://localhost:9000/recommendation/actuator/info" | jq
+echo -n "--> Wake up recommendation service "
+curl -s "http://localhost:9000/recommendation/actuator/health" | jq '.status'
 
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MH/commands/addFriend?friendId=$ID_MS" | jq
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MS/commands/addFriend?friendId=$ID_KB" | jq
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_SH" | jq
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_EE" | jq
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MH/commands/addFriend?friendId=$ID_EE" | jq
-curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_MJ" | jq
+echo "====> Create users"
 
-curl "http://localhost:9000/friend/v1/users/$ID_MH/friends" | jq
-curl "http://localhost:9000/recommendation/v1/users/$ID_MH/commands/findMutualFriends?friendId=$ID_KB" | jq
-curl "http://localhost:9000/recommendation/v1/users/$ID_KB/commands/recommendFriends" | jq
+IDS=()
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+while read fullname; do
+  NAME=( $(IFS=" " echo "${fullname}") )
+  ADD_USER=`\
+    curl -s -X "POST" "http://localhost:9000/user/v1/users" \
+      -H 'Content-Type: application/json; charset=utf-8' \
+      -d $"{\"firstName\": \"${NAME[0]}\",\"lastName\": \"${NAME[1]}\"}"`
+  echo $ADD_USER | jq
+  USER_ID=`echo $ADD_USER | jq .id`
+  [[ "$USER_ID" != "null" ]] && IDS+=("${USER_ID}")
+  #sleep 1
+done <$DIR/names.txt
+
+echo -n "added ids: "
+for i in "${IDS[@]}"
+do
+    echo -n $i
+done
+echo
+
+echo "====> Create 10 friendships"
+for i in {1..10};
+do
+  friend1=${IDS[$RANDOM % ${#IDS[@]}]}
+  friend2=${IDS[$RANDOM % ${#IDS[@]}]}
+  echo "$friend1 <3 $friend2"
+  curl -s -X "POST" "http://localhost:9000/friend/v1/users/$friend1/commands/addFriend?friendId=$friend2" | jq  
+  sleep 1
+done
+
+friend1=${IDS[$RANDOM % ${#IDS[@]}]}
+friend2=${IDS[$RANDOM % ${#IDS[@]}]}
+echo "--> Check that $friend1 has friends"
+curl -s "http://localhost:9000/friend/v1/users/$friend1/friends" | jq
+sleep 1
+
+friend1=${IDS[$RANDOM % ${#IDS[@]}]}
+friend2=${IDS[$RANDOM % ${#IDS[@]}]}
+echo "--> List Mutual friends between $friend1 and $friend2"
+curl -s "http://localhost:9000/recommendation/v1/users/$friend1/commands/findMutualFriends?friendId=$friend2" | jq
+sleep 1
+
+echo "--> Recommend friends to $rec"
+rec=${IDS[$RANDOM % ${#IDS[@]}]}
+curl -s "http://localhost:9000/recommendation/v1/users/$rec/commands/recommendFriends" | jq
