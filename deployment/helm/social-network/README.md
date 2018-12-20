@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-* A Kubernetes Cluster
-* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl)
-* [helm](https://docs.helm.sh/using_helm/#installing-helm)
+*   A Kubernetes Cluster
+*   [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl)
+*   [helm](https://docs.helm.sh/using_helm/#installing-helm)
 
 Ensure you have access to Kubernetes:
 
@@ -18,7 +18,7 @@ vm-ab234512-d336-4f5a-495a-a917657575c1   Ready     <none>    7d        v1.11.5
 
 Install helm tiller (RBAC):
 
-```
+```bash
 kubectl -n kube-system create serviceaccount tiller
 kubectl create clusterrolebinding tiller \
   --clusterrole cluster-admin \
