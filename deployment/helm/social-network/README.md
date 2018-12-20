@@ -2,7 +2,36 @@
 
 ## Prerequisites
 
-> add instructions for downloading and setting up helm here
+* A Kubernetes Cluster
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl)
+* [helm](https://docs.helm.sh/using_helm/#installing-helm)
+
+Ensure you have access to Kubernetes:
+
+```bash
+kubectl get nodes
+NAME                                      STATUS    ROLES     AGE       VERSION
+vm-0acae492-fe57-46b8-510f-f95b7b007078   Ready     <none>    7d        v1.11.5
+vm-0f68c2fd-cff9-4c23-4387-2373bd2b4ae3   Ready     <none>    7d        v1.11.5
+vm-ab234512-d336-4f5a-495a-a917657575c1   Ready     <none>    7d        v1.11.5
+```
+
+Install helm tiller (RBAC):
+
+```
+kubectl -n kube-system create serviceaccount tiller
+kubectl create clusterrolebinding tiller \
+  --clusterrole cluster-admin \
+  --serviceaccount=kube-system:tiller
+helm init --service-account=tiller
+```
+
+Clone this repo locally:
+
+```bash
+git clone https://github.com/hyperskale/social-network-example.git
+cd social-network-example
+```
 
 Add the bitnami helm repository which contains the `kafka` and `zookeeper` charts:
 

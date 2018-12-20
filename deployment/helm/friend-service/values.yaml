@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: hyperskale/friend-service
-  tag: latest
+  tag: 0.0.1-SNAPSHOT
   pullPolicy: Always
 
 nameOverride: ""

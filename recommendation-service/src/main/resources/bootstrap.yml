@@ -1,5 +1,5 @@
 spring:
-  profiles: default,development,docker,test
+  profiles: default,development,docker,kubernetes,test
   application:
     name: recommendation-service
 management:

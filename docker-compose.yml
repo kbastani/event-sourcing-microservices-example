@@ -6,7 +6,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       PROMETHEUS_URL: "prometheus-pushgateway:9091"
-    image: kbastani/discovery-service:0.0.1-SNAPSHOT
+    image: hyperskale/discovery-service:0.0.1-SNAPSHOT
     ports:
       - "8761:8761/tcp"
     deploy:
@@ -16,7 +16,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       PROMETHEUS_URL: "prometheus-pushgateway:9091"
-    image: kbastani/edge-service:0.0.1-SNAPSHOT
+    image: hyperskale/edge-service:0.0.1-SNAPSHOT
     ports:
       - "9000:9000/tcp"
     deploy:
@@ -33,7 +33,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       PROMETHEUS_URL: "prometheus-pushgateway:9091"
-    image: kbastani/friend-service:0.0.1-SNAPSHOT
+    image: hyperskale/friend-service:0.0.1-SNAPSHOT
     deploy:
       replicas: 1
       resources:
@@ -48,7 +48,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       PROMETHEUS_URL: "prometheus-pushgateway:9091"
-    image: kbastani/user-service:0.0.1-SNAPSHOT
+    image: hyperskale/user-service:0.0.1-SNAPSHOT
     deploy:
       replicas: 1
       resources:
@@ -63,7 +63,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       PROMETHEUS_URL: "prometheus-pushgateway:9091"
-    image: kbastani/recommendation-service:0.0.1-SNAPSHOT
+    image: hyperskale/recommendation-service:0.0.1-SNAPSHOT
     deploy:
       replicas: 1
       resources:

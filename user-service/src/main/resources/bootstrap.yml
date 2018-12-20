@@ -1,5 +1,5 @@
 spring:
-  profiles: default,development,test,docker
+  profiles: default,development,test,docker,kubernetes
   application:
     name: user-service
 management:

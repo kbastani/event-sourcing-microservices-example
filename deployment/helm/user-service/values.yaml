@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: Always/user-service
-  tag: latest
+  repository: hyperskale/user-service
+  tag: 0.0.1-SNAPSHOT
   pullPolicy: Always
 
 nameOverride: ""

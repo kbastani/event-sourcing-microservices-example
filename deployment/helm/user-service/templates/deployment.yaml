@@ -25,9 +25,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS
-              value: esme-kafka:9092
+              value: {{ .Release.Name}}-kafka:9092
             - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_ZKNODES
-              value: esme-zookeeper
+              value: {{ .Release.Name}}-zookeeper
             - name: SPRING_PROFILES_ACTIVE
               value: kubernetes
           ports:
