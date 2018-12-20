@@ -62,4 +62,17 @@ eureka:
       defaultZone: http://discovery-service:8761/eureka/
 ---
 spring:
+  profiles: kubernetes
+  data:
+    neo4j:
+      uri: "bolt://neo4j:7687"
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: "kafka:29092"
+ribbon.eureka.enabled: false
+eureka.client.enabled: false
+---
+spring:
   profiles: test

@@ -66,6 +66,34 @@ eureka:
     serviceUrl:
       defaultZone: http://discovery-service:8761/eureka/
 ---
+postgres.port: 5432
+postgres.host: friend-db
+postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/
+postgres.database-name: postgres
+postgres.password: example
+postgres.username: postgres
+spring:
+  profiles: kubernetes
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: kafka
+          defaultBrokerPort: 29092
+          zkNodes: zookeeper
+          defaultZkPort: 32181
+  datasource:
+    url: ${postgres.url}
+    data-username: ${postgres.username}
+    data-password: ${postgres.password}
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    url: ${postgres.url}
+    user: ${postgres.username}
+    password: ${postgres.password}
+ribbon.eureka.enabled: false
+eureka.client.enabled: false
+---
 spring:
   profiles: test
 eureka:
