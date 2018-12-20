@@ -1,0 +1,10 @@
+Event Sourcing Microservices Example (esme) Successfully deployed.
+
+1. Run kubectl port forward to access the app:
+
+    $ kubectl -n {{ .Release.Namespace }} port-forward svc/edge-service 9000
+
+2. Check that it is healthy
+
+    $ curl localhost:9000/actuator/health
+    {"status":"UP"}

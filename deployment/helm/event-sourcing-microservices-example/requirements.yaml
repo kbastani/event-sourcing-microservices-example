@@ -1,0 +1,7 @@
+dependencies:
+  - name: kafka
+    version: 1.2.3
+    repository: https://charts.bitnami.com
+    condition: kafka.enabled
+    tags:
+      - kafka
