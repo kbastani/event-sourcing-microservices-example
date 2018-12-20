@@ -23,6 +23,7 @@
         <spring-cloud.version>Greenwich.RC1</spring-cloud.version>
         <spring-data-releasetrain.version>Moore-M1</spring-data-releasetrain.version>
         <docker.user>kbastani</docker.user>
+        <micrometer.version>1.1.0-SNAPSHOT</micrometer.version>
     </properties>
 
     <modules>
@@ -41,6 +42,16 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>${micrometer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_pushgateway</artifactId>
+            <version>0.6.0</version>
         </dependency>
     </dependencies>
 

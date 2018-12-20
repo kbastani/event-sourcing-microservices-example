@@ -57,8 +57,6 @@ curl -X "POST" "http://localhost:9000/user/v1/users" \
   "lastName": "E."
 }' | jq .id`
 
-sleep 5
-
 # Wake up friend service
 curl -i "http://localhost:9000/friend/actuator/info" | jq
 
@@ -66,20 +64,12 @@ curl -i "http://localhost:9000/friend/actuator/info" | jq
 curl -i "http://localhost:9000/recommendation/actuator/info" | jq
 
 curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MH/commands/addFriend?friendId=$ID_MS" | jq
-sleep 1
 curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MS/commands/addFriend?friendId=$ID_KB" | jq
-sleep 1
 curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_SH" | jq
-sleep 1
 curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_EE" | jq
-sleep 1
 curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_MH/commands/addFriend?friendId=$ID_EE" | jq
-sleep 1
 curl -X "POST" "http://localhost:9000/friend/v1/users/$ID_KB/commands/addFriend?friendId=$ID_MJ" | jq
-sleep 1
 
 curl "http://localhost:9000/friend/v1/users/$ID_MH/friends" | jq
-sleep 1
 curl "http://localhost:9000/recommendation/v1/users/$ID_MH/commands/findMutualFriends?friendId=$ID_KB" | jq
-sleep 1
 curl "http://localhost:9000/recommendation/v1/users/$ID_KB/commands/recommendFriends" | jq

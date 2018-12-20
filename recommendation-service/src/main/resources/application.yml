@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: recommendation-service
   cloud:
     stream:
       bindings:

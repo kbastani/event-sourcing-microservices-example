@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: friend-service
   cloud:
     stream:
       bindings:

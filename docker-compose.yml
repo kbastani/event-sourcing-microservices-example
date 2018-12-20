@@ -5,7 +5,8 @@ services:
   discovery-service:
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: kbastani/discovery-service:latest
+      PROMETHEUS_URL: "prometheus-pushgateway:9091"
+    image: kbastani/discovery-service:0.0.1-SNAPSHOT
     ports:
       - "8761:8761/tcp"
     deploy:
@@ -14,32 +15,64 @@ services:
   edge-service:
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: kbastani/edge-service:latest
+      PROMETHEUS_URL: "prometheus-pushgateway:9091"
+    image: kbastani/edge-service:0.0.1-SNAPSHOT
     ports:
       - "9000:9000/tcp"
     deploy:
       replicas: 1
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '1000mb'
+        reservations:
+          cpus: '0.1'
+          memory: '250mb'
 
   friend-service:
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: kbastani/friend-service:latest
+      PROMETHEUS_URL: "prometheus-pushgateway:9091"
+    image: kbastani/friend-service:0.0.1-SNAPSHOT
     deploy:
       replicas: 1
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '1000mb'
+        reservations:
+          cpus: '0.1'
+          memory: '250mb'
 
   user-service:
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: kbastani/user-service:latest
+      PROMETHEUS_URL: "prometheus-pushgateway:9091"
+    image: kbastani/user-service:0.0.1-SNAPSHOT
     deploy:
       replicas: 1
+      resources:
+        limits:
+          memory: '1000mb'
+          cpus: '0.5'
+        reservations:
+          cpus: '0.1'
+          memory: '250mb'
 
   recommendation-service:
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    image: kbastani/recommendation-service:latest
+      PROMETHEUS_URL: "prometheus-pushgateway:9091"
+    image: kbastani/recommendation-service:0.0.1-SNAPSHOT
     deploy:
       replicas: 1
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '1000mb'
+        reservations:
+          cpus: '0.1'
+          memory: '250mb'
 
   kafka:
     environment:

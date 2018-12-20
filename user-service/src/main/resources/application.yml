@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: user-service
   cloud:
     stream:
       bindings:

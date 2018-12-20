@@ -1,8 +1,6 @@
 spring:
   profiles:
     active: development
-  application:
-    name: edge-service
   cloud:
     gateway:
       discovery:
@@ -48,7 +46,6 @@ management:
   endpoint:
     gateway:
       enabled: true
-
 ---
 spring:
   profiles: development
@@ -60,7 +57,6 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-management.endpoints.web.exposure.include: gateway
 ---
 spring:
   profiles: docker
@@ -72,7 +68,6 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://discovery-service:8761/eureka/
-management.endpoints.web.exposure.include: gateway
 ---
 spring:
   profiles: test
