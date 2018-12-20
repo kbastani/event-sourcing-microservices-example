@@ -2,13 +2,15 @@ spring:
   profiles:
     active: development
   cloud:
+    kubernetes:
+      enabled: false
     gateway:
       discovery:
         locator:
           enabled: false
       routes:
-      - id: FRIEND-SERVICE
-        uri: lb://FRIEND-SERVICE
+      - id: friend-service
+        uri: lb://friend-service
         predicates:
         - name: Path
           args:
@@ -18,8 +20,8 @@ spring:
           args:
             regexp: "/friend/(?<remaining>.*)"
             replacement: "/${remaining}"
-      - id: USER-SERVICE
-        uri: lb://USER-SERVICE
+      - id: user-service
+        uri: lb://user-service
         predicates:
         - name: Path
           args:
@@ -29,8 +31,8 @@ spring:
           args:
             regexp: "/user/(?<remaining>.*)"
             replacement: "/${remaining}"
-      - id: RECOMMENDATION-SERVICE
-        uri: lb://RECOMMENDATION-SERVICE
+      - id: recommendation-service
+        uri: lb://recommendation-service
         predicates:
         - name: Path
           args:
@@ -49,6 +51,9 @@ management:
 ---
 spring:
   profiles: development
+  cloud:
+    kubernetes:
+      enabled: false
 eureka:
   instance:
     prefer-ip-address: true
@@ -68,6 +73,30 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://discovery-service:8761/eureka/
+---
+spring:
+  profiles: kubernetes
+  cloud:
+    kubernetes:
+      enabled: true
+      discovery:
+        enabled: true
+      ribbon:
+        enabled: true
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          url-expression: "'http://'+serviceId"
+kubernetes.trust.certificates: true
+management.endpoints.web.exposure.include: gateway,health
+# disable eureka
+ribbon.eureka.enabled: false
+eureka.client.enabled: false
+# kubernetes ribbon client requires a portName for each service
+#friend-service.ribbon.portName: http
+#user-service.ribbon.portName: http
+#recommendation-service.ribbon.portName: http
 ---
 spring:
   profiles: test
