@@ -6,53 +6,57 @@ This project is a practical microservices reference example for demonstrating th
 
 ## Table of Contents
 
--   [Reference Example Overview](#reference-example-overview)
--   [Architecture](#architecture)
-    -   [Microservice Specifications](#microservice-specifications)
-    -   -   [Architecture](#architecture)
-    -   -   [Component-based Architecture](#component-based-architecture)
--   [Docker and Kubernetes](#deploying-to-kubernetes-with-docker-stacks)
--   [Installation](#installation)
-    -   [Pre-requisites](#pre-requisites)
-        -   [How does this all work?](#how-does-this-all-work)
-    -   [Docker Compose Classic (Local)](#docker-compose-classic-local)
-    -   [Docker Stacks (Kubernetes or Swarm)](#docker-stacks-kubernetes-or-swarm)
-    -   [Kubernetes](#deploying-to-kubernetes)
-        -   [Build](#build-and-deploy)
-        -   [Deploy](#ready-to-deploy)
--   [Building a Social Network](#building-a-social-network)
--   [API Gateway](#api-gateway)
--   [Generating a Social Network](#generating-a-social-network)
--   [Commands and Queries](#commands-and-queries)
+-   [Architecture Overview](#architecture-overview)
+    -   [System Diagram](#system-diagram)
+    -   [Container Diagram](#container-diagram)
+    -   [Container Specifications](#container-specifications)
+-   [*Evaluation Scenarios*](#deployment-scenarios)
+    -   [**Desktop Evaluation**](#desktop-evaluation)
+        -   [Docker Desktop Installation](#docker-desktop-installation)
+            -   [Getting Started](#getting-started)
+            -   [Docker Compose Classic (Local)](#docker-compose-classic-local)
+            -   [Docker Stacks (Kubernetes or Swarm)](#docker-stacks-kubernetes-or-swarm)
+            -   [Deploying to Kubernetes](#deploying-to-kubernetes)
+                -   [Docker Build](#build-and-deploy)
+                -   [Docker Deploy](#deploy-with-docker)
+    -   [**Hyperscale Evaluation**](#hyperscale-evaluation)
+        -   [Helm Installation](#helm-installation)
+            -   [Adding Bitnami](#adding-bitnami)
+        -   [Update Dependencies](#update-dependencies)
+        -   [Helm Deploy](#helm-deploy)
+-   [Running the Social Network](#running-a-social-network)
+    -   [API Gateway](#api-gateway)
+    -   [Generating Data](#generating-a-social-network)
     -   [Event Sourcing and CQRS](#event-sourcing-and-cqrs)
-    -   [Finding Mutual Friends](#finding-mutual-friends)
-    -   [Recommending New Friends](#recommending-new-friends)
+        -   [Finding Mutual Friends](#finding-mutual-friends)
+        -   [Recommending New Friends](#recommending-new-friends)
 -   [Conventional Best Practices](#conventional-best-practices)
     -   [Domain Services](#domain-services)
     -   [Aggregate Services](#aggregate-services)
+-   [License](#license)
 
-## Reference Example Overview
+## Architecture Overview
 
 For this example, I've chosen to build a social network using microservices. A social network's domain graph provides a simple model that has a high degree of complexity as friendships are established between users. The complexity of a graph can force microservice teams to become confused about the ownership of complicated features, such as generating friend recommendations for a user. Without the right architectural best practices, teams may resort to sophisticated caching techniques or ETLs—or worse: generating recommendations using HTTP calls that exponentially decrease performance.
 
 <img src="https://imgur.com/Uqd7SHE.png" width="400" alt="Domain graph of users and friends">
 <br/>
 
-## Architecture
+### System Diagram
 
 In the architecture diagram below, you'll see a component diagram that describes an event-driven microservices architecture that contains two domain services and one aggregate service (a read-only projection of replicated domain data provided as a service).
 
 <img src="https://imgur.com/DUEhtBH.png" width="480" alt="Event sourcing architecture diagram">
 <br/>
 
-### Component-based Architecture
+### Container Diagram
 
 The diagram below is a more comprehensive view of the actual architecture, demonstrating the end-to-end reactive flows from the API gateway to the domain services to the database.
 
 <img src="https://imgur.com/vEkKuJz.png" width="700" alt="Component-based architecture">
 <br/>
 
-### Microservice Specifications
+### Container Specifications
 
 The reference example has two microservices, and one read-only replica of domain data that is stitched together from events streamed into Apache Kafka. This means that we can hydrate a different database technology with each event from multiple different microservices. By running these events in order, we can create one eventually consistent read-only projection of domain data stored in separate systems of record!
 
@@ -66,13 +70,22 @@ With this approach, we can get the best of both worlds—the large shared databa
 | _[Discovery](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/discovery-service)_           | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [N/A](https://docs.spring.io/spring-data/neo4j/docs/5.1.3.RELEASE/reference/html/)       | [N/A](https://kafka.apache.org/)          | _Netflix Eureka_                 |
 | _[Gateway](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/edge-service)_                  | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [N/A](https://docs.spring.io/spring-data/neo4j/docs/5.1.3.RELEASE/reference/html/)       | [N/A](https://kafka.apache.org/)          | _Spring Cloud Gateway_           |
 
-## Deploying to Kubernetes with Docker Stacks
+## Evaluation Scenarios
+
+Our goal is to provide two types of evaluation scenarios for our users to deploy this example to Kubernetes.
+
+-   [Desktop Evaluation](#desktop-evaluation)
+    -   The `docker-for-desktop` installation is for users who are looking to get up and running with a desktop Kubernetes cluster to evaluate the various Spring technologies included in this reference example.
+-   [Hyperscale Evaluation](#hyperscale-evaluation)
+    -   The `hyperscale` installation is for users who are looking to run a hyper-scalable distributed system with a production Kubernetes cluster that is deployed to a public cloud provider. In this scenario an operator would be evaluating how to deploy and manage a distributed systems architecture (such as microservices) using Kubernetes. Load simulation modules will be provided to test the load on the system to give operators a realistic evaluation of a production-grade cloud-native application deployed with Kubernetes.
+
+## Desktop Evaluation
 
 This is the first reference example that I've put together that uses Docker Compose to deploy and operate containers on Kubernetes.
 
 Docker Desktop Community v2.0 recently released an experimental feature that allows you to use Docker Compose files to deploy and operate distributed systems on any Kubernetes cluster (locally or remote). I think that this is a significant advancement for developers looking to get up and running with Kubernetes and microservices as quickly as possible. Before this feature, (over the last five years), developers with Windows-based development environments found it difficult to run my examples using Docker. I'm proud to say that those days are now over.
 
-## Installation
+### Docker Desktop Installation
 
 First, if you have not already, please download _Docker Desktop Community Edition_ for your operating system of choice. You can choose between _Windows or Mac_ from Docker's download page.
 
@@ -80,7 +93,7 @@ First, if you have not already, please download _Docker Desktop Community Editio
 
 _Please make sure that you are using version 2.0+ of Docker Desktop._
 
-### Pre-requisites
+### Getting Started
 
 You'll need to do the following pre-requisites before you can use Docker Stacks to perform Kubernetes deployments using Docker Compose files.
 
@@ -92,12 +105,6 @@ Pre-requisites:
 -   Turn on `Experimental Features` (From Docker Desktop)
 
 You can quickly tackle the last two pre-requisites by configuring the Docker preferences pane—which can be found from the menu in the Docker Desktop system tray.
-
-#### How does this all work?
-
-Docker Desktop will use your `kubectl` configuration to provide you a list of Kubernetes clusters that you can target for a stack deployment using a Docker Compose file. By default, Docker Desktop gives you a ready-to-go Kubernetes cluster called `docker-for-desktop-cluster` that runs locally. Or you can set up your local cluster using `mini-kube`.
-
-Once you have finished the pre-requisites, you should adjust your Docker system memory to roughly 8 GiB. You can also find these settings in the Docker Desktop system tray.
 
 ### Docker Compose Classic (Local)
 
@@ -117,6 +124,10 @@ docker-compose ps
 If all of the services have successfully started, that means you're ready to start playing with the application. The next section will focus on using Docker Stacks to deploy this example to a Kubernetes cluster.
 
 ### Docker Stacks (Kubernetes or Swarm)
+
+Docker Desktop will use your `kubectl` configuration to provide you a list of Kubernetes clusters that you can target for a stack deployment using a Docker Compose file. By default, Docker Desktop gives you a ready-to-go Kubernetes cluster called `docker-for-desktop-cluster` that runs locally. Or you can set up your local cluster using `mini-kube`.
+
+Once you have finished the pre-requisites, you should adjust your Docker system memory to roughly 8 GiB. You can also find these settings in the Docker Desktop system tray.
 
 Running Docker Compose locally brought us an easy way to spin up a distributed system on a local machine. This has been an excellent feature for teaching developers how to build distributed systems. Eventually, for more extensive examples, it becomes unfeasible to use Docker Compose to run distributed systems on your laptop. The problem posed by running Docker Compose locally is that most developers often do not have the system memory available to run some of my more complex examples performantly.
 
@@ -201,10 +212,6 @@ docker-compose -f ./deployment/docker/docker-compose-build.yml \
 
 After the docker images are successfully uploaded to your Docker Hub account, you're all ready to deploy this distributed system to Kubernetes using Docker Stacks.
 
-#### Deploy with Helm
-
-see [Install Social Network via Helm](deployment/helm/social-network/README.md) for instructions on using the include Helm chart to deploy.  Otherwise you can try to use docker...
-
 #### Deploy with Docker
 
 Make sure that your `kubectl` is targeting the desired Kubernetes cluster you would like to deploy to. You can select this using the Docker for Mac/Desktop tray icon before proceeding.
@@ -246,7 +253,58 @@ user-service-6d7fb74ffc-p8fg4             1/1       Running   0          1m
 zookeeper-5fd96b9b9f-8dfw8                1/1       Running   0          1m
 ```
 
-## Building a Social Network
+## Hyperscale Evaluation
+
+Helm is a package manager for Kubernetes that can be used to deploy a distributed system. Each [Hyperskale](http://www.github.com/hyperskale) example application has a Helm package to help you get up and running with deploying a hyper-scalable distributed system example to Kubernetes as fast as possible.
+
+This tutorial is for users who are wanting to deploy the hyper-scalable production version of our social network example to a remote Kubernetes cluster.
+
+### Helm Installation
+
+Please follow the instructions for installing Helm at <https://docs.helm.sh/using_helm/#installing-helm>.
+
+### Adding Bitnami
+
+Add the bitnami Helm repository which contains the `kafka` and `zookeeper` Helm charts required for this example.
+
+```bash
+helm repo add bitnami https://charts.bitnami.com
+```
+
+### Update Dependencies
+
+Run a few helm commands to ensure all dependent charts are available:
+
+```bash
+helm dep update deployment/helm/event-sourcing-microservices-example
+helm dep update deployment/helm/friend-service
+helm dep update deployment/helm/user-service
+helm dep update deployment/helm/recommendation-service
+```
+
+### Helm Deployment
+
+Once Helm is set up, deploying the distributed system to any Kubernetes cluster is quite simple.
+
+```bash
+helm install --namespace esme --name esme --set fullNameOverride=esme \
+  deployment/helm/event-sourcing-microservices-example
+```
+
+There is no application-level security for the example app at this point, therefore rather than exposing the edge
+to the internet we can utilize `kubectl port-forward` to access the app.
+
+```bash
+kubectl --namespace esme port-forward svc/edge-service 9000
+```
+
+Now, run the following script to test adding users and friend relationships to the social network.
+
+```bash
+sh ./deployment/sbin/generate-social-network.sh
+```
+
+## Running a Social Network
 
 Since we've deployed the distributed system to Kubernetes, we can start exploring the functionality of the social networking backend. For extra credit, you can add in a service mesh, such as Istio, which uses sidecars that adds application platform functionality similar to what you would find in Spring Cloud. Not contained in this example, Istio will provide you with distributed tracing and metrics right out of the box. Since we are using Spring Cloud Eureka in this example, there won't be much of a need to use Istio's other favorite feature: service discovery.
 
@@ -277,7 +335,7 @@ The _Edge Service_ application is an API gateway that simplifies, combines, and 
 -   **Friend Recommendation**
     -   GET <http://localhost:9000/recommendation/v1/users/{0}/commands/recommendFriends>
 
-### Generating a Social Network
+### Generating Data
 
 Many thanks goes out to [Michael Simons](http://www.twitter.com/rotnroll666) for contributing multiple fixes and improvements to this repository. One of those improvements was a script to generate test data that you can use to automate the APIs listed above. Once your cluster is up and running, navigate to the `./deployment/sbin` directory. This directory contains a shell script named `generate-social-network.sh`. To make sure there is no funny business going on, you're welcome to run the command `cat ./deployment/sbin/generate-social-network.sh`. You'll see the contents of the shell script, which is written in BASH and will automate and test each of the APIs in the order listed in the last section.
 
@@ -313,13 +371,11 @@ You should see the following result.
 
 Congratulations! You've successfully deployed a distributed system to Kubernetes using Docker Compose. I've been waiting for this feature for several years. I could not be more excited about how this feature will make it easier for developers to test their distributed systems using Kubernetes and Docker. The next sections in this tutorial are purely architectural. If you're interested in learning more about how the social network works, please feel free to read on.
 
-## Commands and Queries
+### Event Sourcing and CQRS
 
 CQRS is a way to structure your REST APIs so that stateful business logic can be captured as a sequence of events. Simple CRUD operations have dominated web services for the better part of the last two decades. With microservices, we should make sure we structure our REST APIs in the same way that we would build a command-line application. Can you imagine trying to create a CLI application using only REST APIs that implemented CRUD?
 
 For each domain aggregate that we have in our microservice applications, we must only use command APIs to mutate state as a result of how business logic applies to domain data. As a result, the aggregates get transformed into a query model that is used for HTTP GET operations.
-
-### Event Sourcing and CQRS
 
 The _User Service_ is responsible for storing, exposing, and managing the data of a social network's users. The query model for a user's profile is created by applying commands in the form of business logic that is triggered by a REST API. Each command is applied to a `User` object and will generate a domain event that describes what happened as a result.
 
