@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: kbastani/user-service
+  repository: Always/user-service
   tag: latest
   pullPolicy: Always
 

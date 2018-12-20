@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: kbastani/recommendation-service
+  repository: hyperskale/recommendation-service
   tag: latest
   pullPolicy: Always
 

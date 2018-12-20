@@ -203,7 +203,7 @@ After the docker images are successfully uploaded to your Docker Hub account, yo
 
 #### Deploy with Helm
 
-see [deployment/helm/event-sourcing-microservices-example/README.md](Install ESME via Helm) for instructions on using the include Helm chart to deploy.  Otherwise you can try to use docker...
+see [Install Social Network via Helm](deployment/helm/social-network/README.md) for instructions on using the include Helm chart to deploy.  Otherwise you can try to use docker...
 
 #### Deploy with Docker
 

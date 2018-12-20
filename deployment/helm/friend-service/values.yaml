@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: kbastani/friend-service
+  repository: hyperskale/friend-service
   tag: latest
   pullPolicy: Always
 
