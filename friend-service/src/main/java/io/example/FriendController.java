@@ -7,12 +7,8 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
-import reactor.core.publisher.Operators;
-import rx.Scheduler;
 
 import java.util.Optional;
 import java.util.logging.Level;
@@ -70,27 +66,26 @@ public class FriendController {
         // This operation is a reactive application-level dual-write, which requires a 2-phase workflow
         return friendRepository.getFriend(userId, friendId).doOnNext(f -> {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Friendship already exists");
-        }).switchIfEmpty(friendRepository.save(friend).doOnNext((f) -> {
+        }).switchIfEmpty(friendRepository.save(friend).doOnError((ex -> {
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        }))).doOnNext((f) -> {
             // If the database operation fails, an event should not be sent to the message broker
-            log.info("Database operation for friend request is pending a dual-write to Kafka: "
-                    + friend.toString());
+            log.info(String.format("Database operation for friend request is pending a dual-write to Kafka: %s",
+                    friend.toString()));
 
             try {
                 // Attempt to perform a reactive dual-write to Kafka by sending a domain event
                 eventStream.output().send(MessageBuilder
                         .withPayload(new FriendEvent(new FriendMessage(f.getUserId(), f.getFriendId()),
                                 EventType.FRIEND_ADDED)).build());
-
                 // The application dual-write was a success and the database transaction can commit
-
             } catch (Exception ex) {
-                log.log(Level.FINER,
-                        "Friend request dual-write to Kafka failed: " + friend.toString());
+                log.log(Level.FINER, String.format("Friend request dual-write to Kafka failed: %s", friend.toString()));
 
                 // Rollback the transaction
                 throw new RuntimeException(ex.getMessage(), ex);
             }
-        }));
+        });
     }
 
     /**
