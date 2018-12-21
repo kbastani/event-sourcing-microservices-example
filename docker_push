@@ -1,4 +1,3 @@
 #!/bin/bash
-echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-docker-compose -f ./deployment/docker/docker-compose-build.yml push
-    edge-service discovery-service friend-service user-service recommendation-service
+echo "$DOCKER_PASSWORD" | docker login -username "$DOCKER_USERNAME" --password-stdin
+/usr/local/bin/docker-compose -f ./deployment/docker/docker-compose-build.yml push edge-service discovery-service friend-service user-service recommendation-service
