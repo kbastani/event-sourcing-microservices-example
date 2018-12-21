@@ -19,6 +19,7 @@ spec:
         app: {{ include "recommendation-service.name" . }}
         release: {{ .Release.Name }}
     spec:
+      serviceAccountName: {{ template "recommendation-service.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -30,6 +31,10 @@ spec:
               value: "bolt://{{ .Release.Name}}-{{ .Values.neo4j.nameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:7687"
             - name: SPRING_PROFILES_ACTIVE
               value: kubernetes
+            - name: KUBERNETES_TRUST_CERTIFICATES
+              value: "true"
+            - name: PROMETHEUS_URL
+              value: {{ .Release.Name}}-prometheus-pushgateway:9091
           ports:
             - name: http
               containerPort: 8110

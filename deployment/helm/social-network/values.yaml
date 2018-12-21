@@ -21,3 +21,11 @@ user-service:
 
 edge-service:
   fullnameOverride: edge-service
+
+prometheus:
+  enabled: true
+  fullnameOverride: prometheus
+  nameOverride: prometheus
+  server:
+    persistentVolume:
+      enabled: false

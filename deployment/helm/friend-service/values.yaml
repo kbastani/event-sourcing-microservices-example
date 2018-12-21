@@ -43,6 +43,7 @@ affinity: {}
 
 postgresql:
   enabled: true
+  nameOverride: friend-db
   fullnameOverride: friend-db
   postgresqlPassword: example
   persistence:

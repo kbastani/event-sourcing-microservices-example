@@ -19,6 +19,7 @@ spec:
         app: {{ include "user-service.name" . }}
         release: {{ .Release.Name }}
     spec:
+      serviceAccountName: {{ template "user-service.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -30,6 +31,10 @@ spec:
               value: {{ .Release.Name}}-zookeeper
             - name: SPRING_PROFILES_ACTIVE
               value: kubernetes
+            - name: KUBERNETES_TRUST_CERTIFICATES
+              value: "true"
+            - name: PROMETHEUS_URL
+              value: {{ .Release.Name}}-prometheus-pushgateway:9091
           ports:
             - name: http
               containerPort: 8120
