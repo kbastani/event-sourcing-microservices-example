@@ -256,7 +256,7 @@ zookeeper-5fd96b9b9f-8dfw8                1/1       Running   0          1m
 
 Helm is a package manager for Kubernetes that can be used to deploy a distributed system. This repository will be moving to a new organization called [Hyperskale](http://www.github.com/hyperskale). Each example application in this new org will contain a Helm package to help you get up and running with deploying a hyper-scalable distributed system to Kubernetes as fast as possible.
 
-Thanks to [Paul Czarkowski](http://www.twitter.com/pczar), this example has a fully functional Helm chart package and tutorial for users who are wanting to deploy the hyper-scalable production version of our social network example to any Kubernetes cluster. This Helm chart comes complete with an HA Kafka cluster and metrics aggregation with Prometheus. 
+Thanks to [Paul Czarkowski](http://www.twitter.com/pczarkowski), this example has a fully functional Helm chart package and tutorial for users who are wanting to deploy the hyper-scalable production version of our social network example to any Kubernetes cluster. This Helm chart comes complete with an HA Kafka cluster and metrics aggregation with Prometheus. 
 
 ### Helm Installation
 
