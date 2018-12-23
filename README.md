@@ -290,6 +290,12 @@ git clone https://github.com/hyperskale/social-network-example.git
 cd social-network-example
 ```
 
+Add the bitnami helm repository which contains the `kafka` and `zookeeper` charts:
+
+```bash
+helm repo add bitnami https://charts.bitnami.com
+```
+
 ### Update Dependencies
 
 Run a few helm commands to ensure all dependent charts are available:
