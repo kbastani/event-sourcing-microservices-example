@@ -13,8 +13,6 @@ import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.util.Logger;
-import reactor.util.Loggers;
 
 import java.util.Arrays;
 
@@ -29,8 +27,6 @@ public class UserControllerTest {
     @ClassRule
     public static EmbeddedKafkaRule embeddedKafka =
             new EmbeddedKafkaRule(1, true, OUTPUT_TOPIC);
-
-    private final Logger LOG = Loggers.getLogger(UserControllerTest.class);
 
     @Autowired
     private WebTestClient webClient;
@@ -69,7 +65,8 @@ public class UserControllerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void after() {
+        embeddedKafka.after();
     }
 
 
