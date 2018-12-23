@@ -26,15 +26,13 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS
-              value: {{ .Release.Name}}-kafka:9092
-            - name: SPRING_DATA_NEO4J_URI
-              value: "bolt://{{ .Release.Name}}-{{ .Values.neo4j.nameOverride }}.{{ .Release.Namespace }}.svc.cluster.local:7687"
+              value: kafka-headless:9092,kafka:9092
             - name: SPRING_PROFILES_ACTIVE
               value: kubernetes
             - name: KUBERNETES_TRUST_CERTIFICATES
               value: "true"
             - name: PROMETHEUS_URL
-              value: {{ .Release.Name}}-prometheus-pushgateway:9091
+              value: "{{ .Release.Name}}-prometheus-pushgateway:9091"
           ports:
             - name: http
               containerPort: 8110

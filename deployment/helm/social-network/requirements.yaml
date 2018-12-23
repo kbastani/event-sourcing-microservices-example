@@ -1,7 +1,7 @@
 dependencies:
   - name: kafka
-    version: 1.2.3
-    repository: https://charts.bitnami.com
+    version: 0.13.3
+    repository: https://kubernetes-charts-incubator.storage.googleapis.com/
     condition: kafka.enabled
   - name: prometheus
     version: 8.3.0

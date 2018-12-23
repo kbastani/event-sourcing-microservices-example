@@ -8,7 +8,7 @@ spring:
           contentType: 'application/json'
           consumer:
             durableSubscription: false
-            concurrency: 5
+            concurrency: 1
             instanceIndex: 1
         friend:
           destination: friend
@@ -16,7 +16,7 @@ spring:
           contentType: 'application/json'
           consumer:
             durableSubscription: false
-            concurrency: 5
+            concurrency: 1
             instanceIndex: 1
   profiles:
     active: development
@@ -27,7 +27,7 @@ logging:
     root: INFO
     kafka.*: WARN
     org.springframework.*: INFO
-    org.apache.kafka.*: ERROR
+    org.apache.kafka.*: WARN
 ---
 spring:
   profiles: development
@@ -77,12 +77,15 @@ spring:
   profiles: kubernetes
   data:
     neo4j:
-      uri: "bolt://neo4j:7687"
+      uri: "bolt://social-network-neo4j:7687"
   cloud:
+    kubernetes.discovery.enabled: true
+    kubernetes.ribbon.enabled: true
+    kubernetes.enabled: true
     stream:
       kafka:
         binder:
-          brokers: "kafka:29092"
+          brokers: "PLAINTEXT://social-network-kafka:9092"
 ribbon.eureka.enabled: false
 eureka.client.enabled: false
 ---

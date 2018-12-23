@@ -16,7 +16,8 @@ logging:
     org.springframework.*: INFO
     org.neo4j.*: INFO
     com.memorynotfound: DEBUG
-    org.apache.kafka.*: ERROR
+    org.apache.kafka.*: WARN
+    liquibase.integration.spring.SpringLiquibase: ERROR
 ---
 postgres.port: 5432
 postgres.host: localhost
@@ -90,18 +91,20 @@ postgres.username: postgres
 spring:
   profiles: kubernetes
   cloud:
+    kubernetes.discovery.enabled: true
+    kubernetes.ribbon.enabled: true
+    kubernetes.enabled: true
     stream:
       kafka:
         binder:
-          brokers: kafka
-          defaultBrokerPort: 29092
-          zkNodes: zookeeper
-          defaultZkPort: 32181
+          brokers: "PLAINTEXT://social-network-kafka:9092"
   datasource:
     url: ${postgres.url}
     data-username: ${postgres.username}
     data-password: ${postgres.password}
     driver-class-name: org.postgresql.Driver
+    xa:
+      data-source-class-name: org.postgresql.xa.PGXADataSource
   liquibase:
     url: ${postgres.url}
     user: ${postgres.username}

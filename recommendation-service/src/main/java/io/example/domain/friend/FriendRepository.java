@@ -5,10 +5,8 @@ import io.example.domain.friend.entity.RankedUser;
 import io.example.domain.user.entity.User;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Repository for managing {@link User} data and friend connections.
@@ -32,7 +30,7 @@ public interface FriendRepository extends Neo4jRepository<Friend, Long> {
             "WHERE userA.userId={0} AND userB.userId={1}\n" +
             "MATCH (userA)-[:FRIEND]-(fof:User)-[:FRIEND]-(userB)\n" +
             "RETURN DISTINCT fof")
-    List<User> mutualFriends(Long fromId, Long toId);
+    Streamable<User> mutualFriends(Long fromId, Long toId);
 
     @Query("MATCH (me:User {userId: {0}})-[:FRIEND]-(friends),\n" +
             "\t(nonFriend:User)-[:FRIEND]-(friends)\n" +
@@ -40,5 +38,5 @@ public interface FriendRepository extends Neo4jRepository<Friend, Long> {
             "WITH nonFriend, count(nonFriend) as mutualFriends\n" +
             "RETURN nonFriend as User, mutualFriends as Weight\n" +
             "ORDER BY Weight DESC")
-    ArrayList<RankedUser> recommendedFriends(Long userId);
+    Streamable<RankedUser> recommendedFriends(Long userId);
 }

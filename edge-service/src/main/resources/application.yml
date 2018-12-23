@@ -49,6 +49,11 @@ management:
   endpoint:
     gateway:
       enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    enabled-by-default: true
 logging:
   level:
     root: INFO
@@ -99,7 +104,6 @@ spring:
           enabled: true
           url-expression: "'http://'+serviceId"
 kubernetes.trust.certificates: true
-management.endpoints.web.exposure.include: gateway,health
 # disable eureka
 ribbon.eureka.enabled: false
 eureka.client.enabled: false

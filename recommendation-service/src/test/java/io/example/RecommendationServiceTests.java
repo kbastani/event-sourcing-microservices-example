@@ -9,8 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
@@ -19,9 +17,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.SignalType;
+import reactor.util.Loggers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -30,7 +31,7 @@ public class RecommendationServiceTests {
 
     private static final String OUTPUT_TOPIC = "embeddedOutputTest";
 
-    private static final Logger LOG = LoggerFactory.getLogger(RecommendationServiceTests.class);
+    private static final reactor.util.Logger LOG = Loggers.getLogger(RecommendationServiceTests.class);
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -84,13 +85,14 @@ public class RecommendationServiceTests {
         friendRepository.addFriend(john.getId(), alice.getId());
         friendRepository.addFriend(paul.getId(), alice.getId());
 
-        ArrayList<RankedUser> rankedUser = friendRepository.recommendedFriends(1L);
+        RankedUser[] rankedUser = friendRepository.recommendedFriends(1L).toList().toArray(RankedUser[]::new);
 
-        LOG.info(Arrays.toString(rankedUser.toArray()), "Friend recommendation output");
+        Flux.fromArray(rankedUser).map(RankedUser::toString).log(LOG, Level.INFO, true, SignalType.ON_NEXT)
+                .subscribe();
 
         Assert.notEmpty(rankedUser, "Friend recommendation must not return an empty list or null");
 
-        org.junit.Assert.assertArrayEquals(rankedUser.toArray(),
+        org.junit.Assert.assertArrayEquals(rankedUser,
                 new RankedUser[]{new RankedUser(ringo, 2),
                         new RankedUser(alice, 2),
                         new RankedUser(george, 1)});
