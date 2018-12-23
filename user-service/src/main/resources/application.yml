@@ -83,10 +83,10 @@ eureka:
 ---
 postgres.port: 5432
 postgres.host: user-db
-postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/
 postgres.database-name: postgres
-postgres.username: postgres
+postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/${postgres.database-name}
 postgres.password: example
+postgres.username: postgres
 spring:
   profiles: kubernetes
   cloud:

@@ -48,7 +48,7 @@ eureka:
 ---
 postgres.port: 5432
 postgres.host: friend-db
-postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/
+postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/${postgres.database-name}
 postgres.database-name: postgres
 spring:
   profiles: docker
@@ -68,6 +68,8 @@ spring:
     data-username: postgres
     data-password: example
     driver-class-name: org.postgresql.Driver
+    xa:
+      data-source-class-name: org.postgresql.xa.PGXADataSource
   liquibase:
     url: ${postgres.url}
     user: postgres
@@ -83,8 +85,8 @@ eureka:
 ---
 postgres.port: 5432
 postgres.host: friend-db
-postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/
 postgres.database-name: postgres
+postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}
 postgres.password: example
 postgres.username: postgres
 spring:

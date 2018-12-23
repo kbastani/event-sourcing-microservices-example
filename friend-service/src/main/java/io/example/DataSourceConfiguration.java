@@ -42,6 +42,9 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
     @Value("${spring.application.name}")
     private String applicationName;
 
+    @Value("${postgres.url")
+    private String url;
+
     private DataSourceProperties dataSourceProperties;
 
     DataSourceConfiguration(DataSourceProperties dataSourceProperties) {
@@ -65,12 +68,11 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
                 .password(dataSourceProperties.getDataPassword()).build());
     }
 
-
     @Bean
     @ConfigurationProperties("spring.datasource")
     @LiquibaseDataSource
     public DataSource dataSource(DataSourceProperties properties) {
-        return new SingleConnectionDataSource(properties.getUrl(),
+        return new SingleConnectionDataSource(url,
                 properties.getDataUsername(), properties.getDataPassword(), true);
     }
 }
