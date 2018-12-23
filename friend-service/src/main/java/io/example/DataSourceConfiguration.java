@@ -27,7 +27,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableR2dbcRepositories
-@Profile({"development", "docker", "kubernetes"})
+@Profile({"kubernetes", "docker", "development"})
 public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
 
     @Value("${postgres.host}")
@@ -41,9 +41,6 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
 
     @Value("${spring.application.name}")
     private String applicationName;
-
-    @Value("${postgres.url")
-    private String url;
 
     private DataSourceProperties dataSourceProperties;
 
@@ -68,11 +65,12 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
                 .password(dataSourceProperties.getDataPassword()).build());
     }
 
+
     @Bean
     @ConfigurationProperties("spring.datasource")
     @LiquibaseDataSource
     public DataSource dataSource(DataSourceProperties properties) {
-        return new SingleConnectionDataSource(url,
+        return new SingleConnectionDataSource(properties.getUrl(),
                 properties.getDataUsername(), properties.getDataPassword(), true);
     }
 }

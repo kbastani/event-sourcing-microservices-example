@@ -86,7 +86,7 @@ eureka:
 postgres.port: 5432
 postgres.host: friend-db
 postgres.database-name: postgres
-postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}
+postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/${postgres.database-name}
 postgres.password: example
 postgres.username: postgres
 spring:
