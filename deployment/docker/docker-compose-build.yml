@@ -12,11 +12,11 @@ services:
 
   friend-service:
     build: .
-    image: hyperskale/friend-service:0.0.1-SNAPSHOT
+    image: hyperskale/friend-service:0.0.2-SNAPSHOT
 
   user-service:
     build: .
-    image: hyperskale/user-service:0.0.1-SNAPSHOT
+    image: hyperskale/user-service:0.0.2-SNAPSHOT
 
   recommendation-service:
     build: .

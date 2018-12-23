@@ -64,11 +64,11 @@ With this approach, we can get the best of both worlds—the large shared databa
 
 | Service Name                                                                                                            | Spring Boot                                                                                  | Spring Cloud                                                                                        | ORM                                                                                      | Messaging                                 | Service Type                     |
 | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------- | -------------------------------- |
-| _[Friend](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/friend-service)_                 | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [R2DBC](https://docs.spring.io/spring-data/r2dbc/docs/1.0.0.M1/reference/html/)          | [Apache Kafka](https://kafka.apache.org/) | [Domain](#domain-services)       |
-| _[User](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/user-service)_                     | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [R2DBC](https://docs.spring.io/spring-data/r2dbc/docs/1.0.0.M1/reference/html/)          | [Apache Kafka](https://kafka.apache.org/) | [Domain](#domain-services)       |
-| _[Recommendation](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/recommendation-service)_ | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [Neo4j OGM](https://docs.spring.io/spring-data/neo4j/docs/5.1.3.RELEASE/reference/html/) | [Apache Kafka](https://kafka.apache.org/) | [Aggregate](#aggregate-services) |
-| _[Discovery](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/discovery-service)_           | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [N/A](https://docs.spring.io/spring-data/neo4j/docs/5.1.3.RELEASE/reference/html/)       | [N/A](https://kafka.apache.org/)          | _Netflix Eureka_                 |
-| _[Gateway](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/edge-service)_                  | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [N/A](https://docs.spring.io/spring-data/neo4j/docs/5.1.3.RELEASE/reference/html/)       | [N/A](https://kafka.apache.org/)          | _Spring Cloud Gateway_           |
+| *[Friend](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/friend-service)*                 | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [R2DBC](https://docs.spring.io/spring-data/r2dbc/docs/1.0.0.M1/reference/html/)          | [Apache Kafka](https://kafka.apache.org/) | [Domain](#domain-services)       |
+| *[User](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/user-service)*                     | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [R2DBC](https://docs.spring.io/spring-data/r2dbc/docs/1.0.0.M1/reference/html/)          | [Apache Kafka](https://kafka.apache.org/) | [Domain](#domain-services)       |
+| *[Recommendation](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/recommendation-service)* | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [Neo4j OGM](https://docs.spring.io/spring-data/neo4j/docs/5.1.3.RELEASE/reference/html/) | [Apache Kafka](https://kafka.apache.org/) | [Aggregate](#aggregate-services) |
+| *[Discovery](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/discovery-service)*           | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [N/A](https://docs.spring.io/spring-data/neo4j/docs/5.1.3.RELEASE/reference/html/)       | [N/A](https://kafka.apache.org/)          | *Netflix Eureka*                 |
+| *[Gateway](https://github.com/kbastani/event-sourcing-microservices-example/tree/master/edge-service)*                  | [2.1.1.RELEASE](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) | [Greenwich.RC1](https://cloud.spring.io/spring-cloud-static/Greenwich.RC1/single/spring-cloud.html) | [N/A](https://docs.spring.io/spring-data/neo4j/docs/5.1.3.RELEASE/reference/html/)       | [N/A](https://kafka.apache.org/)          | *Spring Cloud Gateway*           |
 
 ## Evaluation Scenarios
 
@@ -87,11 +87,11 @@ Docker Desktop Community v2.0 recently released an experimental feature that all
 
 ### Docker Desktop Installation
 
-First, if you have not already, please download _Docker Desktop Community Edition_ for your operating system of choice. You can choose between _Windows or Mac_ from Docker's download page.
+First, if you have not already, please download *Docker Desktop Community Edition* for your operating system of choice. You can choose between *Windows or Mac* from Docker's download page.
 
 -   <https://www.docker.com/products/docker-desktop>
 
-_Please make sure that you are using version 2.0+ of Docker Desktop._
+*Please make sure that you are using version 2.0+ of Docker Desktop.*
 
 ### Getting Started
 
@@ -165,20 +165,20 @@ The current configuration is setup to build, push, and deploy the docker compose
 
 To make running the example easy, I've provided a few command-line scripts that will replace my Docker Hub username in the multiple configuration files in this project. Before continuing forward, make sure to run each of the following commands in order.
 
-First, create an environment variable called `$username` by replacing the text `replace` with your Docker Hub username. _After executing this command, you can run the following commands without replacing any syntax._
+First, create an environment variable called `$username` by replacing the text `replace` with your Docker Hub username. *After executing this command, you can run the following commands without replacing any syntax.*
 
 ```bash
 export username="replace"
 ```
 
-_This next command replaces all instances of my username in the main docker compose file._
+*This next command replaces all instances of my username in the main docker compose file.*
 
 ```bash
 sed -i '' -e 's/kbastani/'$username'/g' \
     ./docker-compose.yml
 ```
 
-_This next command replaces all instances of my username in another Docker Compose file that is meant for **pushing** the compiled containers to Docker Hub._
+*This next command replaces all instances of my username in another Docker Compose file that is meant for **pushing** the compiled containers to Docker Hub.*
 
 ```bash
 sed -i '' -e 's/kbastani/'$username'/g' \
@@ -316,7 +316,7 @@ You should see that each of the microservices has registered with Eureka. You wo
 
 ### API Gateway
 
-The _Edge Service_ application is an API gateway that simplifies, combines, and secures access to the potentially many different REST APIs exposed by different microservices. For our simple social networking backend, we have a few simple APIs exposed by the gateway.
+The *Edge Service* application is an API gateway that simplifies, combines, and secures access to the potentially many different REST APIs exposed by different microservices. For our simple social networking backend, we have a few simple APIs exposed by the gateway.
 
 -   **Create User**
     -   POST <http://localhost:9000/user/v1/users>
@@ -359,7 +359,7 @@ open http://localhost:7474
 
 That should open up the Neo4j browser, and allow you to run a Cypher query. Run the following query and hit CTRL+ENTER.
 
-```text
+```cql
 MATCH (n)
 OPTIONAL MATCH (n)-[r]-()
 RETURN n, r
@@ -377,17 +377,17 @@ CQRS is a way to structure your REST APIs so that stateful business logic can be
 
 For each domain aggregate that we have in our microservice applications, we must only use command APIs to mutate state as a result of how business logic applies to domain data. As a result, the aggregates get transformed into a query model that is used for HTTP GET operations.
 
-The _User Service_ is responsible for storing, exposing, and managing the data of a social network's users. The query model for a user's profile is created by applying commands in the form of business logic that is triggered by a REST API. Each command is applied to a `User` object and will generate a domain event that describes what happened as a result.
+The *User Service* is responsible for storing, exposing, and managing the data of a social network's users. The query model for a user's profile is created by applying commands in the form of business logic that is triggered by a REST API. Each command is applied to a `User` object and will generate a domain event that describes what happened as a result.
 
 As a result, a stream of endless domain activity is piped into a `User` topic as a series of messages that describe events that are stored in Apache Kafka. I like to think of Apache Kafka as a "DNA store" for a distributed system—allowing us to exactly replicate and create projections of domain data that are distributed across many different applications and databases.
 
 <img src="https://imgur.com/DUEhtBH.png" width="480" alt="Event sourcing architecture diagram">
 
-The same idea applies to the _Friend Service_. Every time a user adds a friend, a command is triggered that generates an event that describes precisely what happened. All of these events can be sequenced in the exact order they are received from the front-end users.
+The same idea applies to the *Friend Service*. Every time a user adds a friend, a command is triggered that generates an event that describes precisely what happened. All of these events can be sequenced in the exact order they are received from the front-end users.
 
 There is a metaphor I often use for event sourcing in microservices. It helps to think that each domain microservice is a musical instrument in a symphony orchestra. Each instrument plays a stream of notes that create a composition of sound. When a musician plays one note, an event is sent out, projecting a harmonic wave that finds the ears of those listening. Each of these different instruments is performing in parallel and are combined to form a single symphony of sound.
 
-Now, our aggregate store—the _Recommendation Service_—could be thought of as a kind of recording studio that combines the different channel sources into one single musical track. The newly formed single track is then recorded to a disk or tape, making it immutable— like an exact read-only replica of the song. We can create as many copies as we want, and distribute them all over the world without worrying about the original song being corrupted or accidentally modified. That's the beauty behind a read-only aggregate service. These useful services are similar to recording studios that can mix or remix the original multi-channel tracks of a song and then combine them into one immutable projection of past behavior.
+Now, our aggregate store—the *Recommendation Service*—could be thought of as a kind of recording studio that combines the different channel sources into one single musical track. The newly formed single track is then recorded to a disk or tape, making it immutable— like an exact read-only replica of the song. We can create as many copies as we want, and distribute them all over the world without worrying about the original song being corrupted or accidentally modified. That's the beauty behind a read-only aggregate service. These useful services are similar to recording studios that can mix or remix the original multi-channel tracks of a song and then combine them into one immutable projection of past behavior.
 
 <img src="https://imgur.com/Uqd7SHE.png" width="400" alt="Domain graph of users and friends">
 <br/>
@@ -400,7 +400,7 @@ Let's take a look at a seemingly simple query that can quickly become a monster 
 
 A better approach would be to use the best tool for the job to generate eventually consistent friend recommendations. The best tool, in this case, would be a graph database, such as Neo4j. Neo4j tends to eat these kinds of queries for breakfast before asking for second or third servings. Now, let's take a look at a friend-of-a-friend query in Neo4j that will answer the question of who are the mutual friends of two separate users?
 
-```java
+```cql
 MATCH (user:User {id: 1}), (friend:User {id: 2}),
   (user)-[:FRIEND]-(mutualFriends)-[:FRIEND]-(friend)
 return mutualFriends
@@ -416,7 +416,7 @@ Is your head spinning yet? Well, I hope not, because it only takes five lines of
 
 The question we are asking ourselves is similar to the last one—except we want to find the friends of my friends who have the most mutual friends with me—and return only the ones that I am not yet friends with yet. Take a look at the Cypher query below, which walks you through each step.
 
-```java
+```cypher
 // Match all the friends of my friends
 MATCH (me:User {userId: 1})-[:FRIEND]-(friends),
 	(nonFriend:User)-[:FRIEND]-(friends)
@@ -446,7 +446,7 @@ One of the main problems I see today when describing components of a microservic
 
 ### Domain Services
 
-**Domain services** are microservices that own the _system of record_ for a portion of the application's domain.
+**Domain services** are microservices that own the *system of record* for a portion of the application's domain.
 
 <img src="https://imgur.com/bAttimP.png" height="300" alt="Domain service">
 <br/>
@@ -460,7 +460,7 @@ Domain services:
 
 ### Aggregate Services
 
-**Aggregate services** are microservices that replicate eventually consistent views of domain data owned by separate _domain services_.
+**Aggregate services** are microservices that replicate eventually consistent views of domain data owned by separate *domain services*.
 
 <img src="https://imgur.com/6c8mJfC.png" height="305" alt="Aggregate service">
 <br/>
@@ -475,3 +475,4 @@ Aggregate services:
 ## License
 
 This project is licensed under Apache License 2.0.
+

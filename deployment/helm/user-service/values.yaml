@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: hyperskale/user-service
-  tag: 0.0.1-SNAPSHOT
+  tag: 0.0.2-SNAPSHOT
   pullPolicy: Always
 
 nameOverride: ""
