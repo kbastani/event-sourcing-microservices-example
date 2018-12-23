@@ -10,7 +10,7 @@ This project is a practical microservices reference example for demonstrating th
     -   [System Diagram](#system-diagram)
     -   [Container Diagram](#container-diagram)
     -   [Container Specifications](#container-specifications)
--   [*Evaluation Scenarios*](#deployment-scenarios)
+-   [*Evaluation Scenarios*](#evaluation-scenarios)
     -   [**Desktop Evaluation**](#desktop-evaluation)
         -   [Docker Desktop Installation](#docker-desktop-installation)
             -   [Getting Started](#getting-started)
@@ -21,12 +21,11 @@ This project is a practical microservices reference example for demonstrating th
                 -   [Docker Deploy](#deploy-with-docker)
     -   [**Hyperscale Evaluation**](#hyperscale-evaluation)
         -   [Helm Installation](#helm-installation)
-            -   [Adding Bitnami](#adding-bitnami)
         -   [Update Dependencies](#update-dependencies)
         -   [Helm Deploy](#helm-deploy)
 -   [Running the Social Network](#running-a-social-network)
     -   [API Gateway](#api-gateway)
-    -   [Generating Data](#generating-a-social-network)
+    -   [Generating Data](#generating-data)
     -   [Event Sourcing and CQRS](#event-sourcing-and-cqrs)
         -   [Finding Mutual Friends](#finding-mutual-friends)
         -   [Recommending New Friends](#recommending-new-friends)
@@ -255,9 +254,9 @@ zookeeper-5fd96b9b9f-8dfw8                1/1       Running   0          1m
 
 ## Hyperscale Evaluation
 
-Helm is a package manager for Kubernetes that can be used to deploy a distributed system. Each [Hyperskale](http://www.github.com/hyperskale) example application has a Helm package to help you get up and running with deploying a hyper-scalable distributed system example to Kubernetes as fast as possible.
+Helm is a package manager for Kubernetes that can be used to deploy a distributed system. This repository will be moving to a new organization called [Hyperskale](http://www.github.com/hyperskale). Each example application in this new org will contain a Helm package to help you get up and running with deploying a hyper-scalable distributed system to Kubernetes as fast as possible.
 
-This tutorial is for users who are wanting to deploy the hyper-scalable production version of our social network example to a remote Kubernetes cluster.
+Thanks to [Paul Czarkowski](http://www.twitter.com/pczar), this example has a fully functional Helm chart package and tutorial for users who are wanting to deploy the hyper-scalable production version of our social network example to any Kubernetes cluster. This Helm chart comes complete with an HA Kafka cluster and metrics aggregation with Prometheus. 
 
 ### Helm Installation
 
@@ -286,8 +285,8 @@ helm init --service-account=tiller
 Clone this repo locally:
 
 ```bash
-git clone https://github.com/hyperskale/social-network-example.git
-cd social-network-example
+git clone https://github.com/kbastani/event-sourcing-microservices-example.git
+cd event-sourcing-microservices-example
 ```
 
 Add the bitnami helm repository which contains the `kafka` and `zookeeper` charts:
@@ -314,6 +313,36 @@ Once Helm is set up, deploying the distributed system to any Kubernetes cluster 
 ```bash
 helm install --namespace social-network --name social-network --set fullNameOverride=social-network \
   deployment/helm/social-network
+```
+
+To check the status of the deployment, use the following command.
+
+```bash
+kubectl get pods -n kube-system
+```
+
+The following output will show you the full state of the cluster.
+
+```text
+NAME                                                          READY     STATUS    RESTARTS   AGE
+edge-service-59d896ddf6-hh88b                                 1/1       Running   0          47m
+friend-db-0                                                   1/1       Running   0          47m
+friend-service-5d47476675-xwkj2                               1/1       Running   0          41m
+kafka-0                                                       1/1       Running   0          47m
+kafka-1                                                       1/1       Running   0          44m
+kafka-2                                                       1/1       Running   0          44m
+recommendation-service-74ddb7d7b8-n6jm5                       1/1       Running   0          47m
+social-network-neo4j-core-0                                   1/1       Running   0          47m
+social-network-prometheus-alertmanager-6945f46869-4jbz2       2/2       Running   0          47m
+social-network-prometheus-kube-state-metrics-f85b799b-zwc6h   1/1       Running   0          47m
+social-network-prometheus-node-exporter-n77nh                 1/1       Running   0          47m
+social-network-prometheus-pushgateway-596d47694d-hrbdj        1/1       Running   0          47m
+social-network-prometheus-server-dc9c96c7b-hbnks              2/2       Running   0          47m
+social-network-zookeeper-0                                    1/1       Running   0          47m
+social-network-zookeeper-1                                    1/1       Running   0          46m
+social-network-zookeeper-2                                    1/1       Running   0          45m
+user-db-0                                                     1/1       Running   0          47m
+user-service-766989c67d-7pz6k                                 1/1       Running   0          47m
 ```
 
 There is no application-level security for the example app at this point, therefore rather than exposing the edge
