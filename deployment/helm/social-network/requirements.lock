@@ -2,5 +2,8 @@ dependencies:
 - name: kafka
   repository: https://charts.bitnami.com
   version: 1.2.3
-digest: sha256:d525ff61f8d13d49a51dac36cc17544acd6a331f5f9a9f35c6bf0b99baae88b7
-generated: 2018-12-18T10:23:21.234088017-06:00
+- name: prometheus
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 8.3.0
+digest: sha256:45a6136c8109310ae4719003e358bf29470da516227127d00ee0ab6f160e6e38
+generated: 2018-12-21T15:12:38.177420859-06:00

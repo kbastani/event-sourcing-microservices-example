@@ -43,6 +43,7 @@ affinity: {}
 
 postgresql:
   enabled: true
+  nameOverride: user-db
   fullnameOverride: user-db
   postgresqlPassword: example
   persistence:
