@@ -1,7 +1,13 @@
+nameOverride: social-network
+fullNameOverride: social-network
+
 kafka:
   enabled: true
+  replicas: 1
   nameOverride: kafka
   fullnameOverride: kafka
+  persistence:
+    enabled: false
 
 friend-service:
   fullnameOverride: friend-service
@@ -22,3 +28,34 @@ prometheus:
   server:
     persistentVolume:
       enabled: false
+  alertmanager:
+    enabled: false
+  pushgateway:
+    enabled: false
+
+grafana:
+  enabled: true
+  adminPassword: password
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://social-network-prometheus-server
+        isDefault: true
+        access: proxy
+  dashboardsConfigMaps:
+    spring: social-network-grafana-dashboard-spring
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'spring'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/spring

@@ -88,6 +88,7 @@ spring:
           brokers: "PLAINTEXT://social-network-kafka:9092"
 ribbon.eureka.enabled: false
 eureka.client.enabled: false
+prometheus.push.enabled: false
 ---
 spring:
   profiles: test
@@ -99,8 +100,4 @@ spring:
     neo4j:
       embedded:
         enabled: true
-management:
-  metrics:
-    export:
-      prometheus:
-        enabled: false
+prometheus.enabled: false

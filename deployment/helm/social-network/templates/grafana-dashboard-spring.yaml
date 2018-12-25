@@ -1,0 +1,13 @@
+{{ if .Values.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "social-network.fullname" . }}-grafana-dashboard-spring
+  labels:
+    app: {{ include "social-network.name" . }}
+    chart: {{ include "social-network.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{- (.Files.Glob "dashboards/*").AsConfig | nindent 2 }}
+{{ end }}
