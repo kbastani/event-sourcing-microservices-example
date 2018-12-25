@@ -112,12 +112,29 @@ spring:
 ribbon.eureka.enabled: false
 eureka.client.enabled: false
 ---
+postgres.port: 5432
+postgres.host: localhost
+postgres.url: ${spring.datasource.url}
+postgres.database-name: user-db
 spring:
   profiles: test
   cloud:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false
     kubernetes.enabled: false
+  datasource:
+    url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/${postgres.database-name}
+    data-username: postgres
+    data-password: password
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    url:
+    user: postgres
+    password: password
+    enabled: false
+eureka:
+  client:
+    enabled: false
 management:
   metrics:
     export:

@@ -19,7 +19,7 @@ import org.springframework.util.Assert;
 @ActiveProfiles("test")
 public class UserServiceApplicationTests {
 
-    private static final String OUTPUT_TOPIC = "testEmbeddedOut";
+    private static final String OUTPUT_TOPIC = "user";
 
     @MockBean
     private UserRepository userRepository;
@@ -44,7 +44,6 @@ public class UserServiceApplicationTests {
     @Test
     public void contextLoads() {
         Assert.notNull(applicationContext, "The application context should not be null");
-        Assert.notNull(userRepository, "The user repository should not be null");
         Assert.notEmpty(embeddedKafka.getEmbeddedKafka().getKafkaServers(),
                 "The kafka server list should not be empty");
     }

@@ -6,7 +6,7 @@ package io.example;
  *
  * @link Kenny Bastani
  */
-public class UserEvent {
+public class UserEvent extends DomainEvent<User> {
 
     private User subject;
     private EventType eventType;
@@ -17,6 +17,10 @@ public class UserEvent {
     public UserEvent(User subject, EventType eventType) {
         this.subject = subject;
         this.eventType = eventType;
+    }
+
+    public UserEvent(EventType userCreated) {
+        this.eventType = userCreated;
     }
 
     public User getSubject() {
