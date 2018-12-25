@@ -29,12 +29,23 @@ public abstract class AbstractDualWriter<T> implements DualWriteFunction<T> {
 
     private final Logger logger = Loggers.getLogger(AbstractDualWriter.class);
 
+    @Override
     public Mono<T> dualWriteFunction(Mono<T> entityExistsResult, Consumer<T> throwConflictError, Mono<T> databaseResult,
                                      Consumer<? super Throwable> databaseFailure, Consumer<T> writeToBroker) {
         return entityExistsResult.doOnNext(throwConflictError)
                 .switchIfEmpty(databaseResult)
                 .doOnError(databaseFailure)
                 .doOnNext(writeToBroker);
+    }
+
+    @Override
+    public Mono<Void> dualDeleteFunction(Mono<T> entityExistsResult, Consumer<T> resultModifier, Mono<Void> deleteFromDatabase,
+                                         Consumer<? super Throwable> databaseFailure, Consumer<T> writeToBroker) {
+        return entityExistsResult.switchIfEmpty(entityExistsResult)
+                .doOnNext(resultModifier)
+                .doOnError(databaseFailure)
+                .doOnNext(writeToBroker)
+                .then();
     }
 
     @Transactional
@@ -57,6 +68,34 @@ public abstract class AbstractDualWriter<T> implements DualWriteFunction<T> {
             } catch (Exception ex) {
                 logger.error(String.format("A dual-write transaction to the message broker has failed: %s",
                         saveQuery.toString()), ex);
+                // This error will cause the database transaction to be rolled back
+                throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "A transactional error occurred");
+            }
+        });
+    }
+
+    @Transactional
+    public Mono<Void> dualDelete(Source broker, Mono<T> existsQuery, Mono<Void> deleteQuery, DomainEvent<T> event, Long timeout) {
+        return dualDeleteFunction(existsQuery, (entity) -> {
+            event.setSubject(entity);
+            if (entity == null) {
+                logger.error("There was an error attempting to delete an entity", deleteQuery);
+                throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }, deleteQuery, (ex) -> {
+            logger.error("There was an error attempting to delete an entity", deleteQuery, ex);
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        }, (entity) -> {
+            // If the database operation fails, a domain event should not be sent to the message broker
+            logger.info(String.format("Database request is pending transaction commit to broker: %s",
+                    deleteQuery.toString()));
+            try {
+                // Attempt to perform a reactive dual-write to message broker by sending a domain event
+                broker.output().send(MessageBuilder.withPayload(event).build(), timeout);
+                // The application dual-write was a success and the database transaction can commit
+            } catch (Exception ex) {
+                logger.error(String.format("A dual-write transaction to the message broker has failed: %s",
+                        deleteQuery.toString()), ex);
                 // This error will cause the database transaction to be rolled back
                 throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "A transactional error occurred");
             }

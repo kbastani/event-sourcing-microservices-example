@@ -1,8 +1,8 @@
 package io.example.util;
 
-import io.example.User;
+import io.example.Friend;
 import org.springframework.stereotype.Component;
 
 @Component
-public class KafkaDualWriter extends AbstractDualWriter<User> {
+public class KafkaDualWriter extends AbstractDualWriter<Friend> {
 }

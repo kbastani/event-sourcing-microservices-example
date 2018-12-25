@@ -6,24 +6,46 @@ package io.example;
  *
  * @link Kenny Bastani
  */
-public class FriendEvent {
+public class FriendEvent extends DomainEvent<Friend> {
 
-    private FriendMessage subject;
+    private Friend subject;
     private EventType eventType;
+    private FriendMessage friendMessage;
 
-    public FriendEvent() {
+    public FriendEvent(EventType friendRemoved) {
     }
 
-    public FriendEvent(FriendMessage subject, EventType eventType) {
+    public FriendEvent(Friend subject, EventType eventType) {
         this.subject = subject;
         this.eventType = eventType;
     }
 
-    public FriendMessage getSubject() {
+    public FriendEvent(Friend subject, EventType eventType, FriendMessage friendMessage) {
+        this.subject = subject;
+        this.eventType = eventType;
+        this.friendMessage = friendMessage;
+    }
+
+    public FriendEvent(Friend subject, Friend subject1, EventType eventType, FriendMessage friendMessage) {
+        super(subject);
+        this.subject = subject1;
+        this.eventType = eventType;
+        this.friendMessage = friendMessage;
+    }
+
+    public FriendMessage getFriendMessage() {
+        return friendMessage;
+    }
+
+    public void setFriendMessage(FriendMessage friendMessage) {
+        this.friendMessage = friendMessage;
+    }
+
+    public Friend getSubject() {
         return subject;
     }
 
-    public void setSubject(FriendMessage subject) {
+    public void setSubject(Friend subject) {
         this.subject = subject;
     }
 

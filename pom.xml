@@ -20,7 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <spring-cloud.version>Greenwich.RC1</spring-cloud.version>
+        <spring-cloud.version>Greenwich.RC2</spring-cloud.version>
         <spring-data-releasetrain.version>Moore-M1</spring-data-releasetrain.version>
         <docker.user>hyperskale</docker.user>
         <micrometer.version>1.1.0-SNAPSHOT</micrometer.version>

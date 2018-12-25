@@ -1,6 +1,6 @@
 package io.example;
 
-public class FriendMessage {
+public class FriendMessage extends DomainEvent<FriendMessage> {
 
     private Long userId;
     private Long friendId;
