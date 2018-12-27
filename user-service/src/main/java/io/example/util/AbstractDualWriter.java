@@ -1,6 +1,6 @@
 package io.example.util;
 
-import io.example.DomainEvent;
+import io.example.domain.DomainEvent;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.support.MessageBuilder;
@@ -11,6 +11,7 @@ import reactor.util.Logger;
 import reactor.util.Loggers;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * This class is an abstract implementation of a reactive application-level dual-write transaction that can use
@@ -30,26 +31,28 @@ public abstract class AbstractDualWriter<T> implements DualWriteFunction<T> {
     private final Logger logger = Loggers.getLogger(AbstractDualWriter.class);
 
     @Override
-    public Mono<T> dualWriteFunction(Mono<T> entityExistsResult, Consumer<T> throwConflictError, Mono<T> databaseResult,
-                                     Consumer<? super Throwable> databaseFailure, Consumer<T> writeToBroker) {
-        return entityExistsResult.doOnNext(throwConflictError)
-                .switchIfEmpty(databaseResult)
+    public Mono<T> dualWriteFunction(Supplier<Mono<T>> lookupQuery, Supplier<Mono<T>> saveQuery,
+                                     Consumer<T> existsConsumer,
+                                     Consumer<? super Throwable> databaseFailure,
+                                     Consumer<T> writeToBroker) {
+        return lookupQuery.get()
+                .doOnSuccess(existsConsumer)
+                .switchIfEmpty(saveQuery.get())
                 .doOnError(databaseFailure)
+                .flatMap(u -> lookupQuery.get())
                 .doOnNext(writeToBroker);
     }
 
     @Transactional
-    public Mono<T> dualWrite(Source broker, Mono<T> existsQuery, Mono<T> saveQuery, DomainEvent<T> event, Long timeout) {
-        return dualWriteFunction(existsQuery, (entity) -> {
-            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Entity already exists");
-        }, saveQuery, (ex) -> {
-            logger.error("There was an error attempting to save an entity", saveQuery, ex);
+    public Mono<T> dualWrite(Source broker, Supplier<Mono<T>> lookupQuery, Supplier<Mono<T>> saveQuery,
+                             DomainEvent<T, Integer> event, Consumer<T> existsConsumer, Long timeout) {
+        return dualWriteFunction(lookupQuery, saveQuery, existsConsumer, (ex) -> {
+            logger.error("There was an error attempting to save an entity", ex);
             throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }, (entity) -> {
-
             // If the database operation fails, a domain event should not be sent to the message broker
             logger.info(String.format("Database request is pending transaction commit to broker: %s",
-                    saveQuery.toString()));
+                    entity.toString()));
             try {
                 // Set the entity payload after it has been updated in the database, but before being committed
                 event.setSubject(entity);
@@ -59,9 +62,14 @@ public abstract class AbstractDualWriter<T> implements DualWriteFunction<T> {
             } catch (Exception ex) {
                 logger.error(String.format("A dual-write transaction to the message broker has failed: %s",
                         saveQuery.toString()), ex);
+
+                // TODO: Implement transactional rollback with R2DBC client
+
                 // This error will cause the database transaction to be rolled back
-                throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "A transactional error occurred");
+                throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "A transactional error occurred");
             }
         });
+
     }
 }

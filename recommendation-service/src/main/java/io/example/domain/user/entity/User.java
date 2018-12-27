@@ -3,8 +3,10 @@ package io.example.domain.user.entity;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.typeconversion.DateLong;
 import org.springframework.integration.support.json.Jackson2JsonObjectMapper;
 
+import java.util.Date;
 import java.util.Random;
 
 /**
@@ -23,6 +25,12 @@ public class User {
     private String firstName;
     private String lastName;
 
+    @DateLong
+    private Date createdAt;
+
+    @DateLong
+    private Date lastModified;
+
     public User() {
         userId = Math.abs(new Random().nextLong());
     }
@@ -37,6 +45,14 @@ public class User {
         this.userId = id;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public User(Long userId, String firstName, String lastName, Date createdAt, Date lastModified) {
+        this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.createdAt = createdAt;
+        this.lastModified = lastModified;
     }
 
     public Long getId() {
@@ -63,6 +79,22 @@ public class User {
         this.lastName = lastName;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
     @Override
     public String toString() {
         try {
@@ -73,8 +105,11 @@ public class User {
 
         return "User{" +
                 "id=" + id +
+                ", userId=" + userId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + lastModified +
                 '}';
     }
 }

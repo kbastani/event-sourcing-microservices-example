@@ -132,7 +132,6 @@ spring:
     url: ${spring.datasource.url}
     user: postgres
     password: password
-    enabled: true
 eureka:
   client:
     enabled: false

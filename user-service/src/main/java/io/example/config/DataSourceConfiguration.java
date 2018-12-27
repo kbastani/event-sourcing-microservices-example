@@ -1,4 +1,4 @@
-package io.example;
+package io.example.config;
 
 import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
 import io.r2dbc.postgresql.PostgresqlConnectionFactory;
@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
@@ -26,7 +26,7 @@ import javax.validation.constraints.NotNull;
  * @author Kenny Bastani
  */
 @Configuration
-@EnableR2dbcRepositories
+@EnableR2dbcRepositories(basePackages = "io.example")
 @Profile({"kubernetes", "docker", "development", "test"})
 public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
 
@@ -48,8 +48,7 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
         this.dataSourceProperties = dataSourceProperties;
     }
 
-    @NotNull
-    @Override
+    @Bean
     public ConnectionFactory connectionFactory() {
         return getPostgresqlConnectionFactory();
     }
@@ -70,7 +69,7 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
     @ConfigurationProperties("spring.datasource")
     @LiquibaseDataSource
     public DataSource dataSource(DataSourceProperties properties) {
-        return new SingleConnectionDataSource(properties.getUrl(),
-                properties.getDataUsername(), properties.getDataPassword(), true);
+        return new SimpleDriverDataSource(new org.postgresql.Driver(),properties.getUrl(),
+                properties.getDataUsername(), properties.getDataPassword());
     }
 }

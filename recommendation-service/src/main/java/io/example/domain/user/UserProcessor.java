@@ -31,20 +31,26 @@ public class UserProcessor {
     @Transactional
     public void apply(Message<UserEvent> userEvent) {
 
-        log.info("Event received: " + userEvent.getPayload().getSubject());
+        log.info("Event received: " + userEvent.getPayload().toString());
 
         switch (userEvent.getPayload().getEventType()) {
             case USER_CREATED:
-
-                // Saves a new user node
-                User user = new User(userEvent.getPayload().getSubject().getId(),
-                        userEvent.getPayload().getSubject().getFirstName(),
-                        userEvent.getPayload().getSubject().getLastName());
-
-                user = userRepository.save(user);
-                user = userRepository.findById(user.getId(), 1).orElse(null);
-
-                log.info("Created user: " + user);
+                User newUser = userRepository.save(userEvent.getPayload().getSubject());
+                log.info(String.format("Created user: %s", newUser));
+                break;
+            case USER_UPDATED:
+                User updateUser = userEvent.getPayload().getSubject();
+                User findUser = userRepository.findUserByUserId(updateUser.getId());
+                if(findUser != null) {
+                    findUser.setCreatedAt(updateUser.getCreatedAt());
+                    findUser.setLastModified(updateUser.getLastModified());
+                    findUser.setFirstName(updateUser.getFirstName());
+                    findUser.setLastName(updateUser.getLastName());
+                    findUser = userRepository.save(findUser);
+                    log.info(String.format("Updated user: %s", findUser.toString()));
+                }
+                break;
+            default:
                 break;
         }
     }

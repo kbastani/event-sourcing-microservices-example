@@ -1,5 +1,6 @@
 package io.example;
 
+import io.example.domain.User;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

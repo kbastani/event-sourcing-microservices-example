@@ -8,5 +8,6 @@ import io.example.domain.user.entity.User;
  * @author Kenny Bastani
  */
 public enum UserEventType {
-    USER_CREATED
+    USER_CREATED,
+    USER_UPDATED
 }

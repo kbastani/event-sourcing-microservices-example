@@ -26,14 +26,13 @@ public abstract class AbstractIntegrationTest {
     public static GenericContainer postgres = new GenericContainer("postgres:9.6.8")
             .withExposedPorts(5432)
             .withEnv("POSTGRES_PASSWORD", "password")
-            .withEnv("POSTGRES_USER", "postgres")
-            .withEnv("POSTGRES_DATABASE", "user-db");
+            .withEnv("POSTGRES_USER", "postgres");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
         public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
-            String jdbcUrl = String.format("jdbc:postgresql://%s:%d/", postgres.getContainerIpAddress(),
-                    postgres.getMappedPort(5432));
+            String jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", postgres.getContainerIpAddress(),
+                    postgres.getMappedPort(5432), "postgres");
             TestPropertyValues values = TestPropertyValues.of(
                     "postgres.host=" + postgres.getContainerIpAddress(),
                     "postgres.port=" + postgres.getMappedPort(5432),

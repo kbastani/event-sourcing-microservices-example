@@ -1,6 +1,6 @@
 package io.example.util;
 
-import io.example.User;
+import io.example.domain.User;
 import org.springframework.stereotype.Component;
 
 @Component
