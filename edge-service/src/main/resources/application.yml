@@ -107,10 +107,7 @@ kubernetes.trust.certificates: true
 # disable eureka
 ribbon.eureka.enabled: false
 eureka.client.enabled: false
-# kubernetes ribbon client requires a portName for each service
-#friend-service.ribbon.portName: http
-#user-service.ribbon.portName: http
-#recommendation-service.ribbon.portName: http
+prometheus.push.enabled: false
 ---
 spring:
   profiles: test
@@ -121,8 +118,4 @@ spring:
 eureka:
   client:
     enabled: false
-management:
-  metrics:
-    export:
-      prometheus:
-        enabled: false
+prometheus.enabled: false

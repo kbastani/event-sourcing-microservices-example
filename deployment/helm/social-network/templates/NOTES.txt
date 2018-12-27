@@ -11,3 +11,18 @@ HyperSkale Social Network has been successfully deployed.
 
 3. Create some content
     $ bash deployment/sbin/generate-social-network.sh
+
+{{ if .Values.grafana.enabled }}
+Spring Metrics can be seen via Grafana.
+
+1. Run kubectl port forward to access the app:
+
+    $ kubectl -n {{ .Release.Namespace }} port-forward svc/{{ .Release.Name }}-grafana 8080:80
+
+2. Access Grafana via your web browser at `http://localhost:8080`
+
+    username: `admin`
+    password: `{{ .Values.grafana.adminPassword }}`
+
+3. Browse to the `Spring Boot Statistics` dashboard and choose your `environment` and `application`.
+{{ end }}

@@ -38,8 +38,4 @@ spring:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false
     kubernetes.enabled: false
-management:
-  metrics:
-    export:
-      prometheus:
-        enabled: false
+prometheus.enabled: false

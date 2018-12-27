@@ -9,15 +9,19 @@ management:
         include: "*"
     enabled-by-default: true
   metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles}
     export:
       prometheus:
         descriptions: true
-        enabled: true # Whether exporting of metrics to Prometheus is enabled.
+        enabled: ${prometheus.enabled:true} # Whether exporting of metrics to Prometheus is enabled.
         step: 1m # Step size (i.e. reporting frequency) to use.
         pushgateway:
           base-url: ${prometheus.url:localhost:9091} # Base URL for the Pushgateway.
-          enabled: true # Enable publishing via a Prometheus Pushgateway.
+          enabled: ${prometheus.push.enabled:true} # Enable publishing via a Prometheus Pushgateway.
           job: ${spring.application.name}  # Job identifier for this application instance.
           push-rate: 1m # Frequency with which to push metrics.
           shutdown-operation: push # Operation that should be performed on shutdown.
+
 ---

@@ -18,6 +18,9 @@ spec:
       labels:
         app: {{ include "edge-service.name" . }}
         release: {{ .Release.Name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       serviceAccountName: {{ template "edge-service.serviceAccountName" . }}
       {{ if .Values.springConfig }}
@@ -40,8 +43,6 @@ spec:
               value: kubernetes
             - name: KUBERNETES_TRUST_CERTIFICATES
               value: "true"
-            - name: PROMETHEUS_URL
-              value: {{ .Release.Name}}-prometheus-pushgateway:9091
             {{ if .Values.springConfig }}
             - name: SPRING_CONFIG_LOCATION
               value: "file:/config/application.yaml"

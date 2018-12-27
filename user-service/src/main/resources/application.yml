@@ -88,6 +88,7 @@ postgres.database-name: postgres
 postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/${postgres.database-name}
 postgres.password: example
 postgres.username: postgres
+prometheus.push.enabled: false
 spring:
   profiles: kubernetes
   cloud:
@@ -116,6 +117,7 @@ postgres.port: 5432
 postgres.host: localhost
 postgres.url: ${spring.datasource.url}
 postgres.database-name: user-db
+prometheus.enabled: false
 spring:
   profiles: test
   cloud:
@@ -135,8 +137,3 @@ spring:
 eureka:
   client:
     enabled: false
-management:
-  metrics:
-    export:
-      prometheus:
-        enabled: false
