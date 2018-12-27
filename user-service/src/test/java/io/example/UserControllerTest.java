@@ -41,7 +41,7 @@ public class UserControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void testUpdateUser() {
-        User expected = new User(1L, "Ken", "Bastani");
+        User expected = new User(200L, "Ken", "Bastani");
 
         Mono<Void> result = databaseClient.insert().into(User.class)
                 .table("users")
@@ -50,11 +50,11 @@ public class UserControllerTest extends AbstractIntegrationTest {
 
         result.block();
 
-        expected = userRepository.getUser(1L).block();
+        expected = userRepository.getUser(200L).block();
 
         expected.setFirstName("Kenny");
 
-        User actual = this.webClient.put().uri("/v1/users/1")
+        User actual = this.webClient.put().uri("/v1/users/200")
                 .contentType(MediaType.APPLICATION_JSON)
                 .syncBody(expected)
                 .exchange()
