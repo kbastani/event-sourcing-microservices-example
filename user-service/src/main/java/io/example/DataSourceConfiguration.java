@@ -3,7 +3,6 @@ package io.example;
 import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
 import io.r2dbc.postgresql.PostgresqlConnectionFactory;
 import io.r2dbc.spi.ConnectionFactory;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseDataSource;
@@ -16,6 +15,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
+import javax.validation.constraints.NotNull;
 
 /**
  * This class configures reactive database access using R2DBC with Postgres. Since R2DBC does not
@@ -27,7 +27,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableR2dbcRepositories
-@Profile({"kubernetes", "docker", "development"})
+@Profile({"kubernetes", "docker", "development", "test"})
 public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
 
     @Value("${postgres.host}")

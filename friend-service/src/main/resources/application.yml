@@ -117,6 +117,7 @@ postgres.port: 5432
 postgres.host: localhost
 postgres.url: ${spring.datasource.url}
 postgres.database-name: postgres
+prometheus.enabled: false
 spring:
   profiles: test
   cloud:
@@ -124,16 +125,15 @@ spring:
     kubernetes.ribbon.enabled: false
     kubernetes.enabled: false
   datasource:
-    url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/${postgres.database-name}
+    url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}
     data-username: postgres
     data-password: password
     driver-class-name: org.postgresql.Driver
   liquibase:
-    url:
+    url: ${spring.datasource.url}
     user: postgres
     password: password
     enabled: true
 eureka:
   client:
     enabled: false
-prometheus.enabled: false

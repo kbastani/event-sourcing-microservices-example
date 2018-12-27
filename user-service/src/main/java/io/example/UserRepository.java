@@ -11,6 +11,6 @@ import reactor.core.publisher.Mono;
  */
 public interface UserRepository extends ReactiveCrudRepository<User, Long> {
 
-    @Query("SELECT * FROM users u WHERE u.user_id = $1 LIMIT 1")
+    @Query("SELECT u.id, u.first_name, u.last_name FROM users u WHERE u.id = $1 LIMIT 1")
     Mono<User> getUser(Long id);
 }

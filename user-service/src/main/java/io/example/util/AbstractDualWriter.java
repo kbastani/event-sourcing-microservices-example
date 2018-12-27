@@ -46,6 +46,7 @@ public abstract class AbstractDualWriter<T> implements DualWriteFunction<T> {
             logger.error("There was an error attempting to save an entity", saveQuery, ex);
             throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }, (entity) -> {
+
             // If the database operation fails, a domain event should not be sent to the message broker
             logger.info(String.format("Database request is pending transaction commit to broker: %s",
                     saveQuery.toString()));

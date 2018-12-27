@@ -1,70 +1,24 @@
 package io.example;
 
 import org.hamcrest.Matchers;
-import org.jetbrains.annotations.NotNull;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.DockerHealthcheckWaitStrategy;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = FriendServiceApplication.class)
 @AutoConfigureWebTestClient
-@ActiveProfiles("test")
-@ContextConfiguration(initializers = FriendControllerTest.Initializer.class)
-public class FriendControllerTest {
-
-    private static final String OUTPUT_TOPIC = "friend";
+public class FriendControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private WebTestClient webClient;
 
     @Autowired
     private FriendRepository friendRepository;
-
-    @ClassRule
-    public static EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, true, OUTPUT_TOPIC);
-
-    @ClassRule
-    public static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:alpine")
-            .withDatabaseName("postgres")
-            .withUsername("postgres")
-            .withPassword("password");
-
-    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        @Override
-        public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertyValues values = TestPropertyValues.empty().and("spring.datasource.url=" + postgres.getJdbcUrl());
-            values.applyTo(configurableApplicationContext);
-        }
-    }
-
-
-    @BeforeClass
-    public static void setup() {
-        //postgreSQLContainer.setPortBindings(Collections.singletonList(new PortBinding(new Ports.Binding("172.0.0.1", "5432"), ExposedPort.tcp(5432))));
-        postgres.start();
-        postgres.waitingFor(new DockerHealthcheckWaitStrategy());
-        System.setProperty("spring.cloud.stream.kafka.binder.brokers", embeddedKafka.getEmbeddedKafka().getBrokersAsString());
-        embeddedKafka.getEmbeddedKafka().setAdminTimeout(30000);
-        System.setProperty("eureka.client.enabled", "false");
-    }
 
     @Before
     public void setUp() {
@@ -75,15 +29,8 @@ public class FriendControllerTest {
                 f5 = new Friend(4L, 2L),
                 f6 = new Friend(5L, 2L);
 
-        Flux<Friend> result = friendRepository.saveAll(Arrays.asList(f1, f2, f3, f4, f5, f6));
+        friendRepository.saveAll(Arrays.asList(f1, f2, f3, f4, f5, f6)).subscribe();
     }
-
-    @After
-    public void after() {
-        embeddedKafka.after();
-        postgres.stop();
-    }
-
 
     @Test
     public void testCreateFriend() {

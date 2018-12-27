@@ -15,7 +15,6 @@ logging:
     kafka.*: WARN
     org.springframework.*: INFO
     org.neo4j.*: INFO
-    com.memorynotfound: DEBUG
     org.apache.kafka.*: WARN
     liquibase.integration.spring.SpringLiquibase: ERROR
 ---
@@ -116,7 +115,7 @@ eureka.client.enabled: false
 postgres.port: 5432
 postgres.host: localhost
 postgres.url: ${spring.datasource.url}
-postgres.database-name: user-db
+postgres.database-name: postgres
 prometheus.enabled: false
 spring:
   profiles: test
@@ -125,15 +124,15 @@ spring:
     kubernetes.ribbon.enabled: false
     kubernetes.enabled: false
   datasource:
-    url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/${postgres.database-name}
+    url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}
     data-username: postgres
     data-password: password
     driver-class-name: org.postgresql.Driver
   liquibase:
-    url:
+    url: ${spring.datasource.url}
     user: postgres
     password: password
-    enabled: false
+    enabled: true
 eureka:
   client:
     enabled: false
