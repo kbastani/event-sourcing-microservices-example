@@ -1,18 +1,18 @@
 package io.example.domain;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
 import java.io.Serializable;
 
+/**
+ * A domain event is an abstract class that describes a behavior within a domain.
+ *
+ * @param <T>  is the type of domain object that this event applies to.
+ * @param <ID> is the type of identity for the domain event.
+ * @author Kenny Bastani
+ */
 public abstract class DomainEvent<T, ID> implements Serializable {
 
     private ID id;
-
-    @CreatedDate
     private Long createdAt;
-
-    @LastModifiedDate
     private Long lastModified;
 
     public DomainEvent() {

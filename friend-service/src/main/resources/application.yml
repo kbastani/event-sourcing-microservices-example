@@ -3,8 +3,12 @@ spring:
     stream:
       bindings:
         output:
+          binder: kafka
           destination: friend
           contentType: 'application/json'
+          group: friend-group
+          producer:
+            requiredGroups: user-group
   profiles:
     active: development
 server:
@@ -98,7 +102,8 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: "PLAINTEXT://social-network-kafka:9092"
+          brokers: kafka
+          defaultBrokerPort: 9092
   datasource:
     url: ${postgres.url}
     data-username: postgres

@@ -4,7 +4,6 @@ import io.example.domain.DomainEvent;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
 import reactor.util.Logger;
@@ -43,7 +42,6 @@ public abstract class AbstractDualWriter<T> implements DualWriteFunction<T> {
                 .doOnNext(writeToBroker);
     }
 
-    @Transactional
     public Mono<T> dualWrite(Source broker, Supplier<Mono<T>> lookupQuery, Supplier<Mono<T>> saveQuery,
                              DomainEvent<T, Integer> event, Consumer<T> existsConsumer, Long timeout) {
         return dualWriteFunction(lookupQuery, saveQuery, existsConsumer, (ex) -> {
@@ -66,8 +64,7 @@ public abstract class AbstractDualWriter<T> implements DualWriteFunction<T> {
                 // TODO: Implement transactional rollback with R2DBC client
 
                 // This error will cause the database transaction to be rolled back
-                throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
-                        "A transactional error occurred");
+                throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "A transactional error occurred");
             }
         });
 

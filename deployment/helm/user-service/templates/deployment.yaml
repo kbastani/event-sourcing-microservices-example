@@ -29,7 +29,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS
-              value: kafka:9092
+              value: "kafka"
             - name: SPRING_PROFILES_ACTIVE
               value: kubernetes
             - name: KUBERNETES_TRUST_CERTIFICATES

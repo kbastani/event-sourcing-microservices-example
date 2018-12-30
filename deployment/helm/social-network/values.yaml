@@ -3,7 +3,6 @@ fullNameOverride: social-network
 
 kafka:
   enabled: true
-  replicas: 1
   nameOverride: kafka
   fullnameOverride: kafka
   persistence:

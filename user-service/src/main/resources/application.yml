@@ -3,8 +3,12 @@ spring:
     stream:
       bindings:
         output:
+          binder: kafka
           destination: user
           contentType: 'application/json'
+          group: user-group
+          producer:
+            requiredGroups: user-group
   profiles:
     active: development
 server:

@@ -3,21 +3,19 @@ spring:
     stream:
       bindings:
         user:
+          binder: kafka
           destination: user
           group: user-group
           contentType: 'application/json'
           consumer:
-            durableSubscription: false
             concurrency: 1
-            instanceIndex: 1
         friend:
+          binder: kafka
           destination: friend
           group: friend-group
           contentType: 'application/json'
           consumer:
-            durableSubscription: false
             concurrency: 1
-            instanceIndex: 1
   profiles:
     active: development
 server:
@@ -85,7 +83,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: "PLAINTEXT://social-network-kafka:9092"
+          brokers: "PLAINTEXT://kafka:9092"
 ribbon.eureka.enabled: false
 eureka.client.enabled: false
 prometheus.push.enabled: false

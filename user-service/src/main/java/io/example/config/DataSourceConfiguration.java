@@ -18,10 +18,9 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
 /**
- * This class configures reactive database access using R2DBC with Postgres. Since R2DBC does not
- * allow using JPA repositories, schema creation must be handled manually or using a tool, like Liquibase.
- * This class configures R2DBC while also configuring Liquibase to be able to manage the schema creation
- * and migration.
+ * This class configures reactive database access using R2DBC with Postgres. Since R2DBC does not allow using JPA
+ * repositories, schema creation must be handled manually or using a tool, like Liquibase. This class configures R2DBC
+ * while also configuring Liquibase to be able to manage the schema creation and migration.
  *
  * @author Kenny Bastani
  */
@@ -63,7 +62,6 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
                 .username(dataSourceProperties.getDataUsername())
                 .password(dataSourceProperties.getDataPassword()).build());
     }
-
 
     @Bean
     @ConfigurationProperties("spring.datasource")
