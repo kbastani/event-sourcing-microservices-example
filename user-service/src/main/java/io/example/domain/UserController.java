@@ -1,15 +1,16 @@
 package io.example.domain;
 
-import io.example.util.KafkaDualWriter;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
-
-import java.util.concurrent.atomic.AtomicReference;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 
 /**
  * This is the main REST API for the {@link User} service.
@@ -21,67 +22,77 @@ import java.util.concurrent.atomic.AtomicReference;
 @Transactional
 public class UserController {
 
-    private final Source messageBroker;
-    private final UserRepository userRepository;
-    private final KafkaDualWriter kafkaDualWriter;
+	private final Logger logger = Loggers.getLogger(UserController.class);
+	private final Source messageBroker;
+	private final UserService userService;
 
-    public UserController(UserRepository userRepository, Source messageBroker, KafkaDualWriter kafkaDualWriter) {
-        this.userRepository = userRepository;
-        this.messageBroker = messageBroker;
-        this.kafkaDualWriter = kafkaDualWriter;
-    }
+	public UserController(Source messageBroker, UserService userService) {
+		this.messageBroker = messageBroker;
+		this.userService = userService;
+	}
 
-    @GetMapping(path = "/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(code = HttpStatus.OK)
-    public Mono<User> getUser(@PathVariable("userId") Long userId) {
-        return userRepository.getUser(userId);
-    }
+	@GetMapping(path = "/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(code = HttpStatus.OK)
+	public Mono<User> getUser(@PathVariable("userId") Long userId) {
+		return userService.find(userId);
+	}
 
-    @PostMapping(path = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public Mono<User> createUser(@RequestBody Mono<User> user) {
-        // Create an atomic reference for the user identity to create a context for the newly created user
-        AtomicReference<Long> id = new AtomicReference<>();
+	@PostMapping(path = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(code = HttpStatus.CREATED)
+	public Mono<User> createUser(@RequestBody Mono<User> user) {
+		Assert.state(user != null, "User payload must not equal null");
 
-        // Take the producer mono and flat map it to a sequence of steps to create a new user
-        return user.flatMap(u -> {
-            // Set the atomic reference to the user identity submitted in the payload
-            id.set(u.getId());
+		// Take the producer mono and flat map it to a sequence of steps to create a new user
+		return user.flatMap(u -> {
+			// Execute a dual-write to the local database and the shared Kafka cluster using an atomic commit
+			return userService.create(u, entity -> {
+				// If the database operation fails, a domain event should not be sent to the message broker
+				logger.info(String.format("Database request is pending transaction commit to broker: %s",
+						entity.toString()));
+				try {
+					UserEvent event = new UserEvent(entity, EventType.USER_CREATED);
+					// Set the entity payload after it has been updated in the database, but before being committed
+					event.setSubject(entity);
+					// Attempt to perform a reactive dual-write to message broker by sending a domain event
+					messageBroker.output().send(MessageBuilder.withPayload(event).build(), 30000L);
+					// The application dual-write was a success and the database transaction can commit
+				} catch (Exception ex) {
+					logger.error(String.format("A dual-write transaction to the message broker has failed: %s",
+							entity.toString()), ex);
+					// This error will cause the database transaction to be rolled back
+					throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+							"A transactional error occurred");
+				}
+			});
+		});
+	}
 
-            // Execute a dual-write to the local database and the shared Kafka cluster using an atomic commit
-            return kafkaDualWriter.dualWrite(messageBroker,
-                    // The lookup function used by the dual writer
-                    () -> userRepository.getUser(id.get()),
-                    // The save function used by the dual writer. Sets the atomic reference to the assigned ID.
-                    () -> userRepository.save(u).doOnSuccess(entity -> id.set(entity.getId())),
-                    new UserEvent(u, EventType.USER_CREATED),
-                    (entity) -> {
-                        // If the lookup function already has an entity, throw an error
-                        if (entity != null)
-                            throw new HttpClientErrorException(HttpStatus.CONFLICT, "User entity already exists");
-                    }, 30000L);
-        });
-    }
 
+	@PutMapping(path = "/users/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<User> updateUser(@PathVariable("userId") Long userId, @RequestBody User user) {
+		Assert.state(user != null, "User payload must not equal null");
+		Assert.state(userId != null, "The userId must not equal null");
+		Assert.state(user.getId().equals(userId), "The userId supplied in the URI path does not match the payload");
 
-    @PutMapping(path = "/users/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public Mono<User> updateUser(@PathVariable("userId") Long userId, @RequestBody Mono<User> user) {
-        // Apply the dual write to the local database and the shared Kafka cluster using an atomic commit
-        return user.flatMap(u -> {
-            // Overwrite the payload's ID with the userId provided through the URI
-            u.setId(userId);
-
-            return kafkaDualWriter.dualWrite(messageBroker,
-                    // Check if the user exists and then apply the update using a flatMap
-                    () -> userRepository.getUser(userId).doOnSuccess(entity -> {
-                        if (entity == null)
-                            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "That user does not exist");
-                    }).flatMap(entity -> userRepository.save(u)),
-                    () -> userRepository.save(u), new UserEvent(u, EventType.USER_UPDATED),
-                    (entity) -> {
-                        // Let the entity pass through to the next step
-                    }, 30000L);
-        });
-    }
+		// Execute a dual-write to the local database and the shared Kafka cluster using an atomic commit
+		return userService.update(user, entity -> {
+			// If the database operation fails, a domain event should not be sent to the message broker
+			logger.info(String.format("Database request is pending transaction commit to broker: %s",
+					entity.toString()));
+			try {
+				UserEvent event = new UserEvent(entity, EventType.USER_UPDATED);
+				// Set the entity payload after it has been updated in the database, but before being committed
+				event.setSubject(entity);
+				// Attempt to perform a reactive dual-write to message broker by sending a domain event
+				messageBroker.output().send(MessageBuilder.withPayload(event).build(), 30000L);
+				// The application dual-write was a success and the database transaction can commit
+			} catch (Exception ex) {
+				logger.error(String.format("A dual-write transaction to the message broker has failed: %s",
+						entity.toString()), ex);
+				// This error will cause the database transaction to be rolled back
+				throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+						"A transactional error occurred");
+			}
+		});
+	}
 }
