@@ -293,6 +293,7 @@ Add the bitnami helm repository which contains the `kafka` and `zookeeper` chart
 
 ```bash
 helm repo add bitnami https://charts.bitnami.com
+helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com
 ```
 
 ### Update Dependencies
