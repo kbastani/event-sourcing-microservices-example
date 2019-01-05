@@ -1,4 +1,4 @@
-package io.example;
+package io.example.domain;
 
 /**
  * An event that encapsulates a state transition for the {@link Friend}

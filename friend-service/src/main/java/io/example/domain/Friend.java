@@ -1,4 +1,4 @@
-package io.example;
+package io.example.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -25,6 +25,12 @@ public class Friend {
     }
 
     public Friend(Long userId, Long friendId) {
+        this.userId = userId;
+        this.friendId = friendId;
+    }
+
+    public Friend(Long id, Long userId, Long friendId) {
+        this.id = id;
         this.userId = userId;
         this.friendId = friendId;
     }

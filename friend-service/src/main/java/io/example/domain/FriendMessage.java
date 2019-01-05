@@ -1,4 +1,4 @@
-package io.example;
+package io.example.domain;
 
 public class FriendMessage extends DomainEvent<FriendMessage> {
 
