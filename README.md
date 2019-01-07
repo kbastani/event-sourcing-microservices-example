@@ -356,7 +356,7 @@ kubectl --namespace social-network port-forward svc/edge-service 9000
 Now, run the following script to test adding users and friend relationships to the social network.
 
 ```bash
-sh ./deployment/sbin/generate-social-network.sh
+sh ./deployment/sbin/generate-serial.sh
 ```
 
 ### Cleanup

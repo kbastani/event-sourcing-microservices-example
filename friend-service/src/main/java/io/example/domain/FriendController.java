@@ -65,33 +65,40 @@ public class FriendController {
 	 */
 	@PostMapping(path = "/users/{userId}/commands/addFriend")
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public Mono<Friend> addFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
+	public Mono<?> addFriend(@PathVariable Long userId, @RequestParam("friendId") Long friendId) {
 		Mono<Friend> friend = Mono.just(new Friend(userId, friendId));
 		Assert.state(userId != null, "UserId must not equal null");
 		Assert.state(friendId != null, "FriendId must not equal null");
 
 		// Take the producer mono and flat map it to a sequence of steps to create a new user
-		return friend.flatMap(f -> {
-			// Execute a dual-write to the local database and the shared Kafka cluster using an atomic commit
-			return friendService.create(f, entity -> {
-				// If the database operation fails, a domain event should not be sent to the message broker
-				logger.info(String.format("Database request is pending transaction commit to broker: %s",
-						entity.toString()));
-				try {
-					FriendEvent event = new FriendEvent(entity, EventType.FRIEND_ADDED);
-					// Set the entity payload after it has been updated in the database, but before being committed
-					event.setSubject(entity);
-					// Attempt to perform a reactive dual-write to message broker by sending a domain event
-					messageBroker.output().send(MessageBuilder.withPayload(event).build(), 30000L);
-					// The application dual-write was a success and the database transaction can commit
-				} catch (Exception ex) {
-					logger.error(String.format("A dual-write transaction to the message broker has failed: %s",
-							entity.toString()), ex);
-					// This error will cause the database transaction to be rolled back
-					throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
-							"A transactional error occurred");
-				}
-			});
+		return friendService.exists(userId, friendId).flatMap(exists -> {
+			if (exists) {
+				return Mono.error(() ->
+						new HttpClientErrorException(HttpStatus.CONFLICT, "The friendship already exists"));
+			} else {
+				return friend.flatMap(f -> {
+					// Execute a dual-write to the local database and the shared Kafka cluster using an atomic commit
+					return friendService.create(f, entity -> {
+						// If the database operation fails, a domain event should not be sent to the message broker
+						logger.info(String.format("Database request is pending transaction commit to broker: %s",
+								entity.toString()));
+						try {
+							FriendEvent event = new FriendEvent(entity, EventType.FRIEND_ADDED);
+							// Set the entity payload after it has been updated in the database, but before committed
+							event.setSubject(entity);
+							// Attempt to perform a reactive dual-write to message broker by sending a domain event
+							messageBroker.output().send(MessageBuilder.withPayload(event).build(), 30000L);
+							// The application dual-write was a success and the database transaction can commit
+						} catch (Exception ex) {
+							logger.error(String.format("A dual-write transaction to the message broker has failed: %s",
+									entity.toString()), ex);
+							// This error will cause the database transaction to be rolled back
+							throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+									"A transactional error occurred");
+						}
+					});
+				});
+			}
 		});
 	}
 

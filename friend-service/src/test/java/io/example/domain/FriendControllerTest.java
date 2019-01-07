@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.test.StepVerifier;
 
+import java.text.MessageFormat;
+
 @AutoConfigureWebTestClient
 public class FriendControllerTest extends AbstractIntegrationTest {
 
@@ -98,6 +100,36 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 					Assert.assertEquals("Actual userId match expected", expected.getUserId(), u.getUserId());
 					Assert.assertEquals("Actual friendId match expected", expected.getFriendId(), u.getFriendId());
 				}).expectComplete().log().verify();
+	}
+
+	@Test
+	public void testAddFriendFailsWhenConflict() {
+		Friend expected = new Friend(77L, 66L);
+
+		// Test creating a new friend using the transactional R2DBC client API
+		StepVerifier.create(this.webClient.post()
+				.uri(MessageFormat
+						.format("/v1/users/{0}/commands/addFriend?friendId={1}", expected.getUserId(),
+								expected.getFriendId()))
+				.contentType(MediaType.APPLICATION_JSON)
+				.exchange()
+				.returnResult(Friend.class).getResponseBody()).expectSubscription()
+				.assertNext(u -> {
+					Assert.assertThat("Actual id must not be null", u.getId(), Matchers.notNullValue());
+					Assert.assertEquals("Actual userId match expected", expected.getUserId(), u.getUserId());
+					Assert.assertEquals("Actual friendId match expected", expected.getFriendId(), u.getFriendId());
+					expected.setId(u.getId());
+				}).expectComplete().log().verify();
+
+		// Test creating the same friend relationship and expect a conflict failure
+		StepVerifier.create(this.webClient.post()
+				.uri(MessageFormat
+						.format("/v1/users/{0}/commands/addFriend?friendId={1}", expected.getUserId(),
+								expected.getFriendId()))
+				.exchange().returnResult(RuntimeException.class)
+				.getResponseBody().single()).expectSubscription()
+				.assertNext(e -> Assert.assertEquals("409 The friendship already exists", e.getMessage()))
+				.expectComplete().log().verify();
 	}
 
 	@Test

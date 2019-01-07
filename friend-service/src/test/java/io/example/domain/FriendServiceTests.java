@@ -98,6 +98,19 @@ public class FriendServiceTests extends AbstractUnitTest {
 	}
 
 	@Test
+	public void transactionCreateFailsWhenConflict() {
+		Friend expected = new Friend(89L, 11L);
+
+		friendService.create(expected, System.out::println).block();
+
+		// Attempt to create a new friend relationship when the relationship already exists
+		StepVerifier.create(friendService.create(expected, friend -> {})).expectSubscription()
+				.expectError()
+				.log()
+				.verify();
+	}
+
+	@Test
 	public void transactionGetSucceeds() {
 		Friend expected = new Friend(500L, 33L, 48L);
 
@@ -192,5 +205,17 @@ public class FriendServiceTests extends AbstractUnitTest {
 
 		// Check to see that the delete transaction was committed
 		StepVerifier.create(friendService.find(1000L)).expectSubscription().expectComplete().log().verify();
+	}
+
+	@Test
+	public void friendExistsSucceeds() {
+		Friend expected = new Friend(421L, 221L);
+
+		friendService.create(expected, System.out::println).block();
+
+		// Delete the friendship where the userId is 421 and the friendId is 221
+		StepVerifier.create(friendService.exists(expected.getUserId(), expected.getFriendId()))
+				.expectSubscription()
+				.expectNext(true).expectComplete().log().verify();
 	}
 }

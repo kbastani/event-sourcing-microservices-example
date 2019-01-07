@@ -130,4 +130,11 @@ public class FriendService {
 						.map(f -> f)
 						.doOnNext(callback).log()).single();
 	}
+
+	public Mono<Boolean> exists(Long userId, Long friendId) {
+		return databaseClient.execute().sql("SELECT * FROM friend WHERE user_id=$1 AND friend_id=$2")
+				.bind(0, userId)
+				.bind(1, friendId)
+				.as(Friend.class).fetch().all().hasElements();
+	}
 }
