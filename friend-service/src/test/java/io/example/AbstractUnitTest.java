@@ -1,7 +1,7 @@
 package io.example;
 
 import io.example.config.DataSourceConfiguration;
-import io.example.domain.FriendService;
+import io.example.domain.friend.FriendService;
 import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;

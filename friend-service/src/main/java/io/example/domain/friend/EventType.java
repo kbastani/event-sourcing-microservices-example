@@ -1,4 +1,4 @@
-package io.example.domain;
+package io.example.domain.friend;
 
 /**
  * The type of events that affect the state of a {@link Friend}.

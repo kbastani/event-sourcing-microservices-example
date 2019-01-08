@@ -1,4 +1,4 @@
-package io.example.domain;
+package io.example.domain.friend;
 
 public abstract class DomainEvent<T> {
 

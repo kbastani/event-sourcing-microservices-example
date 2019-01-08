@@ -24,35 +24,37 @@ import java.util.logging.Logger;
 @Transactional
 public class FriendProcessor {
 
-    private final Logger log = Logger.getLogger(FriendProcessor.class.getName());
-    private final FriendRepository friendRepository;
-    private final UserRepository userRepository;
+	private final Logger log = Logger.getLogger(FriendProcessor.class.getName());
+	private final FriendRepository friendRepository;
+	private final UserRepository userRepository;
 
-    public FriendProcessor(FriendRepository friendRepository, UserRepository userRepository) {
-        this.friendRepository = friendRepository;
-        this.userRepository = userRepository;
-    }
+	public FriendProcessor(FriendRepository friendRepository, UserRepository userRepository) {
+		this.friendRepository = friendRepository;
+		this.userRepository = userRepository;
+	}
 
-    @StreamListener(value = FriendSink.INPUT)
-    public void apply(Message<FriendEvent> friendEvent) {
+	@StreamListener(value = FriendSink.INPUT)
+	public void apply(Message<FriendEvent> friendEvent) {
 
-        log.info("Event received: " + friendEvent.toString());
+		log.info("Event received: " + friendEvent.toString());
 
-        User user = userRepository.findUserByUserId(friendEvent.getPayload().getSubject().getUserId());
-        User friend = userRepository.findUserByUserId(friendEvent.getPayload().getSubject().getFriendId());
+		User user = userRepository.findUserByUserId(friendEvent.getPayload().getSubject().getUserId());
+		User friend = userRepository.findUserByUserId(friendEvent.getPayload().getSubject().getFriendId());
 
-        if (user == null || friend == null) {
-            throw new RuntimeException("Invalid user identifier for " + friendEvent.getPayload().getEventType() +
-                    " operation on one or more users: " + Arrays.asList(user, friend).toString());
-        }
+		if (user == null || friend == null) {
+			throw new RuntimeException("Invalid user identifier for " + friendEvent.getPayload().getEventType() +
+					" operation on one or more users: " + Arrays.asList(user, friend).toString());
+		}
 
-        switch (friendEvent.getPayload().getEventType()) {
-            case FRIEND_ADDED:
-                friendRepository.addFriend(user.getId(), friend.getId());
-                break;
-            case FRIEND_REMOVED:
-                friendRepository.removeFriend(user.getId(), friend.getId());
-                break;
-        }
-    }
+		switch (friendEvent.getPayload().getEventType()) {
+			case FRIEND_ADDED:
+				friendRepository.addFriend(user.getId(), friend.getId(),
+						friendEvent.getPayload().getSubject().getCreatedAt().getTime(),
+						friendEvent.getPayload().getSubject().getUpdatedAt().getTime());
+				break;
+			case FRIEND_REMOVED:
+				friendRepository.removeFriend(user.getId(), friend.getId());
+				break;
+		}
+	}
 }

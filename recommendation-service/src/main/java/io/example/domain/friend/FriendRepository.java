@@ -23,8 +23,8 @@ public interface FriendRepository extends Neo4jRepository<Friend, Long> {
 
     @Query("MATCH (userA:User), (userB:User)" +
             "WHERE userA.userId={0} AND userB.userId={1} " +
-            "CREATE (userA)-[:FRIEND]->(userB)")
-    void addFriend(Long fromId, Long toId);
+            "CREATE (userA)-[:FRIEND { createdAt: {2}, lastUpdated: {3} }]->(userB)")
+    void addFriend(Long fromId, Long toId, Long createdAt, Long lastUpdated);
 
     @Query("MATCH (userA:User), (userB:User)\n" +
             "WHERE userA.userId={0} AND userB.userId={1}\n" +

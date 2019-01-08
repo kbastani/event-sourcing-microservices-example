@@ -2,7 +2,7 @@ package io.example.domain.friend;
 
 import java.sql.Timestamp;
 
-public class FriendMessage {
+public class FriendMessage extends DomainEvent<FriendMessage> {
 
 	private Long userId;
 	private Long friendId;
@@ -63,7 +63,6 @@ public class FriendMessage {
 				", friendId=" + friendId +
 				", createdAt=" + createdAt +
 				", updatedAt=" + updatedAt +
-				'}';
+				"} " + super.toString();
 	}
 }
-

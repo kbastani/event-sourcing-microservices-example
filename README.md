@@ -356,7 +356,13 @@ kubectl --namespace social-network port-forward svc/edge-service 9000
 Now, run the following script to test adding users and friend relationships to the social network.
 
 ```bash
+# Generates a 15 person social network using serial API calls
 sh ./deployment/sbin/generate-serial.sh
+```
+
+```bash
+# Generates a 100 person social network using parallel API calls (high-performance)
+sh ./deployment/sbin/generate-parallel.sh
 ```
 
 ### Cleanup
@@ -364,8 +370,11 @@ sh ./deployment/sbin/generate-serial.sh
 To uninstall run the following commands:
 
 ```bash
+# Deletes the entire cluster in the social-network namespace except persistent storage for Neo4j
 helm delete --purge social-network
-kubectl delete pvc datadir-social-network-neo4j-core-0
+
+# Delete the persistent storage for Neo4j
+kubectl delete pvc datadir-social-network-neo4j-core-0 -n social-network
 ```
 
 ## Running a Social Network

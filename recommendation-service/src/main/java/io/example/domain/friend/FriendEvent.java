@@ -10,30 +10,38 @@ import io.example.domain.friend.entity.Friend;
  */
 public class FriendEvent {
 
-    private FriendMessage subject;
-    private FriendEventType eventType;
+	private FriendMessage subject;
+	private FriendEventType eventType;
 
-    public FriendEvent() {
-    }
+	public FriendEvent() {
+	}
 
-    public FriendEvent(FriendMessage subject, FriendEventType eventType) {
-        this.subject = subject;
-        this.eventType = eventType;
-    }
+	public FriendEvent(FriendMessage subject, FriendEventType eventType) {
+		this.subject = subject;
+		this.eventType = eventType;
+	}
 
-    public FriendMessage getSubject() {
-        return subject;
-    }
+	public FriendMessage getSubject() {
+		return subject;
+	}
 
-    public void setSubject(FriendMessage subject) {
-        this.subject = subject;
-    }
+	public void setSubject(FriendMessage subject) {
+		this.subject = subject;
+	}
 
-    public FriendEventType getEventType() {
-        return eventType;
-    }
+	public FriendEventType getEventType() {
+		return eventType;
+	}
 
-    public void setEventType(FriendEventType eventType) {
-        this.eventType = eventType;
-    }
+	public void setEventType(FriendEventType eventType) {
+		this.eventType = eventType;
+	}
+
+	@Override
+	public String toString() {
+		return "FriendEvent{" +
+				"subject=" + subject +
+				", eventType=" + eventType +
+				'}';
+	}
 }

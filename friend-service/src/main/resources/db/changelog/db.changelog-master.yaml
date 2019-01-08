@@ -24,3 +24,16 @@ databaseChangeLog:
                   type: int
                   constraints:
                     nullable: false
+              - column:
+                  name: created_at
+                  type: java.sql.Types.TIMESTAMP
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: java.sql.Types.TIMESTAMP
+                  defaultValueComputed: NOW()
+                  valueComputed: NOW()
+                  constraints:
+                    nullable: false

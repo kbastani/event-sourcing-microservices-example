@@ -1,16 +1,24 @@
 package io.example.domain;
 
 import io.example.AbstractIntegrationTest;
+import io.example.domain.friend.Friend;
+import io.example.domain.friend.FriendRepository;
+import io.example.domain.friend.FriendService;
+import io.example.domain.user.User;
+import io.example.domain.user.UserClient;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.r2dbc.function.DatabaseClient;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.text.MessageFormat;
@@ -30,6 +38,9 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 	@Autowired
 	public DatabaseClient databaseClient;
 
+	@MockBean
+	private UserClient userClient;
+
 	@Before
 	public void setUp() {
 		// Clear friend table
@@ -44,6 +55,9 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 
 	@Test
 	public void testGetFriendSucceeds() {
+
+		Mockito.when(userClient.getUser(1L)).thenReturn(Mono.just(new User(1L, "Major", "Tom")));
+		Mockito.when(userClient.getUser(6L)).thenReturn(Mono.just(new User(6L, "David", "Bowie")));
 
 		friendService.create(new Friend(300L, 1L, 6L), System.out::println).then().block();
 
@@ -62,6 +76,11 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 	@Test
 	public void testGetFriendsSucceeds() {
 
+		Mockito.when(userClient.getUser(1L)).thenReturn(Mono.just(new User(1L, "Tom", "Sauyer")));
+		Mockito.when(userClient.getUser(5L)).thenReturn(Mono.just(new User(5L, "Sally", "Jean")));
+		Mockito.when(userClient.getUser(4L)).thenReturn(Mono.just(new User(4L, "Lady", "Gaga")));
+		Mockito.when(userClient.getUser(3L)).thenReturn(Mono.just(new User(3L, "Major", "Tom")));
+
 		friendService.create(new Friend(1L, 5L), System.out::println).then().block();
 		friendService.create(new Friend(5L, 3L), System.out::println).then().block();
 		friendService.create(new Friend(4L, 5L), System.out::println).then().block();
@@ -77,6 +96,9 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 	@Test
 	public void testAddFriendSucceeds() {
 		Friend expected = new Friend(20L, 36L);
+
+		Mockito.when(userClient.getUser(20L)).thenReturn(Mono.just(new User(20L, "Major", "Tom")));
+		Mockito.when(userClient.getUser(36L)).thenReturn(Mono.just(new User(36L, "David", "Bowie")));
 
 		// Test creating a new friend using the transactional R2DBC client API
 		StepVerifier.create(this.webClient.post().uri("/v1/users/20/commands/addFriend?friendId=36")
@@ -105,6 +127,9 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 	@Test
 	public void testAddFriendFailsWhenConflict() {
 		Friend expected = new Friend(77L, 66L);
+
+		Mockito.when(userClient.getUser(77L)).thenReturn(Mono.just(new User(77L, "Major", "Tom")));
+		Mockito.when(userClient.getUser(66L)).thenReturn(Mono.just(new User(66L, "David", "Bowie")));
 
 		// Test creating a new friend using the transactional R2DBC client API
 		StepVerifier.create(this.webClient.post()
@@ -135,6 +160,9 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 	@Test
 	public void testRemoveFriendSucceeds() {
 		Friend expected = new Friend(74L, 51L, 26L);
+
+		Mockito.when(userClient.getUser(51L)).thenReturn(Mono.just(new User(51L, "Major", "Tom")));
+		Mockito.when(userClient.getUser(26L)).thenReturn(Mono.just(new User(26L, "David", "Bowie")));
 
 		friendService.create(expected, System.out::println).then().block();
 

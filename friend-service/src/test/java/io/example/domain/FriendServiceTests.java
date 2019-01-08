@@ -1,13 +1,21 @@
 package io.example.domain;
 
 import io.example.AbstractUnitTest;
+import io.example.domain.friend.Friend;
+import io.example.domain.friend.FriendRepository;
+import io.example.domain.friend.FriendService;
+import io.example.domain.user.User;
+import io.example.domain.user.UserClient;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.r2dbc.function.DatabaseClient;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
@@ -28,6 +36,9 @@ public class FriendServiceTests extends AbstractUnitTest {
 
 	@Autowired
 	private FriendRepository friendRepository;
+
+	@MockBean
+	private UserClient userClient;
 
 	@Before
 	public void setUp() {
@@ -59,6 +70,9 @@ public class FriendServiceTests extends AbstractUnitTest {
 	public void transactionCreateSucceeds() {
 		Friend expected = new Friend(1L, 33L, 32L);
 
+		Mockito.when(userClient.getUser(33L)).thenReturn(Mono.just(new User(33L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(32L)).thenReturn(Mono.just(new User(32L, "Jean", "Gray")));
+
 		// Create a new friend transaction without throwing an error in the callback
 		StepVerifier.create(friendService.create(expected, friend -> System.out.println(friend.toString())))
 				.expectSubscription()
@@ -82,6 +96,9 @@ public class FriendServiceTests extends AbstractUnitTest {
 	public void transactionCreateFails() {
 		Friend expected = new Friend(2L, 46L, 23L);
 
+		Mockito.when(userClient.getUser(46L)).thenReturn(Mono.just(new User(46L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(23L)).thenReturn(Mono.just(new User(23L, "Jean", "Gray")));
+
 		// Create a new friend transaction and throw a runtime exception in the callback
 		StepVerifier.create(friendService.create(expected, friend -> {
 			// This error should rollback the transaction
@@ -101,6 +118,9 @@ public class FriendServiceTests extends AbstractUnitTest {
 	public void transactionCreateFailsWhenConflict() {
 		Friend expected = new Friend(89L, 11L);
 
+		Mockito.when(userClient.getUser(89L)).thenReturn(Mono.just(new User(89L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(11L)).thenReturn(Mono.just(new User(11L, "Jean", "Gray")));
+
 		friendService.create(expected, System.out::println).block();
 
 		// Attempt to create a new friend relationship when the relationship already exists
@@ -114,13 +134,19 @@ public class FriendServiceTests extends AbstractUnitTest {
 	public void transactionGetSucceeds() {
 		Friend expected = new Friend(500L, 33L, 48L);
 
+		Mockito.when(userClient.getUser(33L)).thenReturn(Mono.just(new User(33L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(48L)).thenReturn(Mono.just(new User(48L, "Jean", "Gray")));
+
 		friendService.create(expected, System.out::println).block();
 
 		StepVerifier.create(friendService.find(500L)).expectSubscription()
 				.assertNext(u -> {
+					System.out.println(u);
 					Assert.assertEquals("Actual id match expected", expected.getId(), u.getId());
 					Assert.assertEquals("Actual userId match expected", expected.getUserId(), u.getUserId());
 					Assert.assertEquals("Actual friendId match expected", expected.getFriendId(), u.getFriendId());
+					Assert.assertNotNull("Created at should not be null", u.getCreatedAt());
+					Assert.assertNotNull("Updated at at should not be null", u.getUpdatedAt());
 				}).expectComplete().log().verify();
 	}
 
@@ -132,6 +158,9 @@ public class FriendServiceTests extends AbstractUnitTest {
 	@Test
 	public void transactionUpdateSucceeds() {
 		Friend expected = new Friend(700L, 21L, 46L);
+
+		Mockito.when(userClient.getUser(21L)).thenReturn(Mono.just(new User(21L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(46L)).thenReturn(Mono.just(new User(46L, "Jean", "Gray")));
 
 		// Create a new friend transaction without throwing an error in the callback
 		StepVerifier.create(friendService.create(expected, friend -> System.out.println(friend.toString())))
@@ -159,6 +188,9 @@ public class FriendServiceTests extends AbstractUnitTest {
 	@Test
 	public void transactionUpdateFails() {
 		Friend expected = new Friend(900L, 35L, 49L);
+
+		Mockito.when(userClient.getUser(35L)).thenReturn(Mono.just(new User(35L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(49L)).thenReturn(Mono.just(new User(49L, "Jean", "Gray")));
 
 		// Create a new friend transaction without throwing an error in the callback
 		StepVerifier.create(friendService.create(expected, friend -> System.out.println(friend.toString())))
@@ -196,6 +228,9 @@ public class FriendServiceTests extends AbstractUnitTest {
 	public void transactionDeleteSucceeds() {
 		Friend expected = new Friend(1000L, 53L, 93L);
 
+		Mockito.when(userClient.getUser(53L)).thenReturn(Mono.just(new User(53L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(93L)).thenReturn(Mono.just(new User(93L, "Jean", "Gray")));
+
 		friendService.create(expected, System.out::println).block();
 
 		// Delete the friendship where the userId is 53 and the friendId is 93
@@ -210,6 +245,9 @@ public class FriendServiceTests extends AbstractUnitTest {
 	@Test
 	public void friendExistsSucceeds() {
 		Friend expected = new Friend(421L, 221L);
+
+		Mockito.when(userClient.getUser(421L)).thenReturn(Mono.just(new User(21L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(221L)).thenReturn(Mono.just(new User(46L, "Jean", "Gray")));
 
 		friendService.create(expected, System.out::println).block();
 

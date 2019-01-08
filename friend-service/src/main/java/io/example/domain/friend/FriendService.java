@@ -1,10 +1,13 @@
-package io.example.domain;
+package io.example.domain.friend;
 
+import io.example.domain.user.UserClient;
 import org.springframework.data.r2dbc.function.DatabaseClient;
 import org.springframework.data.r2dbc.function.TransactionalDatabaseClient;
 import org.springframework.data.r2dbc.function.convert.MappingR2dbcConverter;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,12 +29,14 @@ public class FriendService {
 	private final TransactionalDatabaseClient transactionalDatabaseClient;
 	private final DatabaseClient databaseClient;
 	private final MappingR2dbcConverter converter;
+	private final UserClient userClient;
 
 	public FriendService(TransactionalDatabaseClient transactionalDatabaseClient, DatabaseClient databaseClient,
-	                     MappingR2dbcConverter converter) {
+	                     MappingR2dbcConverter converter, UserClient userClient) {
 		this.transactionalDatabaseClient = transactionalDatabaseClient;
 		this.databaseClient = databaseClient;
 		this.converter = converter;
+		this.userClient = userClient;
 	}
 
 	/**
@@ -43,16 +48,24 @@ public class FriendService {
 	 * @return a {@link Mono<Friend>} that emits the result of the transaction in the form of the committed {@link Friend}.
 	 */
 	public Mono<Friend> create(Friend friend, Consumer<Friend> callback) {
-		return transactionalDatabaseClient.inTransaction(db -> db.insert().into(Friend.class)
-				.using(friend)
-				.map((o, u) -> converter.populateIdIfNecessary(friend).apply(o, u))
-				.first().map(Friend::getId)
-				.flatMap(id -> db.execute().sql("SELECT * FROM friend WHERE id=$1")
-						.bind(0, id).as(Friend.class)
-						.fetch()
-						.first())
-				.single()
-				.doOnNext(callback)).single();
+		// Validate that both friends exist on the user-service
+		return Mono.sequenceEqual(userClient.getUser(friend.getUserId()).hasElement(),
+				userClient.getUser(friend.getFriendId()).hasElement(), (a, b) -> a && b)
+				.doOnNext(valid -> {
+					if (!valid) {
+						throw new HttpClientErrorException(HttpStatus.NOT_FOUND,
+								"The supplied friends do not exist by the friendId or userId");
+					}
+				}).then(transactionalDatabaseClient.inTransaction(db -> db.insert().into(Friend.class)
+						.using(friend)
+						.map((o, u) -> converter.populateIdIfNecessary(friend).apply(o, u))
+						.first().map(Friend::getId)
+						.flatMap(id -> db.execute().sql("SELECT * FROM friend WHERE id=$1")
+								.bind(0, id).as(Friend.class)
+								.fetch()
+								.first())
+						.single()
+						.doOnNext(callback)).single());
 	}
 
 	/**
