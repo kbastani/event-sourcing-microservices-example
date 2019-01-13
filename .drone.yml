@@ -5,4 +5,4 @@ steps:
 - name: unit-tests
   image: maven:3.6-jdk-11
   commands:
-  - mvn clean test
+  - mvn clean test -Dtest="*,!UserControllerTest,!UserServiceTests"
