@@ -1,5 +1,8 @@
 # Event Sourcing Microservices Example with Spring, Kubernetes, and Docker
 
+[![drone status](http://drone.pivlab.gcp.paulczar.wtf/api/badges/paulczar/event-sourcing-microservices-example/status.svg)](http://drone.pivlab.gcp.paulczar.wtf/paulczar/event-sourcing-microservices-example)
+
+
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/03693178d32b4db6bb6a1453e9b0c007)](https://app.codacy.com/app/kbastani/event-sourcing-microservices-example?utm_source=github.com&utm_medium=referral&utm_content=kbastani/event-sourcing-microservices-example&utm_campaign=Badge_Grade_Settings)[![Build Status](https://travis-ci.com/kbastani/event-sourcing-microservices-example.svg?branch=master)](https://travis-ci.com/kbastani/event-sourcing-microservices-example)
 
 This project is a practical microservices reference example for demonstrating the basics of CQRS and Event Sourcing with Spring Boot and Spring Cloud. This tutorial walks you through getting this example up and running on Kubernetes using Docker Stacks. If you're unfamiliar with Kubernetes–no worries!–everything you need to get started is contained in this tutorial.
@@ -548,4 +551,3 @@ Aggregate services:
 ## License
 
 This project is licensed under Apache License 2.0.
-

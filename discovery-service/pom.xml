@@ -36,6 +36,23 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>1.0.0-rc2</version>
+                <configuration>
+                <from>
+                    <image>openjdk:11.0.1-jre-slim-sid</image>
+                </from>
+                <to>
+                    <auth>
+                        <username>${env.DOCKER_USERNAME}</username>
+                        <password>${env.DOCKER_PASSWORD}</password>
+                    </auth>
+                    <image>${docker.user}/${project.name}:${project.version}</image>
+                </to>
+                </configuration>
+            </plugin>
+            <plugin>
             <groupId>com.spotify</groupId>
             <artifactId>dockerfile-maven-plugin</artifactId>
             <version>1.4.9</version>

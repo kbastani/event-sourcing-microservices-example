@@ -3,3 +3,7 @@ appVersion: "0.0.1-SNAPSHOT"
 description: A Helm chart for Hyerskale Social Network
 name: social-network
 version: 0.1.0
+home: https://github.com/hyperskale/social-network
+maintainers:
+  - name: paulczar
+  - name: kbastani

@@ -23,12 +23,12 @@ serviceAccount:
 rbac:
   create: true
 
-# inject extra spring into app
-#springConfig:
-#  spring:
-#    profiles: kubernetes
-#    cloud:
-#      gateway:
+## inject extra spring into app
+# springConfig:
+#   spring:
+#     profiles: kubernetes
+#     cloud:
+#       gateway:
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

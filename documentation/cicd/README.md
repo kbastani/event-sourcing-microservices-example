@@ -27,7 +27,7 @@ helm install --namespace cicd-drone --name drone \
       --set 'server.host=http://drone.pivlab.gcp.paulczar.wtf:8000' \
       --set 'server.env.DRONE_USER_CREATE=username:paulczar\,admin:true' \
       --set 'adminUser=paulczar' \
-      stable/drone
+      .
 ```
 
 * Point DNS A record matching the github settings to your services IP.

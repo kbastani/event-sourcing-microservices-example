@@ -3,3 +3,7 @@ appVersion: "0.0.2-SNAPSHOT"
 description: Helm chart for the friend microservice in hyperskale/social-network
 name: friend-service
 version: 0.2.0
+home: https://github.com/hyperskale/social-network
+maintainers:
+  - name: paulczar
+  - name: kbastani

@@ -3,3 +3,7 @@ appVersion: "0.0.1-SNAPSHOT"
 description: Helm chart for the edge microservice in hyperskale/social-network
 name: edge-service
 version: 0.1.0
+home: https://github.com/hyperskale/social-network
+maintainers:
+  - name: paulczar
+  - name: kbastani
