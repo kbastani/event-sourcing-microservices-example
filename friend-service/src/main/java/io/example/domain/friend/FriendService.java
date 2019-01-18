@@ -63,9 +63,8 @@ public class FriendService {
 						.flatMap(id -> db.execute().sql("SELECT * FROM friend WHERE id=$1")
 								.bind(0, id).as(Friend.class)
 								.fetch()
-								.first())
-						.single()
-						.doOnNext(callback)).single());
+								.first()))
+						.delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u))).single());
 	}
 
 	/**
@@ -116,7 +115,7 @@ public class FriendService {
 								.bind(0, friendId.get())
 								.as(Friend.class)
 								.fetch()
-								.first()).single().doOnNext(callback)).single();
+								.first()).delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u)))).single();
 	}
 
 	/**
@@ -139,9 +138,7 @@ public class FriendService {
 									.fetch()
 									.rowsUpdated();
 						}).single().then(Mono.just(friend))
-						.single()
-						.map(f -> f)
-						.doOnNext(callback).log()).single();
+						.delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u)))).single();
 	}
 
 	public Mono<Boolean> exists(Long userId, Long friendId) {
