@@ -96,20 +96,23 @@ read_name() {
 
 export -f read_name
 
+# Generate random text file name
+export FILE_NAME="$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1).txt"
+
 parallel \
-    'read_name {1} | jq -c . >> temp.txt' :::+<$DIR/names-100.txt
+    'read_name {1} | jq -c . >> $FILE_NAME' :::+<$DIR/names-100.txt
 
 while read id; do
   echo ${id} | jq .;
   IDS+=($(echo ${id} | jq -r .id));
-done <./temp.txt
+done <./$FILE_NAME
 
-rm ./temp.txt
+rm ./$FILE_NAME
 
-echo "====> Create 600 friendships..."
+echo "====> Create 2000 friendships..."
 
 add_friend() {
-  RANGE=500
+  RANGE=600
   friend1=$RANDOM
   friend2=$RANDOM
   let "friend1 %= $RANGE"
@@ -152,22 +155,8 @@ echo
 seq 99 | parallel \
     'add_relationship {1} $LOWER_BOUND'
 
-seq 500 | parallel \
+seq 2000 | parallel \
     'add_friend $LOWER_BOUND'
-
-
-#for i in {1..100};
-#do
-#  friend1=${IDS[$RANDOM % ${#IDS[@]}]};
-#  friend2=${IDS[$RANDOM % ${#IDS[@]}]};
-#  echo "$friend1 ❤ $friend2";
-#  FRIEND_RESULT=`curl -s -X "POST" \
-#   "http://$EDGE_URI/friend/v1/users/$friend1/commands/addFriend?friendId=$friend2" \
-#    -H 'Content-Type: application/json; charset=utf-8' -d ""`
-#  echo ${FRIEND_RESULT} | jq
-#done
-
-sleep 4
 
 friend1=${IDS[$RANDOM % ${#IDS[@]}]}
 friend2=${IDS[$RANDOM % ${#IDS[@]}]}

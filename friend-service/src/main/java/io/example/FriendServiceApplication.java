@@ -9,7 +9,8 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.*;
+import reactor.core.publisher.Mono;
 
 /**
  * The microservice that manages domain data for friend requests.
@@ -37,7 +38,14 @@ public class FriendServiceApplication {
 	public WebClient userWebClient(LoadBalancerExchangeFilterFunction eff) {
 		return WebClient.builder()
 				.filter(eff)
+				.filter(new ExchangeFilterFunction() {
+					@Override
+					public Mono<ClientResponse> filter(ClientRequest clientRequest, ExchangeFunction exchangeFunction) {
+						return null;
+					}
+				})
 				.baseUrl("http://user-service/")
 				.build();
 	}
+
 }

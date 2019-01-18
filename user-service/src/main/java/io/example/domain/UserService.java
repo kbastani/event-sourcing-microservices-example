@@ -45,13 +45,12 @@ public class UserService {
 		return transactionalDatabaseClient.inTransaction(db -> db.insert().into(User.class)
 				.using(user)
 				.map((o, u) -> converter.populateIdIfNecessary(user).apply(o, u))
-				.first().map(User::getId)
+				.first()
+				.map(User::getId)
 				.flatMap(id -> db.execute().sql("SELECT * FROM users WHERE id=$1")
 						.bind(0, id).as(User.class)
 						.fetch()
-						.first())
-				.single()
-				.doOnNext(callback)).single();
+						.first()).delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u)))).single();
 	}
 
 	/**
@@ -90,6 +89,6 @@ public class UserService {
 								.bind(0, userId.get())
 								.as(User.class)
 								.fetch()
-								.first()).single().doOnNext(callback)).single();
+								.first()).delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u)))).single();
 	}
 }
