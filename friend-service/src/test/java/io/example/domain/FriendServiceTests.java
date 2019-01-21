@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 /**
  * Tests the transactional guarantees of the {@link FriendService}.
@@ -27,6 +29,11 @@ import java.util.Arrays;
  */
 @EnableAutoConfiguration
 public class FriendServiceTests extends AbstractUnitTest {
+
+	private Function<Friend, Publisher<Void>> friendToError = (friend) -> Mono.just(friend)
+			.doOnNext((f) -> {
+				throw new RuntimeException();
+			}).then();
 
 	@Autowired
 	private DatabaseClient databaseClient;
@@ -74,7 +81,8 @@ public class FriendServiceTests extends AbstractUnitTest {
 		Mockito.when(userClient.getUser(45L)).thenReturn(Mono.just(new User(45L, "Jean", "Gray")));
 
 		// Create a new friend transaction without throwing an error in the callback
-		StepVerifier.create(friendService.create(expected, friend -> System.out.println(friend.toString())))
+		StepVerifier.create(friendService.create(expected,
+				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString()))))
 				.expectSubscription()
 				.assertNext(u -> {
 					Assert.assertEquals("Actual id match expected", expected.getId(), u.getId());
@@ -100,10 +108,7 @@ public class FriendServiceTests extends AbstractUnitTest {
 		Mockito.when(userClient.getUser(23L)).thenReturn(Mono.just(new User(23L, "Jean", "Gray")));
 
 		// Create a new friend transaction and throw a runtime exception in the callback
-		StepVerifier.create(friendService.create(expected, friend -> {
-			// This error should rollback the transaction
-			throw new RuntimeException();
-		})).expectSubscription()
+		StepVerifier.create(friendService.create(expected, friendToError)).expectSubscription()
 				.expectError()
 				.log()
 				.verify();
@@ -121,7 +126,8 @@ public class FriendServiceTests extends AbstractUnitTest {
 		Mockito.when(userClient.getUser(89L)).thenReturn(Mono.just(new User(89L, "Kenny", "Bastani")));
 		Mockito.when(userClient.getUser(11L)).thenReturn(Mono.empty());
 
-		StepVerifier.create(friendService.create(expected, friend -> {})).expectSubscription()
+		StepVerifier.create(friendService.create(expected,
+				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString())))).expectSubscription()
 				.expectError()
 				.log()
 				.verify();
@@ -134,10 +140,12 @@ public class FriendServiceTests extends AbstractUnitTest {
 		Mockito.when(userClient.getUser(89L)).thenReturn(Mono.just(new User(89L, "Kenny", "Bastani")));
 		Mockito.when(userClient.getUser(11L)).thenReturn(Mono.just(new User(11L, "Jean", "Gray")));
 
-		friendService.create(expected, System.out::println).block();
+		friendService.create(expected, friend -> Mono.fromRunnable(() -> System.out.println(friend.toString())))
+				.block();
 
 		// Attempt to create a new friend relationship when the relationship already exists
-		StepVerifier.create(friendService.create(expected, friend -> {})).expectSubscription()
+		StepVerifier.create(friendService.create(expected,
+				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString())))).expectSubscription()
 				.expectError()
 				.log()
 				.verify();
@@ -150,7 +158,8 @@ public class FriendServiceTests extends AbstractUnitTest {
 		Mockito.when(userClient.getUser(33L)).thenReturn(Mono.just(new User(33L, "Kenny", "Bastani")));
 		Mockito.when(userClient.getUser(48L)).thenReturn(Mono.just(new User(48L, "Jean", "Gray")));
 
-		friendService.create(expected, System.out::println).block();
+		friendService.create(expected, friend -> Mono.fromRunnable(() -> System.out.println(friend.toString())))
+				.block();
 
 		StepVerifier.create(friendService.find(500L)).expectSubscription()
 				.assertNext(u -> {
@@ -176,7 +185,8 @@ public class FriendServiceTests extends AbstractUnitTest {
 		Mockito.when(userClient.getUser(46L)).thenReturn(Mono.just(new User(46L, "Jean", "Gray")));
 
 		// Create a new friend transaction without throwing an error in the callback
-		StepVerifier.create(friendService.create(expected, friend -> System.out.println(friend.toString())))
+		StepVerifier.create(friendService.create(expected,
+				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString()))))
 				.expectSubscription()
 				.assertNext(u -> {
 					Assert.assertEquals("Actual id match expected", expected.getId(), u.getId());
@@ -206,7 +216,8 @@ public class FriendServiceTests extends AbstractUnitTest {
 		Mockito.when(userClient.getUser(49L)).thenReturn(Mono.just(new User(49L, "Jean", "Gray")));
 
 		// Create a new friend transaction without throwing an error in the callback
-		StepVerifier.create(friendService.create(expected, friend -> System.out.println(friend.toString())))
+		StepVerifier.create(friendService.create(expected,
+				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString()))))
 				.expectSubscription()
 				.assertNext(u -> {
 					Assert.assertEquals("Actual id match expected", u.getId(), expected.getId());
@@ -244,7 +255,8 @@ public class FriendServiceTests extends AbstractUnitTest {
 		Mockito.when(userClient.getUser(53L)).thenReturn(Mono.just(new User(53L, "Kenny", "Bastani")));
 		Mockito.when(userClient.getUser(93L)).thenReturn(Mono.just(new User(93L, "Jean", "Gray")));
 
-		friendService.create(expected, System.out::println).block();
+		friendService.create(expected,
+				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString()))).block();
 
 		// Delete the friendship where the userId is 53 and the friendId is 93
 		StepVerifier.create(friendService.delete(expected, System.out::println))
@@ -262,7 +274,8 @@ public class FriendServiceTests extends AbstractUnitTest {
 		Mockito.when(userClient.getUser(421L)).thenReturn(Mono.just(new User(21L, "Kenny", "Bastani")));
 		Mockito.when(userClient.getUser(221L)).thenReturn(Mono.just(new User(46L, "Jean", "Gray")));
 
-		friendService.create(expected, System.out::println).block();
+		friendService.create(expected,
+				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString()))).block();
 
 		// Delete the friendship where the userId is 421 and the friendId is 221
 		StepVerifier.create(friendService.exists(expected.getUserId(), expected.getFriendId()))
