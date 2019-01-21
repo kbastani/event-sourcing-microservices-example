@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,9 +23,13 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.text.MessageFormat;
+import java.util.function.Function;
 
 @AutoConfigureWebTestClient
 public class FriendControllerTest extends AbstractIntegrationTest {
+
+	private Function<Friend, Publisher<Void>> friendToString = (friend) -> Mono.just(friend)
+			.doOnNext(System.out::println).then();
 
 	@Autowired
 	public WebTestClient webClient;
@@ -59,7 +64,11 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 		Mockito.when(userClient.getUser(1L)).thenReturn(Mono.just(new User(1L, "Major", "Tom")));
 		Mockito.when(userClient.getUser(6L)).thenReturn(Mono.just(new User(6L, "David", "Bowie")));
 
-		friendService.create(new Friend(300L, 1L, 6L), System.out::println).then().block();
+		StepVerifier.create(friendService.create(new Friend(300L, 1L, 6L), friendToString))
+				.expectSubscription()
+				.expectNextCount(1L)
+				.expectComplete()
+				.verify();
 
 		// Test getting a friend
 		StepVerifier.create(this.webClient.get().uri("/v1/friends/300")
@@ -81,9 +90,9 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 		Mockito.when(userClient.getUser(4L)).thenReturn(Mono.just(new User(4L, "Lady", "Gaga")));
 		Mockito.when(userClient.getUser(3L)).thenReturn(Mono.just(new User(3L, "Major", "Tom")));
 
-		friendService.create(new Friend(1L, 5L), System.out::println).then().block();
-		friendService.create(new Friend(5L, 3L), System.out::println).then().block();
-		friendService.create(new Friend(4L, 5L), System.out::println).then().block();
+		friendService.create(new Friend(1L, 5L), friendToString).then().block();
+		friendService.create(new Friend(5L, 3L), friendToString).then().block();
+		friendService.create(new Friend(4L, 5L), friendToString).then().block();
 
 		// Test getting a friend
 		StepVerifier.create(this.webClient.get().uri("/v1/users/5/friends")
@@ -164,14 +173,13 @@ public class FriendControllerTest extends AbstractIntegrationTest {
 		Mockito.when(userClient.getUser(51L)).thenReturn(Mono.just(new User(51L, "Major", "Tom")));
 		Mockito.when(userClient.getUser(26L)).thenReturn(Mono.just(new User(26L, "David", "Bowie")));
 
-		friendService.create(expected, System.out::println).then().block();
+		friendService.create(expected, friendToString).then().block();
 
 		// Test creating a new friend using the transactional R2DBC client API
 		StepVerifier.create(this.webClient.post().uri("/v1/users/51/commands/removeFriend?friendId=26")
 				.contentType(MediaType.APPLICATION_JSON)
 				.exchange()
 				.returnResult(Friend.class).getResponseBody()).expectSubscription()
-				.assertNext(System.out::print)
 				.expectComplete().log().verify();
 
 		// Test that the transaction was not rolled back

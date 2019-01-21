@@ -1,6 +1,7 @@
 package io.example.domain.friend;
 
 import io.example.domain.user.UserClient;
+import org.reactivestreams.Publisher;
 import org.springframework.data.r2dbc.function.DatabaseClient;
 import org.springframework.data.r2dbc.function.TransactionalDatabaseClient;
 import org.springframework.data.r2dbc.function.convert.MappingR2dbcConverter;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * The {@link FriendService} contains methods for managing the transactional state of {@link Friend} entities. Each
@@ -44,10 +46,10 @@ public class FriendService {
 	 * event to a third-party system, such as Apache Kafka, before finalizing the commit.
 	 *
 	 * @param friend   is the {@link Friend} entity to create.
-	 * @param callback is a {@link Consumer<Friend>} that will allow you to throw an exception to rollback the TX.
+	 * @param callback is a {@code Function<Friend, Publisher<Void>>} that will allow you to throw an exception to rollback the TX.
 	 * @return a {@link Mono<Friend>} that emits the result of the transaction in the form of the committed {@link Friend}.
 	 */
-	public Mono<Friend> create(Friend friend, Consumer<Friend> callback) {
+	public Mono<Friend> create(Friend friend, Function<Friend, Publisher<Void>> callback) {
 		// Validate that both friends exist on the user-service
 		return Mono.sequenceEqual(userClient.getUser(friend.getUserId()).hasElement(),
 				userClient.getUser(friend.getFriendId()).hasElement(), (a, b) -> a && b)
@@ -64,7 +66,7 @@ public class FriendService {
 								.bind(0, id).as(Friend.class)
 								.fetch()
 								.first()))
-						.delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u))).single());
+						.delayUntil(callback).single());
 	}
 
 	/**

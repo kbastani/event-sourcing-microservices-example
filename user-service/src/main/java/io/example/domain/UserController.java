@@ -40,8 +40,6 @@ public class UserController {
 	@PostMapping(path = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Mono<User> createUser(@RequestBody Mono<User> user) {
-		Assert.state(user != null, "User payload must not equal null");
-
 		// Take the producer mono and flat map it to a sequence of steps to create a new user
 		return user.flatMap(u -> {
 			// Execute a dual-write to the local database and the shared Kafka cluster using an atomic commit
