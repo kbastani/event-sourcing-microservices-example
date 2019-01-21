@@ -319,31 +319,30 @@ helm install --namespace social-network --name social-network --set fullNameOver
 To check the status of the deployment, use the following command.
 
 ```bash
-kubectl get pods -n kube-system
+kubectl get pods -n social-network
 ```
 
 The following output will show you the full state of the cluster.
 
 ```text
-NAME                                                          READY     STATUS    RESTARTS   AGE
-edge-service-59d896ddf6-hh88b                                 1/1       Running   0          47m
-friend-db-0                                                   1/1       Running   0          47m
-friend-service-5d47476675-xwkj2                               1/1       Running   0          41m
-kafka-0                                                       1/1       Running   0          47m
-kafka-1                                                       1/1       Running   0          44m
-kafka-2                                                       1/1       Running   0          44m
-recommendation-service-74ddb7d7b8-n6jm5                       1/1       Running   0          47m
-social-network-neo4j-core-0                                   1/1       Running   0          47m
-social-network-prometheus-alertmanager-6945f46869-4jbz2       2/2       Running   0          47m
-social-network-prometheus-kube-state-metrics-f85b799b-zwc6h   1/1       Running   0          47m
-social-network-prometheus-node-exporter-n77nh                 1/1       Running   0          47m
-social-network-prometheus-pushgateway-596d47694d-hrbdj        1/1       Running   0          47m
-social-network-prometheus-server-dc9c96c7b-hbnks              2/2       Running   0          47m
-social-network-zookeeper-0                                    1/1       Running   0          47m
-social-network-zookeeper-1                                    1/1       Running   0          46m
-social-network-zookeeper-2                                    1/1       Running   0          45m
-user-db-0                                                     1/1       Running   0          47m
-user-service-766989c67d-7pz6k                                 1/1       Running   0          47m
+NAME                                                            READY     STATUS    RESTARTS   AGE
+edge-service-5598fcdc76-jcw84                                   1/1       Running   0          10m
+friend-db-0                                                     1/1       Running   0          10m
+friend-service-894564675-7jt5m                                  1/1       Running   0          10m
+kafka-0                                                         1/1       Running   1          10m
+kafka-1                                                         1/1       Running   0          8m
+kafka-2                                                         1/1       Running   0          7m
+recommendation-service-6cf6799c8d-87p9b                         1/1       Running   0          10m
+social-network-grafana-7cb6964c49-pdhkr                         1/1       Running   0          10m
+social-network-neo4j-core-0                                     1/1       Running   0          10m
+social-network-prometheus-kube-state-metrics-584476744f-fcqqt   1/1       Running   0          10m
+social-network-prometheus-node-exporter-krbxw                   1/1       Running   0          10m
+social-network-prometheus-server-67fb7845b9-87dbb               2/2       Running   0          10m
+social-network-zookeeper-0                                      1/1       Running   0          10m
+social-network-zookeeper-1                                      1/1       Running   0          9m
+social-network-zookeeper-2                                      1/1       Running   0          9m
+user-db-0                                                       1/1       Running   0          10m
+user-service-8575d8b458-cd2hh                                   1/1       Running   0          10m
 ```
 
 There is no application-level security for the example app at this point, therefore rather than exposing the edge
@@ -364,6 +363,27 @@ sh ./deployment/sbin/generate-serial.sh
 # Generates a 100 person social network using parallel API calls (high-performance)
 sh ./deployment/sbin/generate-parallel.sh
 ```
+
+Metrics for each application are forwarded to a prometheus gateway used for scraping into prometheus. Each Spring application uses http://micrometer.io to allow you to aggregate metrics using a collection of backing stores. For visualizing the aggregated metrics, you can use tools such as https://grafana.com/grafana. Our Helm chart includes easy access to Grafana, with preconfigured dashboards ready for your convenience.
+
+To access Grafana, take the following steps.
+
+Run `kubectl` port forward to make the application accessible:
+
+```bash
+kubectl -n social-network port-forward svc/social-network-grafana 8080:80
+```
+
+Access Grafana via your web browser at `http://localhost:8080`
+
+Enter the credentials below to authenticate.
+
+    Username: admin
+    Password: password
+
+Browse to the `Spring Boot Statistics` dashboard and choose your `environment`, `application`, and `instance`.
+
+
 
 ### Cleanup
 
