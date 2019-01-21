@@ -68,10 +68,10 @@ public class FriendServiceTests extends AbstractUnitTest {
 
 	@Test
 	public void transactionCreateSucceeds() {
-		Friend expected = new Friend(1L, 33L, 32L);
+		Friend expected = new Friend(917L, 68L, 45L);
 
-		Mockito.when(userClient.getUser(33L)).thenReturn(Mono.just(new User(33L, "Kenny", "Bastani")));
-		Mockito.when(userClient.getUser(32L)).thenReturn(Mono.just(new User(32L, "Jean", "Gray")));
+		Mockito.when(userClient.getUser(68L)).thenReturn(Mono.just(new User(68L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(45L)).thenReturn(Mono.just(new User(45L, "Jean", "Gray")));
 
 		// Create a new friend transaction without throwing an error in the callback
 		StepVerifier.create(friendService.create(expected, friend -> System.out.println(friend.toString())))
@@ -83,7 +83,7 @@ public class FriendServiceTests extends AbstractUnitTest {
 				}).expectComplete().log().verify();
 
 		// Read the result of the previous transaction and see that it succeeded
-		StepVerifier.create(friendService.find(1L))
+		StepVerifier.create(friendService.find(917L))
 				.expectSubscription()
 				.assertNext(u -> {
 					Assert.assertEquals("Actual id match expected", expected.getId(), u.getId());
@@ -111,6 +111,19 @@ public class FriendServiceTests extends AbstractUnitTest {
 		// Read the result of the previous transaction and expect that no friends are emitted from the publisher
 		StepVerifier.create(friendService.find(2L)).expectSubscription()
 				.expectComplete()
+				.verify();
+	}
+
+	@Test
+	public void transactionCreateFailsOnFkConstraint() {
+		Friend expected = new Friend(89L, 11L);
+
+		Mockito.when(userClient.getUser(89L)).thenReturn(Mono.just(new User(89L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(11L)).thenReturn(Mono.empty());
+
+		StepVerifier.create(friendService.create(expected, friend -> {})).expectSubscription()
+				.expectError()
+				.log()
 				.verify();
 	}
 

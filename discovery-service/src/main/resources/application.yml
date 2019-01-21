@@ -39,3 +39,6 @@ spring:
     kubernetes.ribbon.enabled: false
     kubernetes.enabled: false
 prometheus.enabled: false
+eureka:
+  client:
+    enabled: false

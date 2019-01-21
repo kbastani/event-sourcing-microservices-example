@@ -58,7 +58,7 @@ while read fullname; do
   echo $ADD_USER | jq
   USER_ID=`echo $ADD_USER | jq .id`
   [[ "$USER_ID" != "null" ]] && IDS+=("${USER_ID}")
-done <$DIR/names-100.txt
+done <$DIR/names-15.txt
 
 while read id; do
   echo ${id} | jq .;
@@ -73,7 +73,7 @@ done
 echo
 
 echo "====> Create 100 friendships..."
-for i in {1..1000};
+for i in {1..300};
 do
   friend1=${IDS[$RANDOM % ${#IDS[@]}]};
   friend2=${IDS[$RANDOM % ${#IDS[@]}]};
