@@ -19,9 +19,7 @@ public class UserClient {
 		Mono<User> user;
 
 		try {
-			user = userWebClient.baseUrl("http://user-service/")
-					.build()
-					.get()
+			user = userWebClient.baseUrl("http://user-service/").build().get()
 					.uri("v1/users/{userId}", userId)
 					.accept(MediaType.APPLICATION_JSON)
 					.retrieve()
