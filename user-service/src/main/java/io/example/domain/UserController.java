@@ -40,7 +40,7 @@ public class UserController {
 	@PostMapping(path = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Mono<User> createUser(@RequestBody Mono<User> user) {
-		Assert.state(user != null, "User payload must not equal null");
+		// user will be never null with mono - spring will map it to Mono.empty() in that case
 
 		// Take the producer mono and flat map it to a sequence of steps to create a new user
 		return user.flatMap(u -> {
