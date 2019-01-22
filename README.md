@@ -396,7 +396,7 @@ sh ./deployment/sbin/generate-parallel.sh
 
 This script sends as many different requests to the server as your machine can handle concurrently. To see how fast your cluster is able to handle the load, you can navigate to a separate dashboard, called `Domain Data Metrics`.
 
-![Domain Data Metrics](https://imgur.com/VuUjTa9.png)
+![Domain Data Metrics](https://i.imgur.com/NMcZWI5.png)
 
 Here you can see the live execution of requests from your machine to the API gateway, which is sending asynchronous non-blocking requests all the way down to the database and back to your client.
 
