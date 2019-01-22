@@ -254,9 +254,9 @@ zookeeper-5fd96b9b9f-8dfw8                1/1       Running   0          1m
 
 ## Hyperscale Evaluation
 
-Helm is a package manager for Kubernetes that can be used to deploy a distributed system. This repository will be moving to a new organization called [Hyperskale](http://www.github.com/hyperskale). Each example application in this new org will contain a Helm package to help you get up and running with deploying a hyper-scalable distributed system to Kubernetes as fast as possible.
+Helm is a package manager for Kubernetes that can be used to deploy and manage a scale-out distributed system.
 
-Thanks to [Paul Czarkowski](http://www.twitter.com/pczarkowski), this example has a fully functional Helm chart package and tutorial for users who are wanting to deploy the hyper-scalable production version of our social network example to any Kubernetes cluster. This Helm chart comes complete with an HA Kafka cluster and metrics aggregation with Prometheus.
+Thanks to contributions from [Paul Czarkowski](http://www.twitter.com/pczarkowski), this social network example has a fully functioning Helm chart and companion tutorial. This deployment scenario is for anyone who wants to test out a hyper-scalable production-ready version of an end-to-end reactive social network built with Spring. The most important feedback mechanism in this Helm chart is the ability to use Grafana to visualize metrics that tests the scalability and performance of the social network's architecture.
 
 ### Helm Installation
 
@@ -360,11 +360,13 @@ sh ./deployment/sbin/generate-serial.sh
 ```
 
 ```bash
-# Generates a 100 person social network using parallel API calls (high-performance)
+# Generates a 600 person social network using parallel API calls (high-performance)
 sh ./deployment/sbin/generate-parallel.sh
 ```
 
-Metrics for each application are forwarded to a prometheus gateway used for scraping into prometheus. Each Spring application uses http://micrometer.io to allow you to aggregate metrics using a collection of backing stores. For visualizing the aggregated metrics, you can use tools such as https://grafana.com/grafana. Our Helm chart includes easy access to Grafana, with preconfigured dashboards ready for your convenience.
+### Metrics and Monitoring
+
+Metrics for each application are forwarded to a prometheus gateway, which aggregates metrics across multiple applications and instances. Each Spring Boot application uses http://micrometer.io to export metrics from each application, which is scraped and downloaded into a Prometheus time-series database. For visualizing the aggregated metrics, you can use tools such as https://grafana.com/grafana—which is included and pre-configured as a part of this installation.
 
 To access Grafana, take the following steps.
 
@@ -381,9 +383,9 @@ Enter the credentials below to authenticate.
     Username: admin
     Password: password
 
-Browse to the `Spring Boot Statistics` dashboard and choose your `environment`, `application`, and `instance`.
+There are two dashboards available for you to start monitoring the application. You can start by navigating to the `Micrometer JVM Statistics` dashboard, which provides the most important information about how a JVM application is running. This dashboard has been designed specifically for Kubernetes, allowing you to select an `application` and either a single `instance` or `all` instances. When selecting `all` instances, the dashboard will create a panel for each `instance` of your chosen `application`.
 
-
+[Micrometer JVM Statistics](https://i.imgur.com/rYQ36D4.png)
 
 ### Cleanup
 
@@ -405,7 +407,7 @@ If everything has been set up correctly, you'll now be able to navigate to Sprin
 
 -   <http://localhost:8761>
 
-You should see that each of the microservices has registered with Eureka. You won't be able to navigate to the URIs contained in the service registry directly. That's because each URI is a part of a network overlay that is being used by the Kubernetes cluster. We can think of these IPs as private, which are not directly mapped to a gateway. Thankfully, we have a Spring Cloud Zuul gateway that is accessible and assigned to your `localhost:9000` (this assumes you've deployed to a local Kubernetes cluster).
+You should see that each of the microservices has registered with Eureka. You won't be able to navigate to the URIs contained in the service registry directly. That's because each URI is a part of a network overlay that is being used by the Kubernetes cluster. We can think of these IPs as private, which are not directly mapped to a gateway. Thankfully, we use _Spring Cloud Gateway_ with reactive non-blocking HTTP requests, accessible at `localhost:9000` (this assumes you've deployed to a local Kubernetes cluster).
 
 ### API Gateway
 
@@ -430,7 +432,7 @@ The *Edge Service* application is an API gateway that simplifies, combines, and 
 
 ### Generating Data
 
-Many thanks goes out to [Michael Simons](http://www.twitter.com/rotnroll666) for contributing multiple fixes and improvements to this repository. One of those improvements was a script to generate test data that you can use to automate the APIs listed above. Once your cluster is up and running, navigate to the `./deployment/sbin` directory. This directory contains a shell script named `generate-social-network.sh`. To make sure there is no funny business going on, you're welcome to run the command `cat ./deployment/sbin/generate-social-network.sh`. You'll see the contents of the shell script, which is written in BASH and will automate and test each of the APIs in the order listed in the last section.
+Many thanks goes out to [Michael Simons](http://www.twitter.com/rotnroll666) for contributing multiple fixes and improvements to this repository. One of those improvements was a script to generate test data that you can use to automate the APIs listed above. Once your cluster is up and running, navigate to the `./deployment/sbin` directory. This directory contains a shell script named `generate-serial.sh`. To make sure there is no funny business going on, you're welcome to run the command `cat ./deployment/sbin/generate-serial.sh`. You'll see the contents of the shell script, which is written in BASH and will automate and test each of the APIs in the order listed in the last section.
 
 You will need to install `jq` to run the script. If you have not yet installed this dependency via your terminal, you can run the command:
 
@@ -441,7 +443,7 @@ brew install jq
 Now you're ready to run the script and test each of the APIs. This script will create 6 users, and create a friend relationships between some of them. Finally, the recommendation API will identify mutual friends and recommend users who I should be friends with.
 
 ```bash
-sh ./deployment/sbin/generate-social-network.sh
+sh ./deployment/sbin/generate-serial.sh
 ```
 
 To see exactly what happened in the Neo4j browser, run the following command.
