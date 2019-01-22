@@ -23,6 +23,7 @@ This project is a practical microservices reference example for demonstrating th
         -   [Helm Installation](#helm-installation)
         -   [Update Dependencies](#update-dependencies)
         -   [Helm Deploy](#helm-deploy)
+        -   [Metrics and Monitoring](#metrics-and-monitoring)
 -   [Running the Social Network](#running-a-social-network)
     -   [API Gateway](#api-gateway)
     -   [Generating Data](#generating-data)
@@ -366,7 +367,7 @@ sh ./deployment/sbin/generate-parallel.sh
 
 ### Metrics and Monitoring
 
-Metrics for each application are forwarded to a prometheus gateway, which aggregates metrics across multiple applications and instances. Each Spring Boot application uses http://micrometer.io to export metrics from each application, which is scraped and downloaded into a Prometheus time-series database. For visualizing the aggregated metrics, you can use tools such as https://grafana.com/grafana—which is included and pre-configured as a part of this installation.
+Metrics for each application are forwarded to a prometheus gateway, which aggregates metrics across multiple applications and instances. Each Spring Boot application uses http://micrometer.io to export metrics from each application, which is scraped and downloaded into a Prometheus time-series database. For visualizing the aggregated metrics, you can use tools such as https://grafana.com/grafana — which is included and pre-configured as a part of this installation.
 
 To access Grafana, take the following steps.
 
@@ -383,9 +384,21 @@ Enter the credentials below to authenticate.
     Username: admin
     Password: password
 
-There are two dashboards available for you to start monitoring the application. You can start by navigating to the `Micrometer JVM Statistics` dashboard, which provides the most important information about how a JVM application is running. This dashboard has been designed specifically for Kubernetes, allowing you to select an `application` and either a single `instance` or `all` instances. When selecting `all` instances, the dashboard will create a panel for each `instance` of your chosen `application`.
+After signing in, there are two dashboards available for you to start monitoring the different applications. You can start by navigating to the `Micrometer JVM Statistics` dashboard, which provides the most important information about how a JVM application is running. This dashboard has been designed specifically for Kubernetes, allowing you to select an `application` and either a single `instance` or `all` instances. When selecting `all` instances, the dashboard will create a panel for each `instance` of your chosen `application`.
 
-[Micrometer JVM Statistics](https://i.imgur.com/rYQ36D4.png)
+![Micrometer JVM Statistics](https://imgur.com/rYQ36D4.png)
+
+In the screenshot above, you can see a few of the metrics that are visible for a single instance of the `user-service`. Notice how the _CPU Usage_ is near 100%. This is because the shell script for parallel execution is being used to scale test the social network. You can try this by running the script locally on your machine.
+
+```bash
+sh ./deployment/sbin/generate-parallel.sh
+```
+
+This script sends as many different requests to the server as your machine can handle concurrently. To see how fast your cluster is able to handle the load, you can navigate to a separate dashboard, called `Domain Data Metrics`.
+
+![Domain Data Metrics](https://imgur.com/VuUjTa9.png)
+
+Here you can see the live execution of requests from your machine to the API gateway, which is sending asynchronous non-blocking requests all the way down to the database and back to your client.
 
 ### Cleanup
 
