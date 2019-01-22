@@ -1,4 +1,4 @@
-HyperSkale Social Network has been successfully deployed.
+Your Hyperskale Social Network example has been successfully deployed to Kubernetes.
 
 1. Run kubectl port forward to access the app:
 
@@ -10,10 +10,14 @@ HyperSkale Social Network has been successfully deployed.
     {"status":"UP"}
 
 3. Create some content
-    $ bash deployment/sbin/generate-social-network.sh
+    $ bash deployment/sbin/generate-serial.sh
+
+    OR
+
+    $ bash deployment/sbin/generate-parallel.sh
 
 {{ if .Values.grafana.enabled }}
-Spring Metrics can be seen via Grafana.
+Micrometer metrics for Spring Boot can be monitored and viewed in Grafana.
 
 1. Run kubectl port forward to access the app:
 
@@ -24,5 +28,5 @@ Spring Metrics can be seen via Grafana.
     username: `admin`
     password: `{{ .Values.grafana.adminPassword }}`
 
-3. Browse to the `Spring Boot Statistics` dashboard and choose your `environment` and `application`.
+3. Browse to the `Micrometer JVM Statistics` dashboard and choose your `application` and `instance`.
 {{ end }}

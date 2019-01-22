@@ -44,6 +44,34 @@ grafana:
         url: http://social-network-prometheus-server
         isDefault: true
         access: proxy
+      - name: Users
+        type: postgres
+        url: user-db
+        database: postgres
+        user: postgres
+        secureJsonData:
+          password: "example"
+        jsonData:
+          sslmode: "disable"
+          maxOpenConns: 0
+          maxIdleConns: 2
+          connMaxLifetime: 14400
+          postgresVersion: 1000
+          timescaledb: false
+      - name: Friends
+        type: postgres
+        url: friend-db
+        database: postgres
+        user: postgres
+        secureJsonData:
+          password: "example"
+        jsonData:
+          sslmode: "disable"
+          maxOpenConns: 0
+          maxIdleConns: 2
+          connMaxLifetime: 14400
+          postgresVersion: 1000
+          timescaledb: false
   dashboardsConfigMaps:
     spring: social-network-grafana-dashboard-spring
   dashboardProviders:
@@ -58,3 +86,6 @@ grafana:
         editable: true
         options:
           path: /var/lib/grafana/dashboards/spring
+  grafana.ini:
+    users:
+      default_theme: "light"
