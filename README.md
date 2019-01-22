@@ -394,7 +394,7 @@ In the screenshot above, you can see a few of the metrics that are visible for a
 sh ./deployment/sbin/generate-parallel.sh
 ```
 
-This script sends as many different requests to the server as your machine can handle concurrently. To see how fast your cluster is able to handle the load, you can navigate to a separate dashboard, called `Domain Data Metrics`.
+This script sends as many different requests to the server as your machine can handle concurrently. To see how fast your cluster is able to handle the load, you can navigate to a separate dashboard, called `Domain Data Statistics`.
 
 ![Domain Data Metrics](https://i.imgur.com/NMcZWI5.png)
 
