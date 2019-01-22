@@ -386,7 +386,7 @@ Enter the credentials below to authenticate.
 
 After signing in, there are two dashboards available for you to start monitoring the different applications. You can start by navigating to the `Micrometer JVM Statistics` dashboard, which provides the most important information about how a JVM application is running. This dashboard has been designed specifically for Kubernetes, allowing you to select an `application` and either a single `instance` or `all` instances. When selecting `all` instances, the dashboard will create a panel for each `instance` of your chosen `application`.
 
-![Micrometer JVM Statistics](https://imgur.com/rYQ36D4.png)
+![Micrometer JVM Statistics](https://i.imgur.com/6Yl6E3K.png)
 
 In the screenshot above, you can see a few of the metrics that are visible for a single instance of the `user-service`. Notice how the _CPU Usage_ is near 100%. This is because the shell script for parallel execution is being used to scale test the social network. You can try this by running the script locally on your machine.
 
