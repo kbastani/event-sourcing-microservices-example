@@ -74,7 +74,7 @@
         "y": 0
       },
       "id": 2,
-      "interval": "5s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -91,7 +91,7 @@
         "values": true
       },
       "lines": true,
-      "linewidth": 2,
+      "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
       "percentage": false,
@@ -189,11 +189,11 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
-        "align": true,
+        "align": false,
         "alignLevel": 1
       }
     },
@@ -214,7 +214,7 @@
         "y": 6
       },
       "id": 3,
-      "interval": "5s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -229,7 +229,7 @@
         "values": true
       },
       "lines": true,
-      "linewidth": 2,
+      "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
       "percentage": false,
@@ -337,7 +337,7 @@
       }
     }
   ],
-  "refresh": "2s",
+  "refresh": false,
   "schemaVersion": 16,
   "style": "dark",
   "tags": [],
@@ -374,7 +374,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Domain Data Metrics",
+  "title": "Domain Data Statistics",
   "uid": "vA03N9Uizs",
-  "version": 2
+  "version": 3
 }
