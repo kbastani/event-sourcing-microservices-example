@@ -28,6 +28,11 @@ public abstract class AbstractIntegrationTest {
             .withEnv("POSTGRES_PASSWORD", "password")
             .withEnv("POSTGRES_USER", "postgres");
 
+
+    static {
+        postgres.start();
+    }
+
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
         public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {

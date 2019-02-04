@@ -212,8 +212,11 @@ public class FriendServiceTests extends AbstractUnitTest {
 	public void transactionUpdateFails() {
 		Friend expected = new Friend(900L, 35L, 49L);
 
-		Mockito.when(userClient.getUser(35L)).thenReturn(Mono.just(new User(35L, "Kenny", "Bastani")));
-		Mockito.when(userClient.getUser(49L)).thenReturn(Mono.just(new User(49L, "Jean", "Gray")));
+		Mockito.when(userClient.getUser(35L))
+				.thenReturn(Mono.just(new User(35L, "Kenny", "Bastani")));
+
+		Mockito.when(userClient.getUser(49L))
+				.thenReturn(Mono.just(new User(49L, "Jean", "Gray")));
 
 		// Create a new friend transaction without throwing an error in the callback
 		StepVerifier.create(friendService.create(expected,
@@ -222,7 +225,8 @@ public class FriendServiceTests extends AbstractUnitTest {
 				.assertNext(u -> {
 					Assert.assertEquals("Actual id match expected", u.getId(), expected.getId());
 					Assert.assertEquals("Actual userId match expected", expected.getUserId(), u.getUserId());
-					Assert.assertEquals("Actual friendId match expected", expected.getFriendId(), u.getFriendId());
+					Assert.assertEquals("Actual friendId match expected", expected.getFriendId(),
+							u.getFriendId());
 				}).expectComplete().log().verify();
 
 		// Execute an update by changing the friend's name from John Doe to Johnny Appleseed
@@ -243,8 +247,10 @@ public class FriendServiceTests extends AbstractUnitTest {
 		StepVerifier.create(friendService.find(900L)).expectSubscription()
 				.assertNext(u -> {
 					Assert.assertEquals("Actual id match expected", u.getId(), expected.getId());
-					Assert.assertEquals("Actual userId match expected", expected.getUserId(), u.getUserId());
-					Assert.assertEquals("Actual friendId match expected", expected.getFriendId(), u.getFriendId());
+					Assert.assertEquals("Actual userId match expected", expected.getUserId(),
+							u.getUserId());
+					Assert.assertEquals("Actual friendId match expected", expected.getFriendId(),
+							u.getFriendId());
 				}).expectComplete().log().verify();
 	}
 
@@ -252,8 +258,10 @@ public class FriendServiceTests extends AbstractUnitTest {
 	public void transactionDeleteSucceeds() {
 		Friend expected = new Friend(1000L, 53L, 93L);
 
-		Mockito.when(userClient.getUser(53L)).thenReturn(Mono.just(new User(53L, "Kenny", "Bastani")));
-		Mockito.when(userClient.getUser(93L)).thenReturn(Mono.just(new User(93L, "Jean", "Gray")));
+		Mockito.when(userClient.getUser(53L))
+				.thenReturn(Mono.just(new User(53L, "Kenny", "Bastani")));
+		Mockito.when(userClient.getUser(93L))
+				.thenReturn(Mono.just(new User(93L, "Jean", "Gray")));
 
 		friendService.create(expected,
 				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString()))).block();
@@ -271,8 +279,11 @@ public class FriendServiceTests extends AbstractUnitTest {
 	public void friendExistsSucceeds() {
 		Friend expected = new Friend(421L, 221L);
 
-		Mockito.when(userClient.getUser(421L)).thenReturn(Mono.just(new User(21L, "Kenny", "Bastani")));
-		Mockito.when(userClient.getUser(221L)).thenReturn(Mono.just(new User(46L, "Jean", "Gray")));
+		Mockito.when(userClient.getUser(421L))
+				.thenReturn(Mono.just(new User(421L, "Kenny", "Bastani")));
+
+		Mockito.when(userClient.getUser(221L))
+				.thenReturn(Mono.just(new User(221L, "Jean", "Gray")));
 
 		friendService.create(expected,
 				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString()))).block();
@@ -281,5 +292,27 @@ public class FriendServiceTests extends AbstractUnitTest {
 		StepVerifier.create(friendService.exists(expected.getUserId(), expected.getFriendId()))
 				.expectSubscription()
 				.expectNext(true).expectComplete().log().verify();
+	}
+
+	@Test
+	public void createFriendWithSelfFails() {
+		// When a user befriends oneself, an error results
+		Friend expected = new Friend(555L, 246L, 246L);
+
+		Mockito.when(userClient.getUser(246L))
+				.thenReturn(Mono.just(new User(246L, "Kenny", "Bastani")));
+
+		StepVerifier.create(friendService.create(expected,
+				friend -> Mono.fromRunnable(() -> System.out.println(friend.toString()))))
+				.expectSubscription()
+				.expectError()
+				.log()
+				.verify();
+
+		// Read the result of the previous transaction and expect that no friends are emitted from the publisher
+		StepVerifier.create(friendService.find(555L)).expectSubscription()
+				.expectComplete()
+				.verify();
+
 	}
 }
