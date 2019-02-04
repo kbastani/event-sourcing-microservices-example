@@ -367,7 +367,7 @@ sh ./deployment/sbin/generate-parallel.sh
 
 ### Metrics and Monitoring
 
-Metrics for each application are forwarded to a prometheus gateway, which aggregates metrics across multiple applications and instances. Each Spring Boot application uses http://micrometer.io to export metrics from each application, which is scraped and downloaded into a Prometheus time-series database. For visualizing the aggregated metrics, you can use tools such as https://grafana.com/grafana — which is included and pre-configured as a part of this installation.
+Metrics for each application are forwarded to a prometheus gateway, which aggregates metrics across multiple applications and instances. Each Spring Boot application uses [http://micrometer.io]() to export metrics from each application, which is scraped and downloaded into a Prometheus time-series database. For visualizing the aggregated metrics, you can use tools such as [https://grafana.com/grafana]() — which is included and pre-configured as a part of this installation.
 
 To access Grafana, take the following steps.
 
@@ -380,15 +380,16 @@ kubectl -n social-network port-forward svc/social-network-grafana 8080:80
 Access Grafana via your web browser at `http://localhost:8080`
 
 Enter the credentials below to authenticate.
-
+```text
     Username: admin
     Password: password
+ ```
 
 After signing in, there are two dashboards available for you to start monitoring the different applications. You can start by navigating to the `Micrometer JVM Statistics` dashboard, which provides the most important information about how a JVM application is running. This dashboard has been designed specifically for Kubernetes, allowing you to select an `application` and either a single `instance` or `all` instances. When selecting `all` instances, the dashboard will create a panel for each `instance` of your chosen `application`.
 
 ![Micrometer JVM Statistics](https://i.imgur.com/6Yl6E3K.png)
 
-In the screenshot above, you can see a few of the metrics that are visible for a single instance of the `user-service`. Notice how the _CPU Usage_ is near 100%. This is because the shell script for parallel execution is being used to scale test the social network. You can try this by running the script locally on your machine.
+In the screenshot above, you can see a few of the metrics that are visible for a single instance of the `user-service`. Notice how the *CPU Usage* is near 100%. This is because the shell script for parallel execution is being used to scale test the social network. You can try this by running the script locally on your machine.
 
 ```bash
 sh ./deployment/sbin/generate-parallel.sh
@@ -420,7 +421,7 @@ If everything has been set up correctly, you'll now be able to navigate to Sprin
 
 -   <http://localhost:8761>
 
-You should see that each of the microservices has registered with Eureka. You won't be able to navigate to the URIs contained in the service registry directly. That's because each URI is a part of a network overlay that is being used by the Kubernetes cluster. We can think of these IPs as private, which are not directly mapped to a gateway. Thankfully, we use _Spring Cloud Gateway_ with reactive non-blocking HTTP requests, accessible at `localhost:9000` (this assumes you've deployed to a local Kubernetes cluster).
+You should see that each of the microservices has registered with Eureka. You won't be able to navigate to the URIs contained in the service registry directly. That's because each URI is a part of a network overlay that is being used by the Kubernetes cluster. We can think of these IPs as private, which are not directly mapped to a gateway. Thankfully, we use *Spring Cloud Gateway* with reactive non-blocking HTTP requests, accessible at `localhost:9000` (this assumes you've deployed to a local Kubernetes cluster).
 
 ### API Gateway
 
