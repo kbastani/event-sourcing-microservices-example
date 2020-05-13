@@ -8,17 +8,21 @@ kafka:
   persistence:
     enabled: false
 
+edge-service:
+  enabled: true
+  fullnameOverride: edge-service
+
 friend-service:
+  enabled: true
   fullnameOverride: friend-service
 
 recommendation-service:
+  enabled: true
   fullnameOverride: recommendation-service
 
 user-service:
+  enabled: true
   fullnameOverride: user-service
-
-edge-service:
-  fullnameOverride: edge-service
 
 prometheus:
   enabled: true

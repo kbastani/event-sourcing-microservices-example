@@ -8,5 +8,17 @@ dependencies:
 - name: grafana
   repository: https://kubernetes-charts.storage.googleapis.com
   version: 1.21.2
-digest: sha256:d0b6038f13f0016e80487068e32f17e87c438b9ecbd0fda90190ae329b5842d7
-generated: 2018-12-25T12:10:00.662856101-06:00
+- name: edge-service
+  repository: file://../edge-service
+  version: 0.1.0
+- name: friend-service
+  repository: file://../friend-service
+  version: 0.2.0
+- name: recommendation-service
+  repository: file://../recommendation-service
+  version: 0.1.0
+- name: user-service
+  repository: file://../user-service
+  version: 0.2.0
+digest: sha256:94ecc5c40798b16baa7ce5e3ffcec50c4e2f5376acaf27b7e6970ae398a86061
+generated: "2020-05-13T14:28:05.7530827+02:00"

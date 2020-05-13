@@ -11,3 +11,19 @@ dependencies:
     version: 1.21.2
     repository: https://kubernetes-charts.storage.googleapis.com
     condition: grafana.enabled
+  - name: edge-service
+    version: 0.1.0
+    repository: file://../edge-service
+    condition: edge-service.enabled
+  - name: friend-service
+    version: 0.2.0
+    repository: file://../friend-service
+    condition: friend-service.enabled
+  - name: recommendation-service
+    version: 0.1.0
+    repository: file://../recommendation-service
+    condition: recommendation-service.enabled
+  - name: user-service
+    version: 0.2.0
+    repository: file://../user-service
+    condition: user-service.enabled

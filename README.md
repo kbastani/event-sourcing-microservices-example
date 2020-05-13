@@ -219,7 +219,7 @@ Make sure that your `kubectl` is targeting the desired Kubernetes cluster you wo
 Now it's time to deploy the example contained inside this repository. Next, using a straightforward command, this example will be deployed to Kubernetes using the configuration included inside a docker-compose.yml file.
 
 ```bash
-docker stack up event-sourcing --compose-file $(pwd)/docker-compose.yml
+docker stack up event-sourcing --compose-file docker-compose.yml --orchestrator kubernetes
 ```
 
 After running the above command, the services contained in the docker-compose.yml file will begin to be deployed to pods in your Kubernetes cluster. You should be able to see the following output when the applications are up and running.
