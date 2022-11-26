@@ -1,6 +1,6 @@
 # Social Network Event Sourcing Example for Microservices
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/03693178d32b4db6bb6a1453e9b0c007)](https://app.codacy.com/app/kbastani/event-sourcing-microservices-example?utm_source=github.com&utm_medium=referral&utm_content=kbastani/event-sourcing-microservices-example&utm_campaign=Badge_Grade_Settings)[![Build Status](https://travis-ci.com/kbastani/event-sourcing-microservices-example.svg?branch=master)](https://travis-ci.com/kbastani/event-sourcing-microservices-example)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ff888e761c85408db07d8c7471bb70ea)](https://www.codacy.com/gh/kbastani/event-sourcing-microservices-example/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kbastani/event-sourcing-microservices-example&amp;utm_campaign=Badge_Grade)[![Build Status](https://travis-ci.com/kbastani/event-sourcing-microservices-example.svg?branch=master)](https://travis-ci.com/kbastani/event-sourcing-microservices-example)
 
 This project is a practical microservices reference example for demonstrating the basics of CQRS and Event Sourcing with Spring Boot and Spring Cloud. This tutorial walks you through getting this example up and running on Kubernetes using Docker Stacks. If you're unfamiliar with Kubernetes–no worries!–everything you need to get started is contained in this tutorial.
 
