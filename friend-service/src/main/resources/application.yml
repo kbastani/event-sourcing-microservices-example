@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: friend-service
   cloud:
     stream:
       bindings:
@@ -10,7 +12,7 @@ spring:
           producer:
             requiredGroups: user-group
   profiles:
-    active: development
+    default: development
 server:
   port: ${PORT:${SERVER_PORT:8100}}
 logging:
@@ -24,25 +26,32 @@ logging:
     liquibase.integration.spring.SpringLiquibase: ERROR
 ---
 postgres.port: 5432
-postgres.host: localhost
+postgres.host: friend-db
 postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/${postgres.database-name}
 postgres.database-name: postgres
 spring:
-  profiles: development
+  config.activate.on-profile: development
   datasource:
     url: ${postgres.url}
-    data-username: user
-    data-password: postgres
+    username: postgres
+    password: example
     driver-class-name: org.postgresql.Driver
+  r2dbc.url: r2dbc:${postgres.url}
   liquibase:
     url: ${postgres.url}
-    user: user
-    password: postgres
-    enabled: false
+    user: postgres
+    password: example
   cloud:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false
     kubernetes.enabled: false
+    stream:
+      kafka:
+        binder:
+          brokers: kafka
+          defaultBrokerPort: 29092
+          zkNodes: zookeeper
+          defaultZkPort: 32181
 eureka:
   instance:
     prefer-ip-address: true
@@ -50,14 +59,14 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://discovery-service:8761/eureka/
 ---
 postgres.port: 5432
 postgres.host: friend-db
 postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/${postgres.database-name}
 postgres.database-name: postgres
 spring:
-  profiles: docker
+  config.activate.on-profile: docker
   cloud:
     stream:
       kafka:
@@ -71,8 +80,8 @@ spring:
     kubernetes.enabled: false
   datasource:
     url: ${postgres.url}
-    data-username: postgres
-    data-password: example
+    username: postgres
+    password: example
     driver-class-name: org.postgresql.Driver
     xa:
       data-source-class-name: org.postgresql.xa.PGXADataSource

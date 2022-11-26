@@ -1,7 +1,5 @@
 package io.example.domain.friend;
 
-import io.example.domain.friend.entity.Friend;
-
 /**
  * An event that encapsulates a state transition for the {@link Friend}
  * domain object.

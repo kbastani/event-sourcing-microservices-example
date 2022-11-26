@@ -1,6 +1,6 @@
-FROM openjdk:11.0.1-jre-slim-sid
+FROM openjdk:17-alpine
 
-CMD ["/usr/bin/java", "-jar", "/usr/share/myservice/myservice.jar"]
+CMD ["java", "-jar", "/usr/share/myservice/myservice.jar"]
 
 # Add the service itself
 ARG JAR_FILE

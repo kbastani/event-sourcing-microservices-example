@@ -1,6 +1,5 @@
 package io.example.domain.user;
 
-import io.example.domain.friend.FriendRepository;
 import io.example.domain.friend.entity.RankedUser;
 import io.example.domain.user.entity.User;
 import org.springframework.web.bind.annotation.*;
@@ -10,19 +9,19 @@ import reactor.core.publisher.Flux;
 @RequestMapping("/v1")
 public class UserController {
 
-    private final FriendRepository friendRepository;
+    private final UserRepository userRepository;
 
-    public UserController(FriendRepository friendRepository) {
-        this.friendRepository = friendRepository;
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @GetMapping(path = "/users/{userId}/commands/findMutualFriends")
     public Flux<User> getMutualFriends(@PathVariable Long userId, @RequestParam Long friendId) {
-        return Flux.fromIterable(friendRepository.mutualFriends(userId, friendId));
+        return Flux.fromIterable(userRepository.mutualFriends(userId, friendId));
     }
 
     @GetMapping(path = "/users/{userId}/commands/recommendFriends")
     public Flux<RankedUser> recommendFriends(@PathVariable Long userId) {
-        return Flux.fromIterable(friendRepository.recommendedFriends(userId));
+        return Flux.fromIterable(userRepository.recommendedFriends(userId, RankedUser.class));
     }
 }

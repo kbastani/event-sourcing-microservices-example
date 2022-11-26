@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
  */
 @RestController
 @RequestMapping("/v1")
-@Transactional
+@Transactional("transactionManager")
 @Validated
 public class FriendController {
 

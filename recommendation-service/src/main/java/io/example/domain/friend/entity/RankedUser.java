@@ -1,7 +1,6 @@
 package io.example.domain.friend.entity;
 
 import io.example.domain.user.entity.User;
-import org.springframework.data.neo4j.annotation.QueryResult;
 
 import java.util.Objects;
 
@@ -12,7 +11,6 @@ import java.util.Objects;
  *
  * @author Kenny Bastani
  */
-@QueryResult
 public class RankedUser {
 
     private User user;

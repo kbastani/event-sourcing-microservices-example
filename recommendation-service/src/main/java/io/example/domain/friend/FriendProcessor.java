@@ -1,6 +1,5 @@
 package io.example.domain.friend;
 
-import io.example.domain.friend.entity.Friend;
 import io.example.domain.user.UserRepository;
 import io.example.domain.user.entity.User;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -13,7 +12,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
- * Message stream listener for {@link Friend} events. Maps types of events
+ * Message stream listener for Friend events. Maps types of events
  * to a graph operation that replicates a connected view of domain data
  * across microservices.
  *
@@ -25,11 +24,9 @@ import java.util.logging.Logger;
 public class FriendProcessor {
 
 	private final Logger log = Logger.getLogger(FriendProcessor.class.getName());
-	private final FriendRepository friendRepository;
 	private final UserRepository userRepository;
 
-	public FriendProcessor(FriendRepository friendRepository, UserRepository userRepository) {
-		this.friendRepository = friendRepository;
+	public FriendProcessor(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
@@ -48,12 +45,12 @@ public class FriendProcessor {
 
 		switch (friendEvent.getPayload().getEventType()) {
 			case FRIEND_ADDED:
-				friendRepository.addFriend(user.getId(), friend.getId(),
+				userRepository.addFriend(user.getId(), friend.getId(),
 						friendEvent.getPayload().getSubject().getCreatedAt().getTime(),
 						friendEvent.getPayload().getSubject().getUpdatedAt().getTime());
 				break;
 			case FRIEND_REMOVED:
-				friendRepository.removeFriend(user.getId(), friend.getId());
+				userRepository.removeFriend(user.getId(), friend.getId());
 				break;
 		}
 	}

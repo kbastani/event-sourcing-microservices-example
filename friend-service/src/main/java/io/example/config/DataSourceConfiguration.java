@@ -11,16 +11,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
-import org.springframework.data.r2dbc.function.ReactiveDataAccessStrategy;
-import org.springframework.data.r2dbc.function.TransactionalDatabaseClient;
-import org.springframework.data.r2dbc.function.convert.MappingR2dbcConverter;
-import org.springframework.data.r2dbc.function.convert.R2dbcCustomConversions;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
-import org.springframework.data.r2dbc.support.R2dbcExceptionTranslator;
-import org.springframework.data.relational.core.conversion.BasicRelationalConverter;
-import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.util.Assert;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
@@ -56,6 +49,11 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
 	}
 
 	@Bean
+	public R2dbcEntityTemplate r2dbcEntityTemplate(ConnectionFactory connectionFactory) {
+		return new R2dbcEntityTemplate(connectionFactory);
+	}
+
+	@Bean
 	public ConnectionFactory connectionFactory() {
 		return getPostgresqlConnectionFactory();
 	}
@@ -67,25 +65,8 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
 				.database(databaseName)
 				.host(postgresHost)
 				.port(postgresPort)
-				.username(dataSourceProperties.getDataUsername())
-				.password(dataSourceProperties.getDataPassword()).build());
-	}
-
-	@Bean(name = "transactionalDatabaseClient")
-	public TransactionalDatabaseClient transactionalDatabaseClient(ReactiveDataAccessStrategy dataAccessStrategy,
-	                                                               R2dbcExceptionTranslator exceptionTranslator) {
-		Assert.notNull(dataAccessStrategy, "DataAccessStrategy must not be null!");
-		Assert.notNull(exceptionTranslator, "ExceptionTranslator must not be null!");
-		return TransactionalDatabaseClient.builder().connectionFactory(this.connectionFactory())
-				.dataAccessStrategy(dataAccessStrategy).exceptionTranslator(exceptionTranslator).build();
-	}
-
-	@Bean
-	public MappingR2dbcConverter converter(RelationalMappingContext mappingContext,
-	                                       R2dbcCustomConversions r2dbcCustomConversions) {
-		Assert.notNull(mappingContext, "MappingContext must not be null!");
-		BasicRelationalConverter converter = new BasicRelationalConverter(mappingContext, r2dbcCustomConversions);
-		return new MappingR2dbcConverter(converter);
+				.username(dataSourceProperties.getUsername())
+				.password(dataSourceProperties.getPassword()).build());
 	}
 
 	@Bean
@@ -93,6 +74,6 @@ public class DataSourceConfiguration extends AbstractR2dbcConfiguration {
 	@LiquibaseDataSource
 	public DataSource dataSource(DataSourceProperties properties) {
 		return new SimpleDriverDataSource(new org.postgresql.Driver(), properties.getUrl(),
-				properties.getDataUsername(), properties.getDataPassword());
+				properties.getUsername(), properties.getPassword());
 	}
 }

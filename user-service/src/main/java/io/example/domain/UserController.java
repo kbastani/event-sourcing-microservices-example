@@ -19,7 +19,7 @@ import reactor.util.Loggers;
  */
 @RestController
 @RequestMapping("/v1")
-@Transactional
+@Transactional("transactionManager")
 public class UserController {
 
 	private final Logger logger = Loggers.getLogger(UserController.class);

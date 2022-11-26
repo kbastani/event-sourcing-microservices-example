@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: development
+  application:
+    name: discovery-service
 server:
   port: 8761
 logging:
@@ -13,7 +15,7 @@ logging:
     org.apache.kafka.*: ERROR
 ---
 spring:
-  profiles: development
+  config.activate.on-profile: development
   cloud:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false
@@ -23,7 +25,7 @@ eureka:
     preferIpAddress: true
 ---
 spring:
-  profiles: docker
+  config.activate.on-profile: docker
   cloud:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false
@@ -33,7 +35,7 @@ eureka:
     preferIpAddress: true
 ---
 spring:
-  profiles: test
+  config.activate.on-profile: test
   cloud:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false

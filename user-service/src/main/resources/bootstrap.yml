@@ -1,7 +1,7 @@
 spring:
-  profiles: default,development,test,docker,kubernetes
-  application:
-    name: user-service
+  profiles:
+    group:
+      production: default,development,test,docker,kubernetes
 management:
   endpoints:
     web:

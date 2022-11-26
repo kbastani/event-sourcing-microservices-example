@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: development
+  application:
+    name: edge-service
   cloud:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false
@@ -64,7 +66,7 @@ logging:
     org.apache.kafka.*: ERROR
 ---
 spring:
-  profiles: development
+  config.activate.on-profile: development
   cloud:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false
@@ -79,7 +81,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 ---
 spring:
-  profiles: docker
+  config.activate.on-profile: docker
 eureka:
   instance:
     prefer-ip-address: true
@@ -90,7 +92,7 @@ eureka:
       defaultZone: http://discovery-service:8761/eureka/
 ---
 spring:
-  profiles: kubernetes
+  config.activate.on-profile: kubernetes
   cloud:
     kubernetes:
       enabled: true
@@ -110,7 +112,7 @@ eureka.client.enabled: false
 prometheus.push.enabled: false
 ---
 spring:
-  profiles: test
+  config.activate.on-profile: test
   cloud:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false

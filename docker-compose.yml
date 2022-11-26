@@ -101,7 +101,7 @@ services:
     environment:
       POSTGRES_PASSWORD: example
     ports:
-      - "5432/tcp"
+      - "54321:5432/tcp"
     deploy:
       replicas: 1
 
@@ -110,7 +110,7 @@ services:
     environment:
       POSTGRES_PASSWORD: example
     ports:
-      - "5432/tcp"
+      - "54322:5432/tcp"
     deploy:
       replicas: 1
 

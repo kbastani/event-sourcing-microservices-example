@@ -2,9 +2,9 @@ package io.example.domain.friend;
 
 import io.example.domain.user.UserClient;
 import org.reactivestreams.Publisher;
-import org.springframework.data.r2dbc.function.DatabaseClient;
-import org.springframework.data.r2dbc.function.TransactionalDatabaseClient;
-import org.springframework.data.r2dbc.function.convert.MappingR2dbcConverter;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.relational.core.query.Query;
+import org.springframework.data.relational.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -15,6 +15,8 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static org.springframework.data.relational.core.query.Criteria.where;
 
 /**
  * The {@link FriendService} contains methods for managing the transactional state of {@link Friend} entities. Each
@@ -28,16 +30,11 @@ import java.util.function.Function;
 @Service
 public class FriendService {
 
-    private final TransactionalDatabaseClient transactionalDatabaseClient;
-    private final DatabaseClient databaseClient;
-    private final MappingR2dbcConverter converter;
+    private final R2dbcEntityTemplate template;
     private final UserClient userClient;
 
-    public FriendService(TransactionalDatabaseClient transactionalDatabaseClient, DatabaseClient databaseClient,
-                         MappingR2dbcConverter converter, UserClient userClient) {
-        this.transactionalDatabaseClient = transactionalDatabaseClient;
-        this.databaseClient = databaseClient;
-        this.converter = converter;
+    public FriendService(R2dbcEntityTemplate template, UserClient userClient) {
+        this.template = template;
         this.userClient = userClient;
     }
 
@@ -61,14 +58,13 @@ public class FriendService {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND,
                         "The supplied friends do not exist by the friendId or userId");
             }
-        }).then(transactionalDatabaseClient.inTransaction(db -> db.insert().into(Friend.class)
+        }).then(template.insert(Friend.class)
                 .using(friend)
-                .map((o, u) -> converter.populateIdIfNecessary(friend).apply(o, u))
-                .first().map(Friend::getId)
-                .flatMap(id -> db.execute().sql("SELECT * FROM friend WHERE id=$1")
-                        .bind(0, id).as(Friend.class)
-                        .fetch()
-                        .first()))
+                .map(Friend::getId)
+                .flatMap(id -> template.select(Friend.class)
+                        .matching(Query.query(where("id").is(id)))
+                        .first()
+                        .single()).delayUntil(u -> Mono.fromRunnable(() -> callback.apply(u)))
                 .delayUntil(callback).single()));
     }
 
@@ -79,9 +75,8 @@ public class FriendService {
      * @return a {@link Flux<Friend>} that emits the result of the database lookup.
      */
     public Flux<Friend> findUserFriends(Long userId) {
-        return databaseClient.execute().sql("SELECT * FROM friend WHERE user_id=$1 LIMIT 1")
-                .bind(0, userId).as(Friend.class)
-                .fetch()
+        return template.select(Friend.class)
+                .matching(Query.query(where("user_id").is(userId)))
                 .all();
     }
 
@@ -92,10 +87,9 @@ public class FriendService {
      * @return a {@link Mono<Friend>} that emits the result of the database lookup.
      */
     public Mono<Friend> find(Long id) {
-        return databaseClient.execute().sql("SELECT * FROM friend WHERE id=$1 LIMIT 1")
-                .bind(0, id).as(Friend.class)
-                .fetch()
-                .one();
+        return template.select(Friend.class)
+                .matching(Query.query(where("id").is(id)))
+                .first();
     }
 
     /**
@@ -111,16 +105,13 @@ public class FriendService {
         AtomicReference<Long> friendId = new AtomicReference<>();
         friendId.set(friend.getId());
 
-        return transactionalDatabaseClient.inTransaction(db ->
-                db.execute().sql("UPDATE friend SET friend_id=$1, user_id=$2 WHERE id=$3 RETURNING *")
-                        .bind(0, friend.getFriendId())
-                        .bind(1, friend.getUserId())
-                        .bind(2, friend.getId()).as(Friend.class).fetch().rowsUpdated()
-                        .then(db.execute().sql("SELECT * FROM friend WHERE id=$1")
-                                .bind(0, friendId.get())
-                                .as(Friend.class)
-                                .fetch()
-                                .first()).delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u)))).single();
+        return template.update(Friend.class)
+                .matching(Query.query(where("id").is(friend.getId())))
+                .apply(Update.update("friend_id", friend.getId())
+                        .set("user_id", friend.getUserId()))
+                .then(template.selectOne(Query.query(where("id").is(friend.getId())), Friend.class).single())
+                .delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u)))
+                .single();
     }
 
     /**
@@ -131,25 +122,19 @@ public class FriendService {
      * @return a {@link Mono<Friend>} that emits the result of the update transaction.
      */
     public Mono<Friend> delete(Friend friend, Consumer<Friend> callback) {
-        return transactionalDatabaseClient.inTransaction(db ->
-                db.execute().sql("SELECT * FROM friend f WHERE f.user_id=$1 AND f.friend_id=$2 LIMIT 1")
-                        .bind(0, friend.getUserId())
-                        .bind(1, friend.getFriendId())
-                        .as(Friend.class).fetch().first()
-                        .flatMap(f -> {
-                            friend.setId(f.getId());
-                            return db.execute().sql("DELETE FROM friend f WHERE f.id=$1")
-                                    .bind(0, f.getId())
-                                    .fetch()
-                                    .rowsUpdated();
-                        }).single().then(Mono.just(friend))
-                        .delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u)))).single();
+        return template.select(Friend.class)
+                .matching(Query.query(where("user_id").is(friend.getUserId())
+                        .and(where("friend_id").is(friend.getFriendId()))))
+                .first()
+                .flatMap(f -> {
+                    friend.setId(f.getId());
+                    return template.delete(f);
+                }).single().then(Mono.just(friend))
+                .delayUntil(u -> Mono.fromRunnable(() -> callback.accept(u))).single();
     }
 
     public Mono<Boolean> exists(Long userId, Long friendId) {
-        return databaseClient.execute().sql("SELECT * FROM friend WHERE user_id=$1 AND friend_id=$2")
-                .bind(0, userId)
-                .bind(1, friendId)
-                .as(Friend.class).fetch().all().hasElements();
+        return template.exists(Query.query(where("user_id")
+                .is(userId).and("friend_id").is(friendId)), Friend.class).single();
     }
 }

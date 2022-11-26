@@ -1,4 +1,8 @@
 spring:
+  application:
+    name: user-service
+  profiles:
+    default: development
   cloud:
     stream:
       bindings:
@@ -9,8 +13,6 @@ spring:
           group: user-group
           producer:
             requiredGroups: user-group
-  profiles:
-    active: development
 server:
   port: ${PORT:${SERVER_PORT:8120}}
 logging:
@@ -23,16 +25,17 @@ logging:
     liquibase.integration.spring.SpringLiquibase: ERROR
 ---
 postgres.port: 5432
-postgres.host: localhost
+postgres.host: user-db
 postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/
 postgres.database-name: postgres
 spring:
-  profiles: development
+  config.activate.on-profile: development
   datasource:
     url: ${postgres.url}
-    data-username: postgres
-    data-password: example
+    username: postgres
+    password: example
     driver-class-name: org.postgresql.Driver
+  r2dbc.url: r2dbc:${postgres.url}
   liquibase:
     url: ${postgres.url}
     user: postgres
@@ -41,6 +44,13 @@ spring:
     kubernetes.discovery.enabled: false
     kubernetes.ribbon.enabled: false
     kubernetes.enabled: false
+    stream:
+      kafka:
+        binder:
+          brokers: kafka
+          defaultBrokerPort: 29092
+          zkNodes: zookeeper
+          defaultZkPort: 32181
 eureka:
   instance:
     prefer-ip-address: true
@@ -48,14 +58,14 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://discovery-service:8761/eureka/
 ---
 postgres.port: 5432
 postgres.host: user-db
 postgres.url: jdbc:postgresql://${postgres.host:localhost}:${postgres.port}/
 postgres.database-name: postgres
 spring:
-  profiles: docker
+  config.activate.on-profile: docker
   cloud:
     stream:
       kafka:
@@ -69,8 +79,8 @@ spring:
     kubernetes.enabled: false
   datasource:
     url: ${postgres.url}
-    data-username: postgres
-    data-password: example
+    username: postgres
+    password: example
     driver-class-name: org.postgresql.Driver
   liquibase:
     url: ${postgres.url}

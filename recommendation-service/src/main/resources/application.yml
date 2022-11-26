@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: recommendation-service
   cloud:
     stream:
       bindings:
@@ -28,7 +30,7 @@ logging:
     org.apache.kafka.*: WARN
 ---
 spring:
-  profiles: development
+  config.activate.on-profile: development
   data:
     neo4j:
       uri: "bolt://localhost:7687"
@@ -50,7 +52,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 ---
 spring:
-  profiles: docker
+  config.activate.on-profile: docker
   data:
     neo4j:
       uri: "bolt://neo4j:7687"

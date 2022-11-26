@@ -13,8 +13,8 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
  * @author Kenny Bastani
  */
 @SpringBootApplication
-@EnableNeo4jRepositories(value = {"io.example.domain.user", "io.example.domain.friend"})
-@EntityScan({"io.example.domain.friend.entity", "io.example.domain.user.entity"})
+@EnableNeo4jRepositories(value = {"io.example.domain.user"})
+@EntityScan({"io.example.domain.user.entity"})
 public class RecommendationService {
 
     public static void main(String[] args) {

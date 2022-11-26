@@ -1,9 +1,9 @@
 package io.example.domain.user.entity;
 
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.typeconversion.DateLong;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.support.DateLong;
 import org.springframework.integration.support.json.Jackson2JsonObjectMapper;
 
 import java.util.Date;
@@ -15,7 +15,7 @@ import java.util.Random;
  *
  * @author Kenny Bastani
  */
-@NodeEntity
+@Node
 public class User {
 
     @Id
