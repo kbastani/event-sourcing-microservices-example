@@ -16,31 +16,15 @@ logging:
 ---
 spring:
   config.activate.on-profile: development
-  cloud:
-    kubernetes.discovery.enabled: false
-    kubernetes.ribbon.enabled: false
-    kubernetes.enabled: false
 eureka:
   instance:
     preferIpAddress: true
 ---
 spring:
   config.activate.on-profile: docker
-  cloud:
-    kubernetes.discovery.enabled: false
-    kubernetes.ribbon.enabled: false
-    kubernetes.enabled: false
 eureka:
   instance:
     preferIpAddress: true
 ---
 spring:
   config.activate.on-profile: test
-  cloud:
-    kubernetes.discovery.enabled: false
-    kubernetes.ribbon.enabled: false
-    kubernetes.enabled: false
-prometheus.enabled: false
-eureka:
-  client:
-    enabled: false
