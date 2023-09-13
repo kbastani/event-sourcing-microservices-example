@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: hyperskale/user-service
+  repository: hyperscale/user-service
   tag: 0.0.2-SNAPSHOT
   pullPolicy: Always
 

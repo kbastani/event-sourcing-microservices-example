@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: hyperskale/recommendation-service
+  repository: hyperscale/recommendation-service
   tag: 0.0.1-SNAPSHOT
   pullPolicy: Always
 

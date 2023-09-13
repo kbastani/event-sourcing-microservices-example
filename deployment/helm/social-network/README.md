@@ -1,4 +1,4 @@
-# Deploy Hyerskale Social Network via Helm
+# Deploy Hyperscale Social Network via Helm
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ helm init --service-account=tiller
 Clone this repo locally:
 
 ```bash
-git clone https://github.com/hyperskale/social-network-example.git
+git clone https://github.com/hyperscale/social-network-example.git
 cd social-network-example
 ```
 
