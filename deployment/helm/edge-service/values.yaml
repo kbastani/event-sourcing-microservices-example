@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: hyperskale/edge-service
+  repository: hyperscale/edge-service
   tag: 0.0.1-SNAPSHOT
   pullPolicy: Always
 
